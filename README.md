@@ -1,4 +1,4 @@
-# JAT parsing
+# JATS parsing
 The project contains python scripts parsing the Europe PMC interchange format JATS using the lxml library
 
 See https://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?attr=article-type
@@ -32,7 +32,7 @@ Simple http server providing a json version of a publication given a pmcid.
 
 The server listen http requests on port 8088 and responds ro requests like _/parse/pmc/{som pmcid}_ .
 
-The server retrieves the XML JAT version of the corresponding publication by calling the ebi API.
+The server retrieves the XML JATS version of the corresponding publication by calling the ebi API.
 
 It then uses **process_xml.py** to parse the XML. The response is a json version of the publication.
 
