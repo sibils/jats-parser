@@ -1,0 +1,484 @@
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.0 20120330//EN" "JATS-archivearticle1.dtd">
+<article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" article-type="research-article"><?properties open_access?><front><journal-meta><journal-id journal-id-type="nlm-ta">Adv Bioinformatics</journal-id><journal-id journal-id-type="iso-abbrev">Adv Bioinformatics</journal-id><journal-id journal-id-type="publisher-id">ABI</journal-id><journal-title-group><journal-title>Advances in Bioinformatics</journal-title></journal-title-group><issn pub-type="ppub">1687-8027</issn><issn pub-type="epub">1687-8035</issn><publisher><publisher-name>Hindawi Publishing Corporation</publisher-name></publisher></journal-meta><article-meta><article-id pub-id-type="pmid">19865592</article-id><article-id pub-id-type="pmc">2768302</article-id><article-id pub-id-type="doi">10.1155/2008/369830</article-id><article-categories><subj-group subj-group-type="heading"><subject>Research Article</subject></subj-group></article-categories><title-group><article-title>Genomic Promoter Analysis Predicts Functional Transcription Factor Binding</article-title></title-group><contrib-group><contrib contrib-type="author"><name><surname>Rao</surname><given-names>J. Sunil</given-names></name><xref ref-type="aff" rid="I1">
+<sup>1</sup>
+</xref></contrib><contrib contrib-type="author"><name><surname>Karanam</surname><given-names>Suresh</given-names></name><xref ref-type="aff" rid="I2">
+<sup>2</sup>
+</xref></contrib><contrib contrib-type="author"><name><surname>McCabe</surname><given-names>Colleen D.</given-names></name><xref ref-type="aff" rid="I2">
+<sup>2</sup>
+</xref></contrib><contrib contrib-type="author"><name><surname>Moreno</surname><given-names>Carlos S.</given-names></name><xref ref-type="aff" rid="I2">
+<sup>2</sup>
+</xref><xref ref-type="corresp" rid="cor1">*</xref></contrib></contrib-group><aff id="I1"><sup>1</sup>Department of Epidemiology and Biostatistics, Case Western Reserve University, Cleveland, OH 44106, USA</aff><aff id="I2"><sup>2</sup>Department of Pathology &#x00026; Laboratory Medicine and Winship Cancer Institute, Emory University School of Medicine, Atlanta, GA 30322, USA</aff><author-notes><corresp id="cor1">*Carlos S. Moreno: <email>cmoreno@emory.edu</email></corresp><fn fn-type="other"><p>Recommended by Ramana Davuluri</p></fn></author-notes><pub-date pub-type="ppub"><year>2008</year></pub-date><pub-date pub-type="epub"><day>30</day><month>10</month><year>2008</year></pub-date><volume>2008</volume><elocation-id>369830</elocation-id><history><date date-type="received"><day>31</day><month>1</month><year>2008</year></date><date date-type="rev-recd"><day>15</day><month>5</month><year>2008</year></date><date date-type="accepted"><day>17</day><month>7</month><year>2008</year></date></history><permissions><copyright-statement>Copyright &#x000a9; 2008 J. Sunil Rao et al.</copyright-statement><copyright-year>2008</copyright-year><license xlink:href="https://creativecommons.org/licenses/by/3.0/"><license-p>This is an open access article distributed under the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p></license></permissions><abstract><p>
+<italic>Background</italic>. The computational identification of functional transcription factor binding sites (TFBSs) remains a major challenge of computational biology.
+<italic>Results</italic>.
+We have analyzed the conserved promoter sequences for the complete set of human RefSeq genes using our conserved transcription factor binding site (CONFAC) software. CONFAC identified 16296 human-mouse ortholog gene pairs, and of those pairs, 9107 genes contained conserved TFBS in the 3 kb proximal promoter and first intron. To attempt to predict in vivo occupancy of transcription factor binding sites, we developed a novel marginal effect isolator algorithm that builds upon Bayesian methods for multigroup TFBS filtering and predicted the in vivo occupancy of two transcription factors with an overall accuracy of 84%.
+<italic>Conclusion</italic>. Our analyses show that integration of chromatin immunoprecipitation data with conserved TFBS analysis can be used to generate accurate predictions of functional TFBS. They also show that TFBS cooccurrence can be used to predict transcription factor binding to promoters in vivo.</p></abstract></article-meta></front><body><sec id="sec1"><title>1. Background</title><p>One of the important
+challenges in computational biology is the accurate prediction of functional
+transcription factor binding sites (TFBSs). 
+A primary reason that accurate prediction of relevant TFBS remains
+difficult is due to the short (6&#x02013;12 bp) degenerate motifs represented as
+position weight matrices (PWMs) that match high numbers of false positives in
+genomic sequences. We previously described the conserved transcription factor
+binding site (CONFAC) software that uses a comparative genomic approach to
+identify evolutionarily conserved and statistically overrepresented TFBS [<xref rid="B1" ref-type="bibr">1</xref>]. The use of comparative genomics to identify functional TFBS [<xref rid="B2" ref-type="bibr">2</xref>&#x02013;<xref rid="B9" ref-type="bibr">9</xref>] is based on the hypothesis
+that functional noncoding genomic sequences are more highly conserved during
+evolution than nonfunctional TFBS.</p><p>Here we have applied the CONFAC analysis to the complete
+set of 21222 RefSeq transcripts identified in the Human Genome. We mined our
+conserved TFBS data in combination with public in vivo occupancy data [<xref rid="B10" ref-type="bibr">10</xref>] using Bayesian methods to
+determine the sequence contexts that influence binding of the HNF1 and HNF4
+transcription factors. We predicted the binding of HNF1 and HNF4 to promoters
+in human pancreatic islet cells and hepatocytes in an independent test set of
+1349 genes with 84% accuracy.</p></sec><sec id="sec2"><title>2. Results</title><p>We have applied CONFAC to the
+complete set of 21222 publicly available human RefSeq transcripts. CONFAC works
+by identifying the conserved sequences in the 3 kb proximal promoter region and
+first intron of human-mouse ortholog gene pairs and then identifying TFBS,
+defined by position weight matrices from the MATCH software [<xref rid="B11" ref-type="bibr">11</xref>], that are conserved between the two species [<xref rid="B1" ref-type="bibr">1</xref>]. Conserved sequence is
+defined as that which is aligned between the human and mouse genomes by
+pairwise BLAST of the 3 kb upstream and first intron. Thus, those sequences are not necessarily
+aligned within the global human-mouse genome alignment. CONFAC then identifies within those conserved
+sequences the TFBS that fall within a 25 bp window of each other in the human-
+and mouse-conserved sequences. The
+cutoff threshold parameters for core similarity score (CSS) and matrix
+similarity score (MSS) used were 0.85 and 0.75, respectively. The TFBSs that meet these criteria are defined here as
+conserved TFBSs. Of the 21222 available
+human RefSeq transcripts, CONFAC identified 16296 human-mouse ortholog gene
+pairs, and of those pairs, 9107 genes contained conserved TFBS in their
+promoter regions. We observed conserved
+TFBS for 310 position weight matrices (PWMs) from this initial analysis. The
+result was a 9107-gene by 310-TFBS table
+in which each element represented the number of conserved
+occurrences of each TFBS in the promoter of each gene. The complete dataset from this analysis is
+provided in the supplementary material (see additional file 2: SuppTableS1.txt
+for the complete dataset available online at doi:10.1155/2008/369830), and is
+also available on our website
+(<ext-link ext-link-type="uri" xlink:href="http://morenolab.whitehead.emory.edu/pubs/Refseq/">http://morenolab.whitehead.emory.edu/pubs/Refseq/</ext-link>).</p><sec sec-type="subsection" id="subsec2.1"><title>2.1. In Vivo Occupancy Predictions</title><p>We sought to
+develop methods to enable integration of in vivo occupancy data from ChIP-chip
+studies with our genomic CONFAC TFBS analysis to determine what TFBS patterns
+might improve computational prediction that a TFBS would be bound in vivo. Towards this end, we utilized publicly
+available ChIP-chip data on HNF4 and HNF1 [<xref rid="B10" ref-type="bibr">10</xref>] to analyze the patterns of
+TFBS identified by CONFAC. We classified
+the genes from this dataset into seven groups: those (1) bound by HNF1 in
+hepatocytes, (2) bound by HNF1 in pancreatic islets, (3) bound by HNF1 in both
+tissues, (4) bound by HNF4 in hepatocytes, (5) bound by HNF4 in pancreatic
+islets, (6) bound by HNF4 in both tissues, and (7) unbound genes. The public in
+vivo occupancy data for HNF1 and HNF4 [<xref rid="B10" ref-type="bibr">10</xref>] on 13046 genes was
+cross-referenced with the 9107 genes containing conserved TFBS. A total of 6683 genes were present on the
+ChIP-chip microarray and had conserved TFBS data using CONFAC. This set of 6683
+genes was used for further analysis. 
+CONFAC uses a pairwise-BLAST method for generation of conserved sequence
+alignments between promoters of human-mouse ortholog pairs. This approach allows for local alignments as
+opposed to global genome alignments. 
+However, one limitation is that if no significant alignment is found,
+there is no sequence to analyze for TFBS, no matter what parameters for core
+and matrix similarity are utilized. Complete data on conserved TFBS for each of
+the seven groups analyzed are available in the supplementary material (see
+Additional Files 3&#x02013;9: Supplementary Tables S2&#x02013;S8). To ensure that our TFBS data
+was not skewed by differences in GC-content, we examined the %GC content of the
+conserved promoter sequences in each of the seven groups of genes, and found
+that each group had a similar %GC content in its conserved promoter sequences
+(<xref ref-type="fig" rid="fig1">Figure 1</xref>).</p><p>Previous studies
+have utilized Bayesian methods to identify TFBS combinations that might be
+predictive of gene expression patterns [<xref rid="B12" ref-type="bibr">12</xref>]. For our analysis, we
+employed the Bayesian Analysis for Microarrays (BAMarray) software [<xref rid="B13" ref-type="bibr">13</xref>]. We used BAM to generate pattern-specific lists of significant
+TFBS where each pattern type corresponded to each of the seven groups of genes
+described above. This dataset has been mined in other studies using
+multivariate adaptive regression splines to identify cooccurring TFBS pairs
+that correlated with expression patterns and localization data 
+[<xref rid="B14" ref-type="bibr">14</xref>]. However, these earlier
+analyses identified patterns correlated with occupancy, and did not attempt to
+predict whether a promoter was occupied or unoccupied in a blinded
+fashion. Moreover, BAM estimates are
+model-averaged, and have been shown to have lower mean squared error than
+competing nonmodel-averaged estimates [<xref rid="B15" ref-type="bibr">15</xref>], thus resulting in more reproducible TFBS pattern sets.</p><p>We trained the
+BAMarray software using 80% of the genes that fell into each of these seven
+groups and then used the marginal effect isolation (MEI) method to predict the
+remaining 1349 (or 20%) of the genes (<xref ref-type="table" rid="tab1">Table 1</xref>) as described in the Methods section. Self-consistency of predictions on
+the training set is shown in <xref ref-type="table" rid="tab2">Table 2</xref>. 
+The end result is a clearer understanding of the biological underpinnings of how TFBSs
+are able to separate the above gene groupings. Because the complete absence of
+a given TFBS in any of the seven gene types creates a spuriously large and
+falsely significant Z-score for a given class, we prefiltered the TFBS data to
+eliminate those that had zero occurrences in any given gene group. BAMarray analysis was then performed on the
+216 TFBS that remained after the prefiltering step. Using this approach, we found that the
+presence of E2FDP1 sites positively influenced the binding of HNF4 in
+pancreatic islets, while the presence of HNF3 and homeobox sites negatively
+influenced HNF4 binding. In addition, we
+found that pairs of HNF4 sites and cooccurring HNF4 and HNF6 sites negatively
+influence HNF1 binding. A summary of the gene predictions using this method is
+provided in <xref ref-type="table" rid="tab1">Table 1</xref>. Our analysis of the data produced 1134 correct
+predictions, or 84% correct (<italic>P</italic> &#x0003c; .0005).</p><p>It must be noted
+that if 100% of the genes were predicted to be unbound, we would have achieved
+77% accuracy. However, all of the
+misclassifications are between the various bound genes and the unbound class, that
+is, there are no bound genes that were misclassified into other bound categories. Thus, if we excluded genes that were
+predicted to be unbound, we achieved 98/98 correct predictions. Thus, our estimated false positive rate was
+zero for bound genes. However, our
+estimated false negative rate (i.e., predicted unbound genes/total bound genes)
+was 202/300 or 67%. Thus, while our
+estimated specificity for bound genes was excellent, our estimated sensitivity
+(33%) was fairly low. Most difficult to
+predict were genes bound only in hepatocytes by HNF1 or HNF4, which may be due
+to influences of newly identified TFBS [<xref rid="B16" ref-type="bibr">16</xref>] not included in this analysis, post-translational modifications
+of HNF1 and/or HNF4, or epigenetic alterations in chromatin structure that
+differ between pancreatic islets and hepatocytes. Another reason for the low sensitivity is
+that the vast majority of significant associations of TFBS with HNF1 and HNF4
+binding were negative correlations, that is, those factors were <italic>not</italic> likely to bind to promoters
+containing the significant TFBS.</p></sec><sec sec-type="subsection" id="subsec2.2"><title>2.2. Ten-Fold
+Repeated Holdout Training-Test Set Validation</title><p>To validate the
+rules identified by BAMarray analysis of the TFBS patterns, we performed a
+ten-fold repeated holdout validation of the data. Each group was randomly sampled ten times to
+split into training and test sets containing 80% or 20% of the data,
+respectively. Training was performed on
+a training set of 80% of the genes and prediction was then performed on the
+remaining test set of 20% of the genes using the ten independent random splits
+of the data. We expected the BAMarray
+filtering to be very reproducible according to 
+[<xref rid="B23" ref-type="bibr">17</xref>, Theorem 3 and Corollary 1]. 
+The theory indicates that differentially associated factors should be
+found with probability going to 1 at a rate inversely proportional to the group
+sample sizes. The outcome of this cross-validation is summarized in 
+<xref ref-type="table" rid="tab4">Table 4</xref>, and the detailed results are
+given in Supplementary 
+Tables <xref ref-type="table" rid="tab1">1</xref>&#x02013;<xref ref-type="table" rid="tab8">8</xref> (see additional
+files 10&#x02013;16: SuppTableS9&#x02013;S15). In general, the results of the ten random
+splits of the data were very reproducible, with dozens of sites repeatedly
+significant in over 50% of the analyses, and many results were reproduced in
+100% of the ten random splits. Of great interest was the fact that families of
+similar TFBS were repeatedly negatively associated with binding of HNF1 or HNF4
+in the six classes that we selected (<xref ref-type="table" rid="tab3">Table 3</xref>). 
+For example, V$E2F1, V$E2F1DP2, V$E2F1DP1, V$E2F4DP2, V$E2F1DP1RB, and
+V$E2F4DP1 were all negatively associated with HNF1 binding in pancreatic
+islets. In addition, NF<italic>&#x003ba;</italic>B sites were negatively associated with the
+three classes of promoters associated with HNF1 binding, while FOX and Homeobox
+sites were negatively associated with the three classes of promoters associated
+with HNF4 binding.</p><p>To get a better
+handle on the stability of MEI classification portion of the analysis, we
+repeated the splitting of the dataset into training and test components 25
+times (with the same 80&#x02013;20 proportions
+each time). For the MEI classifier, the
+average total misclassification rate over the 25 splits was 0.1666 with a
+standard deviation of 0.007. Thus, the
+overall accuracy over the 25 splits was 83% &#x000b1; 0.7%. The average false positive rate for bound
+genes was 0.0099 with a standard deviation of 0.0062. The predictions for each group of genes are
+summarized in <xref ref-type="table" rid="tab4">Table 4</xref>. Taken as a whole, this repeated splitting
+exercise indicates that the results presented are highly reproducible.</p></sec><sec sec-type="subsection" id="subsec2.3"><title>2.3. Contribution of the Large Unbound Class</title><p>To gauge the
+effect of the large unbound class on our sensitivity and false positive rates,
+we repeated the training and testing of an 80&#x02013;20 split of the
+data, this time using only the six bound classes of genes. The results of this classification are shown
+in <xref ref-type="table" rid="tab5">Table 5</xref>. In general, the maximum
+false positive rate observed for any class was 16% (HNF4 bound genes in
+pancreas), and the average false positive rate was 6%. Sensitivity for the six classes ranged from
+84% to 100%, while specificity ranged from 95% to 100%. Overall accuracy of the predictions improved
+to 86% when the unbound class was removed from the dataset. These data suggest that the poor sensitivity
+that we observed is partially due to the large unbound class of genes from this
+dataset.</p></sec><sec sec-type="subsection" id="subsec2.4"><title>2.4. Alternative TFBS Prediction Methods</title><p>To compare the
+performance of the CONFAC approach with other methodologies, we input all of
+the genes from the HNF ChIP-chip experiment into the oPOSSUM 2.0 software [<xref rid="B17" ref-type="bibr">18</xref>, <xref rid="B18" ref-type="bibr">19</xref>]. 
+We performed single site analysis using oPOSSUM and we were able to
+determine that HNF4 sites were overrepresented in the genes bound by HNF4 and
+HNF1 in hepatocytes (<xref ref-type="table" rid="tab6">Table 6</xref>). However, since the oPOSSUM 2.0 software only
+reports the aggregate number of TFBS occurrences in each gene set, and not the
+individual numbers per gene, it was not possible to use these data for a
+predictive MEI classification analysis.</p><p>However, we did
+perform additional analyses using two modifications to the CONFAC software. One uses the genomic alignments of human and mouse with a window
+size of zero, requiring perfect alignment of the sites 
+(<xref ref-type="table" rid="tab7">Table 7</xref>). The second uses the sequences that have significant
+regulatory potential based on alignment of seven species [<xref rid="B19" ref-type="bibr">20</xref>] and uses the window length of 25 bp 
+(<xref ref-type="table" rid="tab8">Table 8</xref>). Using these two
+approaches, the specificity remains high, and the sensitivity was slightly
+increased. </p></sec></sec><sec id="sec3"><title>3. Discussion</title><p>Here we have accurately predicted in vivo occupancy
+of promoters based on conserved TFBS patterns and public ChIP-chip localization
+data. The TFBS patterns were generated
+for the complete set of human RefSeq genes using our CONFAC software, which
+identifies TFBS that are conserved between human and mouse genomes [<xref rid="B1" ref-type="bibr">1</xref>]. A possible reason for our low
+sensitivity could be the requirement for conservation between human and mouse
+genomes. However, without this
+requirement, the gains in sensitivity would likely be lost by losses in
+specificity. This is
+supported by an earlier study of 14 gene pairs and 40 verified TFBSs, which
+found that requiring evolutionary conservation reduced the total number of
+sites detected by 85% but maintained detection of 83% of verified sites [<xref rid="B4" ref-type="bibr">4</xref>]. 
+Thus, comparison of human and mouse genome sequences can greatly reduce
+the background noise of false positive TFBS with only a small loss in the
+overall sensitivity for detection of functionally significant TFBS. In addition, analysis of only the bound classes of genes
+exhibited sensitivity ranging from 86&#x02013;100%, suggesting
+that part of the computational challenge lies in the unbalanced nature of these
+datasets.</p><p>While other studies have
+mined public ChIP-chip data [<xref rid="B10" ref-type="bibr">10</xref>] to identify cooccurring TFBS
+pairs that correlated with expression patterns and localization data using
+multivariate adaptive regression splines, these studies [<xref rid="B14" ref-type="bibr">14</xref>] did not attempt to predict whether a promoter was occupied or
+unoccupied in a blinded fashion. Our
+success rate of 84% on an independent test set of 1349 genes demonstrates that
+given sufficient localization and sequence data, it is possible to separate
+bound from unbound promoters computationally. 
+One of the challenges with these predictions is the marked lack of
+balance in the sample sizes between genes bound by a transcription factor and
+the unbound genes. Since typical approaches tend to minimize overall error
+rates across all groups, higher error rates on smaller classes are tolerated
+for smaller error rates on the unbound class. That is, we tend to learn
+posterior inferences much more accurately on the larger represented class. 
+Under certain situations, this can lead to a bias represented as an underestimation
+of posterior probabilities of assignment for the smaller classes [<xref rid="B20" ref-type="bibr">21</xref>]. There are some approaches
+to alleviate these biases that deal with this issue in a systematic manner
+rather than resorting to ad hoc corrections. 
+These approaches include biased sampling in the training set by
+subsampling from the larger represented group and down weighting observations
+in the larger represented group [<xref rid="B20" ref-type="bibr">21</xref>]. The strategy that we used was to adjust class priors such that
+posterior class assignments could be made using conventional cutoffs rather
+than ones that were adjusted for unequal group representation. We will continue to investigate other
+statistically optimal approaches for bias adjustment with the goal of optimal
+prediction of TFBS functionality.</p><p>Genome-wide analyses of TFBS
+have been conducted in <italic>Saccharomyces
+cerevisiae</italic> which have identified combinations of TFBS and integrated the cooccurrence
+of TFBS in promoter elements with microarray expression data [<xref rid="B23" ref-type="bibr">17</xref>, <xref rid="B21" ref-type="bibr">22</xref>, <xref rid="B22" ref-type="bibr">23</xref>]. Bayesian approaches have also been applied to
+yeast and <italic>C. elegans</italic> [<xref rid="B12" ref-type="bibr">12</xref>], but not yet to mammalian genomes, partially because earlier
+methods for identification of TFBS produced such a high number of false
+positives. One analysis of the human
+genome found TFBSs that were enriched in 1 kb of upstream sequences relative to
+the second exon [<xref rid="B24" ref-type="bibr">24</xref>]. This study did find that
+many transcription factors associated with immune response had TFBS in the
+promoters of genes annotated for immune system regulation. However, regulatory elements are quite often
+further than 1 kb upstream of transcription start sites or in intronic
+sequences, and it is not clear if the second exon of genes represents an
+optimal background to compare against upstream sequences. Moreover, the study by 
+Long et al. [<xref rid="B24" ref-type="bibr">24</xref>] did not use comparative genomics to identify evolutionarily
+conserved TFBS.</p><p>Our approach exhibited high
+specificity, but low sensitivity for prediction of in vivo binding of HNF4 and
+HNF1. Part of the reason for the low
+sensitivity could be due to the nature of the HNF1 binding site, which consists
+of two 7 bp half-sites with a one-base
+spacer, resulting in a long (15 bp) PWM [<xref rid="B25" ref-type="bibr">25</xref>]. 
+Other approaches for site identification that use half-sites might
+increase our sensitivity, but CONFAC uses the PWM available in the latest
+release of MATCH (TRANSFAC Professional Release 11.1). We
+anticipate that further refinements of
+our input parameters to include cis-regulatory modules [<xref rid="B26" ref-type="bibr">26</xref>] or nucleosome occupancy probabilities [<xref rid="B27" ref-type="bibr">27</xref>] may enhance our ability to find positive associations between
+TFBS sets and in vivo occupancy.</p></sec><sec id="sec4"><title>4. Conclusions</title><p>One of the many challenges of
+computational biology has been to identify functional genomic binding sites for
+transcription factors (TFBSs) and the direct downstream targets they affect. Identification of such sites would allow the
+development of more accurate gene networks and an understanding of important
+biological pathways. We applied the
+Conserved Transcription Factor Binding Sites (CONFAC) software to identify
+evolutionarily conserved and statistically overrepresented TFBS in the region
+immediately upstream of the complete set of identified human genes. We have developed a novel statistical
+technique that uses the TFBS patterns to accurately predict binding of
+transcription factors in a tissue specific manner based on prior biological
+data. These methods can be applied to additional transcription factors as more
+biological data becomes available. These
+methods will allow more accurate predictions of functional transcription factor
+binding sites, saving time in the wet lab and allowing faster development of more accurate gene
+networks.</p></sec><sec id="sec5"><title>5. Methods</title><sec sec-type="subsection" id="subsec5.1"><title>5.1. CONFAC Analysis</title><p>The CONFAC software runs in the linux operating system,
+using cgi scripts written in the Perl programming language, and accepts lists
+of genes via a web browser interface (<ext-link ext-link-type="uri" xlink:href="http://confac.emory.edu/">http://confac.emory.edu/</ext-link>). The user inputs a tab-delimited text file
+containing a unique identifier for the gene name in the first column and a
+GenBank accession number or RefSeq ID in the second column [<xref rid="B1" ref-type="bibr">1</xref>]. The CONFAC software then
+automatically identifies orthologous murine genes by accessing ortholog lookup
+tables obtained from the UCSC and ENSEMBL genome databases. The RefSeqs analyzed were based on 
+Tables hg16 refFlat and mm3 refFlat, available at <ext-link ext-link-type="uri" xlink:href="http://genome.ucsc.edu/cgi-bin/hgTables"> http://genome.ucsc.edu/cgi-bin/hgTables</ext-link>. The CONFAC analysis was performed using hg16
+(July 2003, NCBI Build 34) of the human genome and mm3 (Feb. 2003, NCBI Build
+30) of the mouse genome. The settings used for the CONFAC analysis of the
+complete RefSeq dataset were as follows: matrix similarity: 0.75; core
+similarity: 0.85; Repeatmasking = ON.</p><p>For analysis of using
+whole genome alignments, the
+axtNet human-mouse whole genome alignment files
+(chr[1-22XY].hg[v17].mm[v7].net.axt.gz) were downloaded from the UCSC genome
+database. Analysis of sequences with positive regulatory potential used the
+regPotential7X tables also downloaded from the UCSC genome database.</p></sec><sec sec-type="subsection" id="subsec5.2"><title>5.2. High
+Throughput Screening with Bayesian ANOVA for Microarrays (BAM)</title><p>Bayesian ANOVA was performed
+using BAMarray 2.0 software available at <ext-link ext-link-type="uri" xlink:href="http://ora.ra.cwru.edu/bamarray/">http://ora.ra.cwru.edu/bamarray/</ext-link>
+[<xref rid="B28" ref-type="bibr">28</xref>]. BAM is a new statistical technique for detecting differentially
+expressing genes from multigroup high throughput microarray experiments. The
+underlying methodology for BAM has been rigorously studied theoretically [<xref rid="B15" ref-type="bibr">15</xref>, <xref rid="B29" ref-type="bibr">29</xref>]. BAM is robust to
+nonnormality of gene expression measurements and to correlations between
+expression measurements on a given chip [<xref rid="B13" ref-type="bibr">13</xref>]. BAM relies on a special type of inferential regularization (i.e.,
+borrowing strength across the data) allowing it to balance the number of false
+detections against false non-detections hence detecting more genes [<xref rid="B13" ref-type="bibr">13</xref>, <xref rid="B29" ref-type="bibr">29</xref>]. This is an oracle (ideal) property guaranteeing lower total gene
+misclassification [<xref rid="B29" ref-type="bibr">29</xref>]. This differs from current statistical methods that protect false
+detection rates. Controlling false detection rates tends to identify obviously
+changing genes but it misses many subtle changes. For multigroup designs, BAM
+adaptively reduces correlations between test statistics on a given gene, enabling
+signal to be extracted from noise more efficiently, thus allowing true
+differential gene expression patterns to be readily identified and reducing the
+number of implausible patterns detected [<xref rid="B29" ref-type="bibr">29</xref>].</p><p>While originally developed
+for gene expression microarray experiments, we have extended the usage of BAM
+for TFBS analysis. Since the BAM
+methodology does not make parametric assumptions about the nature of the data
+being analyzed, the count nature of our TFBS data can be handled easily. The number
+of occurrences of each TFBS for each gene was input into BAMArray. The genes were grouped according to the
+biological data indicating HNF1 and HNF4 binding, (bound by HNF1 in pancreatic
+cells, bound by HNF4 in pancreatic cells, bound by HNF1 in hematocytes, bound
+by HNF4 in hematocytes, bound by HNF1 in both tissues, bound by HNF4 in both
+tissues, and unbound genes). The baseline group for comparisons was taken to be
+the class of unbound genes. Analyses
+were performed using unequal variance between groups and high-accuracy
+setting. Rare TFBS that had zero
+conserved occurrences in the groups of genes bound by HNF1 or HNF4 were
+excluded from the analysis to eliminate spuriously high-negative correlations.</p></sec><sec sec-type="subsection" id="subsec5.3"><title>5.3. Marginal
+Effect Isolation (MEI)</title><p>Gene predictions were made using a marginal effect
+isolation (MEI) multigroup classifier. 
+In order to do so, class-specific patterns of differential TFBS
+associations were pulled from the BAM analysis above. These are patterns that uniquely separate one
+class from all of the others. These are sometimes termed &#x0201c;hit-and-run&#x0201d; patterns
+in the original context; they were developed for analyzing differentially
+expressing genes in multigroup microarray experiments [<xref rid="B29" ref-type="bibr">29</xref>]. A simple form of these kinds of
+patterns can be found in the work of Li and Wong [<xref rid="B30" ref-type="bibr">30</xref>], but the BAM-based patterns are much more rigorously defined.</p><p>The MEI classifier is a novel multigroup classifier that
+operates by building separate two group classifiers using these hit-and-run
+patterns to separate HNF1 and HNF4 bound genes. Specifically, a classifier is
+built to separate a particular gene set from all of the other by using the
+hit-and-run pattern TFBS found as predictors and building a two group
+classifier for discriminating a particular class from all of the others (i.e.,
+the others are put together into a collapsed group). This is repeated for each class one by one
+except for the baseline group, which is handled separately as described below. 
+For predictions on new test data, these two group classifiers are aggregated in
+a way that mimics a data-based estimate of a full multigroup Bayes rule. That is, a new observation is tested on each
+two-group classifier, and is assigned to the group with highest posterior
+probability of membership. That is, each classifier generates a posterior
+probability estimate belonging to a group (or not) using only that group's set
+of hit-and-run TFBS as predictors. A baseline group is always included in the
+construction of each two-group classifier as part of the collapsed group. If each classifier predicts that the test
+observation belongs to the collapsed group, then the observation is assigned to
+the baseline group. The power of this
+approach for multigroup classification is that it uses specific predictor sets
+(i.e., TFBS sets) that have been determined by BAM to be particularly informative
+in uniquely separating individual classes from all of the others. This approach was detailed previously in [<xref rid="B31" ref-type="bibr">31</xref>] and
+is described briefly below.</p><p>The
+test set of TFBS for the genes from the HNF1 and HNF4 in vivo data along with
+the marginalized TFBS patterns identified by BAM using the training set of HNF1
+and HNF4 in vivo data are input for MEI. 
+MEI then outputs its predictions for the test set for which group (HNF1
+bound in pancreatic cells, HNF4 bound in pancreatic cells, etc.) each gene
+should belong to based on its TFBS. The p-value of achieving this number of
+correct predictions compared to random assignment was based on a chi-squared
+like test with resampling used to generate a null sampling distribution 
+[<xref rid="B32" ref-type="bibr">32</xref>]. </p></sec></sec><sec sec-type="supplementary-material" id="supplementary-material-sec"><title>Supplementary Material</title><supplementary-material content-type="local-data" id="f1"><caption><p>Supplementary Table S1 presents the complete dataset from the analysis given in Section 2 of the paper. Supplementary Tables S2&#x02013;S8 show the complete data on conserved TFBS for each of the seven groups analyzed in Section 2.1 of the paper. Supplementary Tables S9&#x02013;S16 demonstrate detailed results of the cross-validation summarized in Table 4 of the paper.</p></caption><media xlink:href="369830.f1.zip"><caption><p>Click here for additional data file.</p></caption></media></supplementary-material></sec></body><back><ack><title>Acknowledgments</title><p>The authors
+would like to thank Drs. William Fairbrother, James Thomas, and
+Scott Devine for critical reading of this manuscript. 
+This research was supported in part by NIH Grants
+K22-CA96560 and R01-CA106826 to CSM and NIH K25-CA89868 and NSF DMS-0405072 to
+JSR. CDM was supported by DOD CDMRP Prostate Cancer Postdoctoral Training
+Fellowship PC060114. C. S. Moreno directed the
+study, performed BAM analyses, analyzed data, and wrote the manuscript. J. S. Rao
+developed the MEI software, performed prediction analyses, and cowrote the
+manuscript. S. Karanam performed the CONFAC analysis of the Refseq gene set and
+generated tables and scripts necessary for the analysis. C. D. McCabe cowrote
+the manuscript.</p></ack><glossary><title>List of Abbreviations</title><def-list><def-item><term>BAM:</term><def><p>Bayesian analysis of
+microarrays</p></def></def-item><def-item><term>ChIP-chip:</term><def><p>Chromatin immunoprecipitation
+followed by microarray analysis</p></def></def-item><def-item><term>CONFAC:</term><def><p>Conserved transcription
+factor binding site software</p></def></def-item><def-item><term>HNF:</term><def><p>Hepatocyte nuclear
+factor</p></def></def-item><def-item><term>MEI:</term><def><p>Marginal effect
+isolation</p></def></def-item><def-item><term>PWM:</term><def><p>Position weight matrix</p></def></def-item><def-item><term>REFSEQ:</term><def><p>Reference sequence
+transcripts</p></def></def-item><def-item><term>TFBS:</term><def><p>Transcription factor
+binding site.</p></def></def-item></def-list></glossary><ref-list><ref id="B1"><label>1</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Karanam</surname><given-names>S</given-names></name><name><surname>Moreno</surname><given-names>CS</given-names></name></person-group><article-title>CONFAC: automated application of comparative genomic promoter analysis to DNA microarray datasets</article-title><source><italic>Nucleic Acids Research</italic></source><year>2004</year><volume>32, web server issue</volume><fpage>W475</fpage><lpage>W484</lpage><pub-id pub-id-type="pmid">15215433</pub-id></element-citation></ref><ref id="B2"><label>2</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Flint</surname><given-names>J</given-names></name><name><surname>Tufarelli</surname><given-names>C</given-names></name><name><surname>Peden</surname><given-names>J</given-names></name><etal/></person-group><article-title>Comparative genome analysis delimits a chromosomal domain and identifies key regulatory elements in the <italic>&#x003b1;</italic> globin cluster</article-title><source><italic>Human Molecular Genetics</italic></source><year>2001</year><volume>10</volume><issue>4</issue><fpage>371</fpage><lpage>382</lpage><pub-id pub-id-type="pmid">11157800</pub-id></element-citation></ref><ref id="B3"><label>3</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Hardison</surname><given-names>RC</given-names></name><name><surname>Oeltjen</surname><given-names>J</given-names></name><name><surname>Miller</surname><given-names>W</given-names></name></person-group><article-title>Long human mouse sequence alignments reveal novel regulatory elements: a reason to sequence the mouse genome</article-title><source><italic>Genome Research</italic></source><year>1997</year><volume>7</volume><issue>10</issue><fpage>959</fpage><lpage>966</lpage><pub-id pub-id-type="pmid">9331366</pub-id></element-citation></ref><ref id="B4"><label>4</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Lenhard</surname><given-names>B</given-names></name><name><surname>Sandelin</surname><given-names>A</given-names></name><name><surname>Mendoza</surname><given-names>L</given-names></name><name><surname>Engstr&#x000f6;m</surname><given-names>P</given-names></name><name><surname>Jareborg</surname><given-names>N</given-names></name><name><surname>Wasserman</surname><given-names>WW</given-names></name></person-group><article-title>Identification of conserved regulatory elements by comparative genome analysis</article-title><source><italic>Journal of Biology</italic></source><year>2003</year><volume>2</volume><issue>2, article 13</issue><fpage>131</fpage><lpage>141</lpage></element-citation></ref><ref id="B5"><label>5</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Wasserman</surname><given-names>WW</given-names></name><name><surname>Palumbo</surname><given-names>M</given-names></name><name><surname>Thompson</surname><given-names>W</given-names></name><name><surname>Fickett</surname><given-names>JW</given-names></name><name><surname>Lawrence</surname><given-names>CE</given-names></name></person-group><article-title>Human-mouse genome comparisons to locate regulatory sites</article-title><source><italic>Nature Genetics</italic></source><year>2000</year><volume>26</volume><issue>2</issue><fpage>225</fpage><lpage>228</lpage><pub-id pub-id-type="pmid">11017083</pub-id></element-citation></ref><ref id="B6"><label>6</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Fickett</surname><given-names>JW</given-names></name><name><surname>Wasserman</surname><given-names>WW</given-names></name></person-group><article-title>Discovery and modeling of transcriptional regulatory regions</article-title><source><italic>Current Opinion in Biotechnology</italic></source><year>2000</year><volume>11</volume><issue>1</issue><fpage>19</fpage><lpage>24</lpage><pub-id pub-id-type="pmid">10679343</pub-id></element-citation></ref><ref id="B7"><label>7</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Wasserman</surname><given-names>WW</given-names></name><name><surname>Fickett</surname><given-names>JW</given-names></name></person-group><article-title>Identification of regulatory regions which confer muscle-specific gene expression</article-title><source><italic>Journal of Molecular Biology</italic></source><year>1998</year><volume>278</volume><issue>1</issue><fpage>167</fpage><lpage>181</lpage><pub-id pub-id-type="pmid">9571041</pub-id></element-citation></ref><ref id="B8"><label>8</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Oeltjen</surname><given-names>JC</given-names></name><name><surname>Malley</surname><given-names>TM</given-names></name><name><surname>Muzny</surname><given-names>DM</given-names></name><name><surname>Miller</surname><given-names>W</given-names></name><name><surname>Gibbs</surname><given-names>RA</given-names></name><name><surname>Belmont</surname><given-names>JW</given-names></name></person-group><article-title>Large-scale comparative sequence analysis of the human and murine Bruton's tyrosine kinase loci reveals conserved regulatory domains</article-title><source><italic>Genome Research</italic></source><year>1997</year><volume>7</volume><issue>4</issue><fpage>315</fpage><lpage>329</lpage><pub-id pub-id-type="pmid">9110171</pub-id></element-citation></ref><ref id="B9"><label>9</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Loots</surname><given-names>GG</given-names></name><name><surname>Ovcharenko</surname><given-names>I</given-names></name></person-group><article-title>rVISTA 2.0: evolutionary analysis of transcription factor binding sites</article-title><source><italic>Nucleic Acids Research</italic></source><year>2004</year><volume>32, web server issue</volume><fpage>W217</fpage><lpage>W221</lpage><pub-id pub-id-type="pmid">15215384</pub-id></element-citation></ref><ref id="B10"><label>10</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Odom</surname><given-names>DT</given-names></name><name><surname>Zizlsperger</surname><given-names>N</given-names></name><name><surname>Gordon</surname><given-names>DB</given-names></name><etal/></person-group><article-title>Control of pancreas and liver gene expression by HNF transcription factors</article-title><source><italic>Science</italic></source><year>2004</year><volume>303</volume><issue>5662</issue><fpage>1378</fpage><lpage>1381</lpage><pub-id pub-id-type="pmid">14988562</pub-id></element-citation></ref><ref id="B11"><label>11</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Kel</surname><given-names>AE</given-names></name><name><surname>G&#x000f6;&#x000df;ling</surname><given-names>E</given-names></name><name><surname>Reuter</surname><given-names>I</given-names></name><name><surname>Cheremushkin</surname><given-names>E</given-names></name><name><surname>Kel-Margoulis</surname><given-names>OV</given-names></name><name><surname>Wingender</surname><given-names>E</given-names></name></person-group><article-title>MATCH<sup>TM</sup>: a tool for searching transcription factor binding sites in DNA sequences</article-title><source><italic>Nucleic Acids Research</italic></source><year>2003</year><volume>31</volume><issue>13</issue><fpage>3576</fpage><lpage>3579</lpage><pub-id pub-id-type="pmid">12824369</pub-id></element-citation></ref><ref id="B12"><label>12</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Beer</surname><given-names>MA</given-names></name><name><surname>Tavazoie</surname><given-names>S</given-names></name></person-group><article-title>Predicting gene expression from sequence</article-title><source><italic>Cell</italic></source><year>2004</year><volume>117</volume><issue>2</issue><fpage>185</fpage><lpage>198</lpage><pub-id pub-id-type="pmid">15084257</pub-id></element-citation></ref><ref id="B13"><label>13</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Ishwaran</surname><given-names>H</given-names></name><name><surname>Rao</surname><given-names>JS</given-names></name></person-group><article-title>Detecting differentially expressed genes in microarrays using Bayesian model selection</article-title><source><italic>Journal of the American Statistical Association</italic></source><year>2003</year><volume>98</volume><issue>462</issue><fpage>438</fpage><lpage>455</lpage></element-citation></ref><ref id="B14"><label>14</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Smith</surname><given-names>AD</given-names></name><name><surname>Sumazin</surname><given-names>P</given-names></name><name><surname>Das</surname><given-names>D</given-names></name><name><surname>Zhang</surname><given-names>MQ</given-names></name></person-group><article-title>Mining ChIP-chip data for transcription factor and cofactor binding sites</article-title><source><italic>Bioinformatics</italic></source><year>2005</year><volume>21</volume><issue>supplement 1</issue><fpage>i403</fpage><lpage>i412</lpage><pub-id pub-id-type="pmid">15961485</pub-id></element-citation></ref><ref id="B15"><label>15</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Ishwaran</surname><given-names>H</given-names></name><name><surname>Rao</surname><given-names>JS</given-names></name></person-group><article-title>Spike and slab variable selection: frequentist and Bayesian strategies</article-title><source><italic>Annals of Statistics</italic></source><year>2005</year><volume>33</volume><issue>2</issue><fpage>730</fpage><lpage>773</lpage></element-citation></ref><ref id="B16"><label>16</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Xie</surname><given-names>X</given-names></name><name><surname>Lu</surname><given-names>J</given-names></name><name><surname>Kulbokas</surname><given-names>EJ</given-names></name><etal/></person-group><article-title>Systematic discovery of regulatory motifs in human promoters and 3&#x02032; UTRs by comparison of several mammals</article-title><source><italic>Nature</italic></source><year>2005</year><volume>434</volume><issue>7031</issue><fpage>338</fpage><lpage>345</lpage><pub-id pub-id-type="pmid">15735639</pub-id></element-citation></ref><ref id="B23"><label>17</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Harbison</surname><given-names>CT</given-names></name><name><surname>Gordon</surname><given-names>DB</given-names></name><name><surname>Lee</surname><given-names>TI</given-names></name><etal/></person-group><article-title>Transcriptional regulatory code of a eukaryotic genome</article-title><source><italic>Nature</italic></source><year>2004</year><volume>431</volume><issue>7004</issue><fpage>99</fpage><lpage>104</lpage><pub-id pub-id-type="pmid">15343339</pub-id></element-citation></ref><ref id="B17"><label>18</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Ho Sui</surname><given-names>SJ</given-names></name><name><surname>Fulton</surname><given-names>DL</given-names></name><name><surname>Arenillas</surname><given-names>DJ</given-names></name><name><surname>Kwon</surname><given-names>AT</given-names></name><name><surname>Wasserman</surname><given-names>WW</given-names></name></person-group><article-title>oPOSSUM: integrated tools for analysis of regulatory motif over-representation</article-title><source><italic>Nucleic Acids Research</italic></source><year>2007</year><volume>35, web server issue</volume><fpage>W245</fpage><lpage>W252</lpage><pub-id pub-id-type="pmid">17576675</pub-id></element-citation></ref><ref id="B18"><label>19</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Ho Sui</surname><given-names>SJ</given-names></name><name><surname>Mortimer</surname><given-names>JR</given-names></name><name><surname>Arenillas</surname><given-names>DJ</given-names></name><etal/></person-group><article-title>oPOSSUM: identification of over-represented transcription factor binding sites in co-expressed genes</article-title><source><italic>Nucleic Acids Research</italic></source><year>2005</year><volume>33</volume><issue>10</issue><fpage>3154</fpage><lpage>3164</lpage><pub-id pub-id-type="pmid">15933209</pub-id></element-citation></ref><ref id="B19"><label>20</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>King</surname><given-names>DC</given-names></name><name><surname>Taylor</surname><given-names>J</given-names></name><name><surname>Elnitski</surname><given-names>L</given-names></name><name><surname>Chiaromonte</surname><given-names>F</given-names></name><name><surname>Miller</surname><given-names>W</given-names></name><name><surname>Hardison</surname><given-names>RC</given-names></name></person-group><article-title>Evaluation of regulatory potential and conservation scores for detecting <italic>cis</italic>-regulatory modules in aligned mammalian genome sequences</article-title><source><italic>Genome Research</italic></source><year>2005</year><volume>15</volume><issue>8</issue><fpage>1051</fpage><lpage>1060</lpage><pub-id pub-id-type="pmid">16024817</pub-id></element-citation></ref><ref id="B20"><label>21</label><element-citation publication-type="book"><person-group person-group-type="author"><name><surname>Ripley</surname><given-names>BD</given-names></name></person-group><source><italic>Pattern Recognition and Neural Networks</italic></source><year>1996</year><publisher-loc>Cambridge, UK</publisher-loc><publisher-name>Cambridge University Press</publisher-name></element-citation></ref><ref id="B21"><label>22</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Sudarsanam</surname><given-names>P</given-names></name><name><surname>Pilpel</surname><given-names>Y</given-names></name><name><surname>Church</surname><given-names>GM</given-names></name></person-group><article-title>Genome-wide co-occurrence of promoter elements reveals a <italic>cis</italic>-regulatory cassette of rRNA transcription motifs in <italic>Saccharomyces cerevisiae</italic>
+</article-title><source><italic>Genome Research</italic></source><year>2002</year><volume>12</volume><issue>11</issue><fpage>1723</fpage><lpage>1731</lpage><pub-id pub-id-type="pmid">12421759</pub-id></element-citation></ref><ref id="B22"><label>23</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Pilpel</surname><given-names>Y</given-names></name><name><surname>Sudarsanam</surname><given-names>P</given-names></name><name><surname>Church</surname><given-names>GM</given-names></name></person-group><article-title>Identifying regulatory networks by combinatorial analysis of promoter elements</article-title><source><italic>Nature Genetics</italic></source><year>2001</year><volume>29</volume><issue>2</issue><fpage>153</fpage><lpage>159</lpage><pub-id pub-id-type="pmid">11547334</pub-id></element-citation></ref><ref id="B24"><label>24</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Long</surname><given-names>F</given-names></name><name><surname>Liu</surname><given-names>H</given-names></name><name><surname>Hahn</surname><given-names>C</given-names></name><name><surname>Sumazin</surname><given-names>P</given-names></name><name><surname>Zhang</surname><given-names>MQ</given-names></name><name><surname>Zilberstein</surname><given-names>A</given-names></name></person-group><article-title>Genome-wide prediction and analysis of function-specific transcription factor binding sites</article-title><source><italic>In Silico Biology</italic></source><year>2004</year><volume>4</volume><issue>4</issue><fpage>395</fpage><lpage>410</lpage><pub-id pub-id-type="pmid">15506990</pub-id></element-citation></ref><ref id="B25"><label>25</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Locker</surname><given-names>J</given-names></name><name><surname>Ghosh</surname><given-names>D</given-names></name><name><surname>Luc</surname><given-names>P-V</given-names></name><name><surname>Zheng</surname><given-names>J</given-names></name></person-group><article-title>Definition and prediction of the full range of transcription factor binding sites&#x02014;the hepatocyte nuclear factor 1 dimeric site</article-title><source><italic>Nucleic Acids Research</italic></source><year>2002</year><volume>30</volume><issue>17</issue><fpage>3809</fpage><lpage>3817</lpage><pub-id pub-id-type="pmid">12202766</pub-id></element-citation></ref><ref id="B26"><label>26</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Blanchette</surname><given-names>M</given-names></name><name><surname>Bataille</surname><given-names>AR</given-names></name><name><surname>Chen</surname><given-names>X</given-names></name><etal/></person-group><article-title>Genome-wide computational prediction of transcriptional regulatory modules reveals new insights into human gene expression</article-title><source><italic>Genome Research</italic></source><year>2006</year><volume>16</volume><issue>5</issue><fpage>656</fpage><lpage>668</lpage><pub-id pub-id-type="pmid">16606704</pub-id></element-citation></ref><ref id="B27"><label>27</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Segal</surname><given-names>E</given-names></name><name><surname>Fondufe-Mittendorf</surname><given-names>Y</given-names></name><name><surname>Chen</surname><given-names>L</given-names></name><etal/></person-group><article-title>A genomic code for nucleosome positioning</article-title><source><italic>Nature</italic></source><year>2006</year><volume>442</volume><issue>7104</issue><fpage>772</fpage><lpage>778</lpage><pub-id pub-id-type="pmid">16862119</pub-id></element-citation></ref><ref id="B28"><label>28</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Ishwaran</surname><given-names>H</given-names></name><name><surname>Rao</surname><given-names>JS</given-names></name><name><surname>Kogalur</surname><given-names>UB</given-names></name></person-group><article-title>BAMARRY<sup>TM</sup>: Java software for Bayesian analysis of variance for microarray data</article-title><source><italic>BMC bioinformatics</italic></source><year>2006</year><volume>7, article 59</volume><fpage>1</fpage><lpage>21</lpage><pub-id pub-id-type="pmid">16393334</pub-id></element-citation></ref><ref id="B29"><label>29</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Ishwaran</surname><given-names>H</given-names></name><name><surname>Rao</surname><given-names>JS</given-names></name></person-group><article-title>Spike and slab gene selection for multigroup microarray data</article-title><source><italic>Journal of the American Statistical Association</italic></source><year>2005</year><volume>100</volume><issue>471</issue><fpage>764</fpage><lpage>780</lpage></element-citation></ref><ref id="B30"><label>30</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Li</surname><given-names>J</given-names></name><name><surname>Wong</surname><given-names>L</given-names></name></person-group><article-title>Identifying good diagnostic gene groups from gene expression profiles using the concept of emerging patterns</article-title><source><italic>Bioinformatics</italic></source><year>2002</year><volume>18</volume><issue>5</issue><fpage>725</fpage><lpage>734</lpage><pub-id pub-id-type="pmid">12050069</pub-id></element-citation></ref><ref id="B31"><label>31</label><element-citation publication-type="book"><person-group person-group-type="author"><name><surname>Rao</surname><given-names>JS</given-names></name><name><surname>Ishwaran</surname><given-names>H</given-names></name></person-group><article-title>Multigroup classification by marginal effect isolation</article-title><year>2006</year><publisher-loc>Cleveland, Ohio, USA</publisher-loc><publisher-name>Department of Epidemiology and Biostatistics, Case Western Reserve University</publisher-name><comment>Tech. Rep.</comment></element-citation></ref><ref id="B32"><label>32</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Patefield</surname><given-names>WM</given-names></name></person-group><article-title>Algorithm AS 159: an efficient method of generating r &#x000d7; c tables with given row and column totals</article-title><source><italic>Applied Statistics</italic></source><year>1981</year><volume>30</volume><issue>1</issue><fpage>91</fpage><lpage>97</lpage></element-citation></ref></ref-list></back><floats-group><fig id="fig1" position="float"><label>Figure 1</label><caption><p> %GC content of the conserved promoter
+sequences in each of the seven groups considered. 
+Plotted are the mean and standard deviation
+of the %GC in each promoter set. 
+Although there is slightly higher GC content in the HNF4-bound groups,
+no statistically significant GC bias was observed for any of the groups
+analyzed for patterns of conserved TFBS.</p></caption><graphic xlink:href="ABI2008-369830.001"/></fig><table-wrap id="tab1" position="float"><label>Table 1</label><caption><p>Prediction of in vivo occupancy by HNF1 and
+HNF4. Data from ChIP-chip studies (3)
+were integrated with CONFAC TFBS data and genes were separated randomly into
+training and test sets. The BAM MEI
+classifier was applied to the independent test set of 1349 genes to predict which
+class each gene belonged based on the TFBS patterns that were predictive of
+occupancy.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="center" colspan="10" rowspan="1">Predicted</th></tr><tr><th align="left" rowspan="1" colspan="1">Observed</th><th align="center" rowspan="1" colspan="1">HNF1
+both</th><th align="center" rowspan="1" colspan="1">HNF1
+hep</th><th align="center" rowspan="1" colspan="1">HNF1
+panc</th><th align="center" rowspan="1" colspan="1">HNF4
+both</th><th align="center" rowspan="1" colspan="1">HNF4
+hep</th><th align="center" rowspan="1" colspan="1">HNF4
+panc</th><th align="center" rowspan="1" colspan="1">Unbound</th><th align="center" rowspan="1" colspan="1">Total
+(obs)</th><th align="center" rowspan="1" colspan="1">Sensitivity</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">HNF1
+both</td><td align="center" rowspan="1" colspan="1">5</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">8</td><td align="center" rowspan="1" colspan="1">63%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1
+hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">23</td><td align="center" rowspan="1" colspan="1">23</td><td align="center" rowspan="1" colspan="1">0%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1
+panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">7</td><td align="center" rowspan="1" colspan="1">10</td><td align="center" rowspan="1" colspan="1">30%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+both</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">35</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">54</td><td align="center" rowspan="1" colspan="1">89</td><td align="center" rowspan="1" colspan="1">39%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">14</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">70</td><td align="center" rowspan="1" colspan="1">84</td><td align="center" rowspan="1" colspan="1">17%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">41</td><td align="center" rowspan="1" colspan="1">45</td><td align="center" rowspan="1" colspan="1">86</td><td align="center" rowspan="1" colspan="1">48%</td></tr><tr><td align="left" rowspan="1" colspan="1">Unbound</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">6</td><td align="center" rowspan="1" colspan="1">5</td><td align="center" rowspan="1" colspan="1">2</td><td align="center" rowspan="1" colspan="1">1036</td><td align="center" rowspan="1" colspan="1">1049</td><td align="center" rowspan="1" colspan="1">99%</td></tr><tr><td align="left" rowspan="1" colspan="1">total
+(pred)</td><td align="center" rowspan="1" colspan="1">5</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">41</td><td align="center" rowspan="1" colspan="1">19</td><td align="center" rowspan="1" colspan="1">43</td><td align="center" rowspan="1" colspan="1">1238</td><td align="center" rowspan="1" colspan="1">1349</td><td align="center" rowspan="1" colspan="1">
+</td></tr><tr><td align="left" rowspan="1" colspan="1">Specificity</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">NA</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">85%</td><td align="center" rowspan="1" colspan="1">74%</td><td align="center" rowspan="1" colspan="1">95%</td><td align="center" rowspan="1" colspan="1">84%</td><td align="center" rowspan="1" colspan="1">
+</td><td align="center" rowspan="1" colspan="1">
+</td></tr></tbody></table></table-wrap><table-wrap id="tab2" position="float"><label>Table 2</label><caption><p> Training set
+self-consistency performance. Data from
+ChIP-chip studies (3) were integrated with CONFAC TFBS data and genes were
+separated randomly into training and test sets. The BAM MEI classifier was
+trained on the training set of 5399 genes and predictions were made on this
+same set of genes.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="center" colspan="10" rowspan="1">Predicted</th></tr><tr><th align="left" rowspan="1" colspan="1">Observed</th><th align="center" rowspan="1" colspan="1">HNF1
+both</th><th align="center" rowspan="1" colspan="1">HNF1
+hep</th><th align="center" rowspan="1" colspan="1">HNF1
+panc</th><th align="center" rowspan="1" colspan="1">HNF4
+both</th><th align="center" rowspan="1" colspan="1">HNF4
+hep</th><th align="center" rowspan="1" colspan="1">HNF4
+panc</th><th align="center" rowspan="1" colspan="1">Unbound</th><th align="center" rowspan="1" colspan="1">Total
+(obs)</th><th align="center" rowspan="1" colspan="1">Sensitivity</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">HNF1
+both</td><td align="center" rowspan="1" colspan="1">10</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">14</td><td align="center" rowspan="1" colspan="1">71%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1
+hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">74</td><td align="center" rowspan="1" colspan="1">78</td><td align="center" rowspan="1" colspan="1">5%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1
+panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">10</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">14</td><td align="center" rowspan="1" colspan="1">24</td><td align="center" rowspan="1" colspan="1">41%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+both</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">130</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">142</td><td align="center" rowspan="1" colspan="1">272</td><td align="center" rowspan="1" colspan="1">48%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">88</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">295</td><td align="center" rowspan="1" colspan="1">383</td><td align="center" rowspan="1" colspan="1">23%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">181</td><td align="center" rowspan="1" colspan="1">159</td><td align="center" rowspan="1" colspan="1">340</td><td align="center" rowspan="1" colspan="1">53%</td></tr><tr><td align="left" rowspan="1" colspan="1">Unbound</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">6</td><td align="center" rowspan="1" colspan="1">5</td><td align="center" rowspan="1" colspan="1">2</td><td align="center" rowspan="1" colspan="1">4249</td><td align="center" rowspan="1" colspan="1">4262</td><td align="center" rowspan="1" colspan="1">99%</td></tr><tr><td align="left" rowspan="1" colspan="1">total
+(pred)</td><td align="center" rowspan="1" colspan="1">10</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">10</td><td align="center" rowspan="1" colspan="1">136</td><td align="center" rowspan="1" colspan="1">93</td><td align="center" rowspan="1" colspan="1">183</td><td align="center" rowspan="1" colspan="1">4937</td><td align="center" rowspan="1" colspan="1">5373</td><td align="center" rowspan="1" colspan="1">
+</td></tr><tr><td align="left" rowspan="1" colspan="1">Specificity</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">NA</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">89%</td><td align="center" rowspan="1" colspan="1">85%</td><td align="center" rowspan="1" colspan="1">96%</td><td align="center" rowspan="1" colspan="1">86%</td><td align="center" rowspan="1" colspan="1">
+</td><td align="center" rowspan="1" colspan="1">
+</td></tr></tbody></table></table-wrap><table-wrap id="tab3" position="float"><label>Table 3</label><caption><p>
+Rules
+associated with HNF1 and HNF4 binding identified by 10-fold cross-validation of
+BAMarray analysis.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="left" rowspan="1" colspan="1">TFBS family</th><th align="left" rowspan="1" colspan="1">Negative association</th><th align="center" rowspan="1" colspan="1">Positive association</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">E2F</td><td align="left" rowspan="1" colspan="1">HNF1-pancreas</td><td align="center" rowspan="1" colspan="1">HNF4 binding</td></tr><tr><td align="left" rowspan="1" colspan="1">ETS</td><td align="left" rowspan="1" colspan="1">HNF1-both</td><td align="center" rowspan="1" colspan="1">None</td></tr><tr><td align="left" rowspan="1" colspan="1">MAF</td><td align="left" rowspan="1" colspan="1">HNF1-hepatocytes</td><td align="center" rowspan="1" colspan="1">None</td></tr><tr><td align="left" rowspan="1" colspan="1">NF<italic>&#x003ba;</italic>B</td><td align="left" rowspan="1" colspan="1">HNF1-any</td><td align="center" rowspan="1" colspan="1">None</td></tr><tr><td align="left" rowspan="1" colspan="1">Homeobox</td><td align="left" rowspan="1" colspan="1">HNF4-pancreas</td><td align="center" rowspan="1" colspan="1">None</td></tr><tr><td align="left" rowspan="1" colspan="1">SOX/TCF</td><td align="left" rowspan="1" colspan="1">HNF4-both</td><td align="center" rowspan="1" colspan="1">None</td></tr><tr><td align="left" rowspan="1" colspan="1">Homeobox</td><td align="left" rowspan="1" colspan="1">HNF4-hepatocytes</td><td align="center" rowspan="1" colspan="1">None</td></tr><tr><td align="left" rowspan="1" colspan="1">FOX/Homeobox</td><td align="left" rowspan="1" colspan="1">HNF4-any</td><td align="center" rowspan="1" colspan="1">None</td></tr></tbody></table></table-wrap><table-wrap id="tab4" position="float"><label>Table 4</label><caption><p>
+Summary of MEI predictions from 25 splits of
+training and test sets. &#x0201c;NA&#x0201d; means that cell could not be calculated for all
+splits. Otherwise, the means and sd's
+were calculated from those splits without NA's.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="left" rowspan="1" colspan="1">Group</th><th align="center" rowspan="1" colspan="1">Mean
+sensitivity (sd)</th><th align="center" rowspan="1" colspan="1">Mean
+specificity (sd)</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">HNF1Both</td><td align="center" rowspan="1" colspan="1">.252 (.152)</td><td align="center" rowspan="1" colspan="1">1 (0)</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1Hep</td><td align="center" rowspan="1" colspan="1">0 (0)</td><td align="center" rowspan="1" colspan="1">NA</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1Panc</td><td align="center" rowspan="1" colspan="1">.352 (.102)</td><td align="center" rowspan="1" colspan="1">1 (0)</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4Both</td><td align="center" rowspan="1" colspan="1">.388 (.083)</td><td align="center" rowspan="1" colspan="1">.840 (.023)</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4Hep</td><td align="center" rowspan="1" colspan="1">.130 (.041)</td><td align="center" rowspan="1" colspan="1">.486 (.201)</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4Panc</td><td align="center" rowspan="1" colspan="1">.430 (.047)</td><td align="center" rowspan="1" colspan="1">.940 (.070)</td></tr><tr><td align="left" rowspan="1" colspan="1">Unbound</td><td align="center" rowspan="1" colspan="1">.982 (.008)</td><td align="center" rowspan="1" colspan="1">.838 (.004)</td></tr></tbody></table></table-wrap><table-wrap id="tab5" position="float"><label>Table 5</label><caption><p>Prediction of in vivo occupancy by HNF1 and HNF4 by
+BAM MEI analysis after removal of the unbound class from the analysis.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="center" colspan="9" rowspan="1">Predicted</th></tr><tr><th align="left" rowspan="1" colspan="1">observed</th><th align="center" rowspan="1" colspan="1">HNF1
+both</th><th align="center" rowspan="1" colspan="1">HNF1 
+hep</th><th align="center" rowspan="1" colspan="1">HNF1
+panc</th><th align="center" rowspan="1" colspan="1">HNF4 
+both</th><th align="center" rowspan="1" colspan="1">HNF4 hep</th><th align="center" rowspan="1" colspan="1">HNF4 panc</th><th align="center" rowspan="1" colspan="1">Total (obs)</th><th align="center" rowspan="1" colspan="1">Sensitivity</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">HNF1 both</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">100%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1 hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">12</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">2</td><td align="center" rowspan="1" colspan="1">18</td><td align="center" rowspan="1" colspan="1">100%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1 panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">6</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">2</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">9</td><td align="center" rowspan="1" colspan="1">100%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4 both</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">66</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">7</td><td align="center" rowspan="1" colspan="1">76</td><td align="center" rowspan="1" colspan="1">93%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4 hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">74</td><td align="center" rowspan="1" colspan="1">9</td><td align="center" rowspan="1" colspan="1">84</td><td align="center" rowspan="1" colspan="1">85%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4 panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">6</td><td align="center" rowspan="1" colspan="1">82</td><td align="center" rowspan="1" colspan="1">92</td><td align="center" rowspan="1" colspan="1">84%</td></tr><tr><td align="left" rowspan="1" colspan="1">Total (pred)</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">12</td><td align="center" rowspan="1" colspan="1">6</td><td align="center" rowspan="1" colspan="1">72</td><td align="center" rowspan="1" colspan="1">89</td><td align="center" rowspan="1" colspan="1">100</td><td align="center" rowspan="1" colspan="1">282</td><td align="center" rowspan="1" colspan="1">
+</td></tr><tr><td align="left" rowspan="1" colspan="1">Specificity</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">98%</td><td align="center" rowspan="1" colspan="1">99%</td><td align="center" rowspan="1" colspan="1">95%</td><td align="center" rowspan="1" colspan="1">95%</td><td align="center" rowspan="1" colspan="1">95%</td><td align="center" rowspan="1" colspan="1">
+</td><td align="center" rowspan="1" colspan="1">
+</td></tr></tbody></table></table-wrap><table-wrap id="tab6" position="float"><label>Table 6</label><caption><p>
+Sites overrepresented by
+oPOSSUM single site analysis.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="left" rowspan="1" colspan="1">Gene set</th><th align="left" rowspan="1" colspan="1">Significant sites</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">HNF1-Hepatocytes</td><td align="left" rowspan="1" colspan="1">HNF4,
+TCF1</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1-Pancreas</td><td align="left" rowspan="1" colspan="1">None</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1-Both</td><td align="left" rowspan="1" colspan="1">None</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4-Hepatocytes</td><td align="left" rowspan="1" colspan="1">HNF4</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4-Pancreas</td><td align="left" rowspan="1" colspan="1">Staf,
+GABPA</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4-Both</td><td align="left" rowspan="1" colspan="1">Staf,
+ELK1, SPIB, Bapx1, ELK4</td></tr></tbody></table></table-wrap><table-wrap id="tab7" position="float"><label>Table 7</label><caption><p>Prediction of in vivo
+occupancy by HNF1 and HNF4 by BAM MEI analysis using human-mouse genomic
+alignments instead of local pairwise BLAST alignments and a window size of
+zero.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="center" colspan="10" rowspan="1">Predicted</th></tr><tr><th align="left" rowspan="1" colspan="1">Observed</th><th align="center" rowspan="1" colspan="1">HNF1
+both</th><th align="center" rowspan="1" colspan="1">HNF1
+hep</th><th align="center" rowspan="1" colspan="1">HNF1
+panc</th><th align="center" rowspan="1" colspan="1">HNF4
+both</th><th align="center" rowspan="1" colspan="1">HNF4
+hep</th><th align="center" rowspan="1" colspan="1">HNF4
+panc</th><th align="center" rowspan="1" colspan="1">Unbound</th><th align="center" rowspan="1" colspan="1">Total
+(obs)</th><th align="center" rowspan="1" colspan="1">Sensitivity</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">HNF1
+both</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">75%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1
+hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">18</td><td align="center" rowspan="1" colspan="1">19</td><td align="center" rowspan="1" colspan="1">5%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1
+panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">2</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">6</td><td align="center" rowspan="1" colspan="1">33%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+both</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">21</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">29</td><td align="center" rowspan="1" colspan="1">50</td><td align="center" rowspan="1" colspan="1">42%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">16</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">82</td><td align="center" rowspan="1" colspan="1">98</td><td align="center" rowspan="1" colspan="1">16%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">34</td><td align="center" rowspan="1" colspan="1">30</td><td align="center" rowspan="1" colspan="1">64</td><td align="center" rowspan="1" colspan="1">53%</td></tr><tr><td align="left" rowspan="1" colspan="1">Unbound</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">7</td><td align="center" rowspan="1" colspan="1">7</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">1259</td><td align="center" rowspan="1" colspan="1">1274</td><td align="center" rowspan="1" colspan="1">99%</td></tr><tr><td align="left" rowspan="1" colspan="1">Total
+(pred)</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">2</td><td align="center" rowspan="1" colspan="1">28</td><td align="center" rowspan="1" colspan="1">23</td><td align="center" rowspan="1" colspan="1">35</td><td align="center" rowspan="1" colspan="1">1423</td><td align="center" rowspan="1" colspan="1">1492</td><td align="center" rowspan="1" colspan="1">
+</td></tr><tr><td align="left" rowspan="1" colspan="1">Specificity</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">75%</td><td align="center" rowspan="1" colspan="1">67%</td><td align="center" rowspan="1" colspan="1">95%</td><td align="center" rowspan="1" colspan="1">88%</td><td align="center" rowspan="1" colspan="1">
+</td><td align="center" rowspan="1" colspan="1">
+</td></tr></tbody></table></table-wrap><table-wrap id="tab8" position="float"><label>Table 8</label><caption><p> Prediction of in vivo occupancy by HNF1 and HNF4 by
+BAM MEI analysis using human-mouse genomic alignments instead of local pairwise
+BLAST alignments restricted to regions of positive regulatory potential and a
+window size of 25 bp.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="center" colspan="10" rowspan="1">Predicted</th></tr><tr><th align="left" rowspan="1" colspan="1">Observed</th><th align="center" rowspan="1" colspan="1">HNF1
+both</th><th align="center" rowspan="1" colspan="1">HNF1
+hep</th><th align="center" rowspan="1" colspan="1">HNF1
+panc</th><th align="center" rowspan="1" colspan="1">HNF4
+both</th><th align="center" rowspan="1" colspan="1">HNF4
+hep</th><th align="center" rowspan="1" colspan="1">HNF4
+panc</th><th align="center" rowspan="1" colspan="1">Unbound</th><th align="center" rowspan="1" colspan="1">Total
+(obs)</th><th align="center" rowspan="1" colspan="1">Sensitivity</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">HNF1
+both</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">75%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1
+hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">16</td><td align="center" rowspan="1" colspan="1">16</td><td align="center" rowspan="1" colspan="1">0%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF1
+panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">4</td><td align="center" rowspan="1" colspan="1">25%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+both</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">20</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">30</td><td align="center" rowspan="1" colspan="1">50</td><td align="center" rowspan="1" colspan="1">40%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+hep</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">18</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">71</td><td align="center" rowspan="1" colspan="1">89</td><td align="center" rowspan="1" colspan="1">20%</td></tr><tr><td align="left" rowspan="1" colspan="1">HNF4
+panc</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">8</td><td align="center" rowspan="1" colspan="1">8</td><td align="center" rowspan="1" colspan="1">16</td><td align="center" rowspan="1" colspan="1">50%</td></tr><tr><td align="left" rowspan="1" colspan="1">Unbound</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">2</td><td align="center" rowspan="1" colspan="1">908</td><td align="center" rowspan="1" colspan="1">916</td><td align="center" rowspan="1" colspan="1">99%</td></tr><tr><td align="left" rowspan="1" colspan="1">Total
+(pred)</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">0</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">23</td><td align="center" rowspan="1" colspan="1">21</td><td align="center" rowspan="1" colspan="1">10</td><td align="center" rowspan="1" colspan="1">1037</td><td align="center" rowspan="1" colspan="1">1095</td><td align="center" rowspan="1" colspan="1">
+</td></tr><tr><td align="left" rowspan="1" colspan="1">Specificity</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">NA</td><td align="center" rowspan="1" colspan="1">100%</td><td align="center" rowspan="1" colspan="1">87%</td><td align="center" rowspan="1" colspan="1">86%</td><td align="center" rowspan="1" colspan="1">80%</td><td align="center" rowspan="1" colspan="1">87%</td><td align="center" rowspan="1" colspan="1">
+</td><td align="center" rowspan="1" colspan="1">
+</td></tr></tbody></table></table-wrap></floats-group></article>

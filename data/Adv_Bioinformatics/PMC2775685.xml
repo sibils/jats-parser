@@ -1,0 +1,370 @@
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.0 20120330//EN" "JATS-archivearticle1.dtd">
+<article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" article-type="research-article"><?properties open_access?><front><journal-meta><journal-id journal-id-type="nlm-ta">Adv Bioinformatics</journal-id><journal-id journal-id-type="iso-abbrev">Adv Bioinformatics</journal-id><journal-id journal-id-type="publisher-id">ABI</journal-id><journal-title-group><journal-title>Advances in Bioinformatics</journal-title></journal-title-group><issn pub-type="ppub">1687-8027</issn><issn pub-type="epub">1687-8035</issn><publisher><publisher-name>Hindawi Publishing Corporation</publisher-name></publisher></journal-meta><article-meta><article-id pub-id-type="pmid">19920989</article-id><article-id pub-id-type="pmc">2775685</article-id><article-id pub-id-type="doi">10.1155/2008/719818</article-id><article-categories><subj-group subj-group-type="heading"><subject>Research Article</subject></subj-group></article-categories><title-group><article-title>Comparing Quantitative Trait Loci and Gene Expression Data</article-title></title-group><contrib-group><contrib contrib-type="author"><name><surname>Han</surname><given-names>Bing</given-names></name><xref ref-type="aff" rid="I1">
+<sup>1</sup>
+</xref><xref ref-type="corresp" rid="cor1">*</xref></contrib><contrib contrib-type="author"><name><surname>Altman</surname><given-names>Naomi S.</given-names></name><xref ref-type="aff" rid="I2">
+<sup>2</sup>
+</xref><xref ref-type="corresp" rid="cor2">*</xref></contrib><contrib contrib-type="author"><name><surname>Mong</surname><given-names>Jessica A.</given-names></name><xref ref-type="aff" rid="I3">
+<sup>3, 4</sup>
+</xref><xref ref-type="aff" rid="I4"/></contrib><contrib contrib-type="author"><name><surname>Klein</surname><given-names>Laura Cousino</given-names></name><xref ref-type="aff" rid="I5">
+<sup>5</sup>
+</xref></contrib><contrib contrib-type="author"><name><surname>Pfaff</surname><given-names>Donald W.</given-names></name><xref ref-type="aff" rid="I4">
+<sup>4</sup>
+</xref></contrib><contrib contrib-type="author"><name><surname>Vandenbergh</surname><given-names>David J.</given-names></name><xref ref-type="aff" rid="I5">
+<sup>5, 6</sup>
+</xref><xref ref-type="aff" rid="I6"/></contrib></contrib-group><aff id="I1"><sup>1</sup>RAND Corporation, Santa Monica, CA 90407, USA</aff><aff id="I2"><sup>2</sup>Department of Statistics, The Pennsylvania State University, University Park, PA 16802, USA</aff><aff id="I3"><sup>3</sup>Department of Pharmacology &#x00026; Experimental Therapeutics, University of Maryland School of Medicine, Baltimore, MD 21201, USA</aff><aff id="I4"><sup>4</sup>The Laboratory of Neurobiology and Behavior, Rockefeller University, New York, NY 10065, USA</aff><aff id="I5"><sup>5</sup>Department of Biobehavioral Health, The Pennsylvania State University, University Park, PA 16802, USA</aff><aff id="I6"><sup>6</sup>Center for Developmental and Health Genetics, The Pennsylvania State University, University Park, PA 16802, USA</aff><author-notes><corresp id="cor1">*Bing Han: <email>bhan@rand.org </email>and</corresp><corresp id="cor2">*Naomi S. Altman: <email>naomi@stat.psu.edu</email></corresp><fn fn-type="other"><p>Recommended by Rainer Spang</p></fn></author-notes><pub-date pub-type="ppub"><year>2008</year></pub-date><pub-date pub-type="epub"><day>16</day><month>9</month><year>2008</year></pub-date><volume>2008</volume><elocation-id>719818</elocation-id><history><date date-type="received"><day>18</day><month>2</month><year>2008</year></date><date date-type="rev-recd"><day>27</day><month>5</month><year>2008</year></date><date date-type="accepted"><day>10</day><month>7</month><year>2008</year></date></history><permissions><copyright-statement>Copyright &#x000a9; 2008 Bing Han et al.</copyright-statement><copyright-year>2008</copyright-year><license xlink:href="https://creativecommons.org/licenses/by/3.0/"><license-p>This is an open access article distributed under the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p></license></permissions><abstract><p>We develop methods to compare the positions of quantitative trait loci (QTL) with a set of genes selected by other methods, such as microarray experiments, from a sequenced genome. We apply our methods to QTL for addictive behavior in mouse, and a set of genes upregulated in a region of the brain associated with addictive behavior, the nucleus accumbens (NA). The association between the QTL and NA genes is not significantly stronger than expected by chance. However, chromosomes 2 and 16 do show strong associations suggesting that genes on these chromosomes might be associated with addictive behavior. The statistical methodology developed for this study can be applied to similar studies to assess the mutual information in microarray and QTL analyses.</p></abstract></article-meta></front><body><sec id="sec1"><title>1. Introduction</title><p>The association between a complex
+phenotypic trait and genetic markers on the chromosomes can be detected through
+statistical analysis, leading to the identification of quantitative trait loci
+(QTL)&#x02014;regions of the chromosomes
+that appear to be associated with the phenotype. Quantitative trait loci (QTL) are
+expected to be associated with the genes controlling some aspects of the
+phenotype. One mechanism by which a gene might be associated with the trait is
+through altered transcription which is easily measured by microarray analysis. 
+Microarrays have the ability to measure a large percentage of the genes in the genome,
+and this assessment parallels the genome-wide scan performed by QTL methods.</p><p>Several investigators have considered
+combining QTL and microarray data for studying a genetic trait. For example, Wayne
+and McIntyre [<xref rid="B1" ref-type="bibr">1</xref>] proposed a way of identifying candidate genes based on both
+QTL mapping and microarray data, where loci for an interesting quantitative
+trait were primarily used for prescreening genes. A parallel microarray study
+focused on the filtered gene list and identified differentially expressed genes
+related to the same trait. When type I error is particularly emphasized, a QTL
+analysis prescreen can be used to greatly reduce the number of genes under
+consideration, and hence reduce the effect of multiple testing. When the
+objective of the research is gene discovery, a combined analysis can focus
+attention on genes and QTL most likely to be associated with the trait. Fischer
+et al. [<xref rid="B2" ref-type="bibr">2</xref>] developed a web-based software tool for combined visualization and
+exploration of gene expression data and QTL. The methodology developed in this
+work is complementary to the analyses that can be performed on the GeneNetwork
+website (WebQTL, <ext-link ext-link-type="uri" xlink:href="http://www.genenetwork.org/">http://www.genenetwork.org/</ext-link>), which allows assessment of the
+relationship between gene expressions and QTL in recombinant in bred mice [<xref rid="B3" ref-type="bibr">3</xref>].</p><p>Comparing QTL and microarray data is not completely
+straightforward. The estimated range of QTL positions is generally wide, containing
+many possibly interesting genes. In addition, QTL analysis may also miss some
+interesting genes [<xref rid="B1" ref-type="bibr">1</xref>]. The high level of experimental errors and limitations in
+microarray data analysis inevitably introduce mistakes in the identification of
+relevant genes. Finally, QTL studies include the entire genome including
+noncoding regions, while microarray studies seldom include the entire genome.</p><p>Further problems arise when we try to
+associate phenotypes with gene expressions in specific tissues. While the association
+is direct if the tissue from which transcription is assayed defines the
+phenotype, unanticipated associations can arise if the tissue indirectly regulates
+the phenotype&#x02014;for example, bone
+strength may be regulated through physical activities regulated by the brain. 
+Alternatively, association can arise through pleiotropic expression of the gene
+in a tissue not included in the expression study but in which the gene plays a
+role in the phenotype. In addition, the association between a phenotype and a
+tissue may depend on ephemeral conditions that may not be present when the
+tissue was collected for the microarray study or on a small percentage of cells
+in the organism, which may be masked by bulk tissue preparation.</p><p>In this paper, we suggest methods to
+examine the strength of association between a set of genes and a set of
+intervals along the genome. The methods identify genomic intervals with
+unusually high numbers of genes in the set, and hence genes and genomic
+intervals which are more likely to be associated. The methodology is not tied
+to the data source. Typically, the genes will be chosen from a gene expression
+study, while the genomic intervals will be QTL. The methods by
+which the regions and genes are selected affect the biological interpretation
+of the results, but not the statistical assessment of association.</p></sec><sec id="sec2"><title>2. Methods</title><p>Our objective is to determine whether genomic intervals on the chromosome
+(usually QTL) and gene loci (often selected from gene expression studies) are collocated
+on the chromosome. This requires matching of gene loci to genomic intervals and
+then measuring the strength of association. Quantitative trait
+loci (QTL) are often measured in recombination distance, while
+gene loci are usually reported as physical distances. In this section, we first
+discuss conversion between recombination and physical distances. We then
+discuss 2 approaches to measure strength of association.</p><sec sec-type="subsection" id="subsec2.1"><title>2.1. Converting Recombination Distance to Physical Distance</title><p>Quantitative trait loci (QTL) are
+reported in centimorgans (cM), which measure recombination frequencies between
+markers on a chromosome. Gene locations are usually measured by the physical distance
+in base pairs (bp) or megabase pairs (1 Mb = 10<sup>6</sup> bp). To match QTL
+sets and gene sets, we adopted the embedded conversion tool in expressionview [<xref rid="B2" ref-type="bibr">2</xref>]
+to estimate physical distances from cM, using a subset of genes for which both
+distances are available. The &#x0201c;smoothing window&#x0201d; technique used in expressionview
+essentially applies piecewise regression. In regions in which expressionview
+appeared to give poor estimates, we also used polynomial regression to estimate
+physical distance from cM by using genes for which both measures are available. 
+Any QTL with a resulting span that extends beyond the end of a chromosome is
+truncated.</p></sec><sec sec-type="subsection" id="subsec2.2"><title>2.2. Measures of Association Based on Completeness and Accuracy</title><p>For
+convenience, we denote a set of QTLs, such as drug abuse QTLs, by <italic>Q</italic>, and a set of genes, such as the NA genes,
+by
+<italic>G</italic>. A natural approach is to consider the percentage of genes in <italic>G</italic> covered by
+at least one QTL in <italic>Q</italic>. The association between <italic>Q</italic> and <italic>G</italic> is strong if this number
+is big. This quantification reflects the &#x0201c;completeness&#x0201d; of <italic>Q</italic> in terms of
+covering <italic>G</italic>. A complementary approach is to consider whether each QTL in <italic>Q</italic> covers
+at least one gene in <italic>G</italic>. If a QTL in <italic>Q</italic> covers no genes in <italic>G</italic>, it is called
+&#x0201c;empty&#x0201d;; otherwise it is &#x0201c;nonempty.&#x0201d; The association between <italic>Q</italic> and <italic>G</italic> is strong
+when the percentage of empty QTL is small. This quantification reflects the
+&#x0201c;accuracy&#x0201d; of <italic>Q</italic> in terms of covering <italic>G</italic>.</p><p>If
+<italic>Q</italic> is strongly associated with <italic>G</italic>, we expect both completeness and accuracy to be
+high. However, the two methods do not necessarily give the same result because
+they are measuring complementary aspects of an association. As quantitative
+trait loci (QTL) are added to <italic>Q</italic>, we expect higher completeness because the QTL in <italic>Q</italic> cover more segments of each chromosome.
+However, if these quantitative trait loci (QTL) are unrelated to <italic>G</italic>, we expect
+many of them to be empty. Similarly, as genes are added to <italic>G</italic>, we expect higher
+accuracy because selected genes are found in more locations. But if the
+additional genes are unrelated to <italic>Q</italic>, we expect few of them to be covered by <italic>Q</italic>.</p><p>To
+account for the effect of increasing the size of <italic>Q</italic> or <italic>G</italic>, we need to develop a combined
+measure on both completeness and accuracy together to answer the question: is
+the overall association strong? We propose an appropriately weighted average of
+completeness and accuracy which penalizes for adding spurious QTL or genes to
+the sets.</p><p>Let <italic>N</italic> be the number of genes in <italic>G</italic>, <italic>M</italic> be the number of QTL in <italic>Q</italic>, <italic>n</italic> be the number genes in <italic>G</italic> covered by <italic>Q</italic>,
+and <italic>m</italic> be the nonempty QTL in <italic>Q</italic>, then
+completeness <italic>C</italic> = <italic>n</italic>/<italic>N</italic>, and accuracy <italic>A</italic> = <italic>m</italic>/<italic>M</italic>. We define the combined
+measure of association as</p><p>
+<disp-formula id="eq1"><label>(1)</label><mml:math id="M1"><mml:mrow><mml:mi>S</mml:mi><mml:mo>=</mml:mo><mml:mfrac><mml:mi>C</mml:mi><mml:mi>M</mml:mi></mml:mfrac><mml:mo>+</mml:mo><mml:mfrac><mml:mi>A</mml:mi><mml:mi>N</mml:mi></mml:mfrac><mml:mo>.</mml:mo></mml:mrow></mml:math></disp-formula> The weight is
+chosen to diminish the effect of matching by chance. When <italic>M</italic> increases, more of the genome will be covered by <italic>Q</italic>; we compensate
+by dividing by <italic>M</italic>. We weight accuracy by 1/<italic>N</italic> to penalize for increasing the size of <italic>G</italic> in the same fashion.</p><p>The limiting behaviors of the combined
+measure <italic>S</italic> satisfy the need to
+differentiate a strong association from a noisy one in which matching results
+by chance. Let <italic>s</italic> be the number of
+genes in <italic>G</italic> which really match some QTL in <italic>Q</italic>. Correspondingly, let <italic>r</italic> be the number of QTL in <italic>Q</italic> that really
+match some genes in <italic>G</italic>. Note <italic>r</italic> usually
+is not equal to <italic>s</italic>. Besides the true
+matching relationship, every gene has probability <italic>p</italic> = <italic>p</italic>(<italic>M</italic>) of being covered
+by <italic>Q</italic> leading to <italic>u</italic> genes which are
+covered by chance. On the other hand, every QTL has a probability 1 &#x02212; <italic>q</italic> = 1 &#x02212; <italic>q</italic>(<italic>N</italic>) of being empty with respect to <italic>G</italic>, so that it has a probability <italic>q</italic> of being &#x0201c;nonempty&#x0201d; leading
+to <italic>v</italic> QTL which are nonempty by chance. 
+Completeness can be written as</p><p>
+<disp-formula id="eq2"><label>(2)</label><mml:math id="M2"><mml:mrow><mml:mi>C</mml:mi><mml:mo>=</mml:mo><mml:mfrac><mml:mrow><mml:mi>s</mml:mi><mml:mo>+</mml:mo><mml:mi>u</mml:mi></mml:mrow><mml:mrow><mml:mi>N</mml:mi></mml:mrow></mml:mfrac><mml:mn>.</mml:mn></mml:mrow></mml:math></disp-formula> Thus, the
+expectation of <italic>C</italic> is straightforward:</p><p>
+<disp-formula id="eq3"><label>(3)</label><mml:math id="M3"><mml:mrow><mml:mtext>E</mml:mtext><mml:mi>C</mml:mi><mml:mo>=</mml:mo><mml:mfrac><mml:mrow><mml:mi>s</mml:mi><mml:mo>+</mml:mo><mml:mo stretchy="false">(</mml:mo><mml:mi>N</mml:mi><mml:mo>&#x02212;</mml:mo><mml:mi>s</mml:mi><mml:mo stretchy="false">)</mml:mo><mml:mi>p</mml:mi></mml:mrow><mml:mrow><mml:mi>N</mml:mi></mml:mrow></mml:mfrac><mml:mn>.</mml:mn></mml:mrow></mml:math></disp-formula> Similarly,</p><p>
+<disp-formula id="eq4"><label>(4)</label><mml:math id="M4"><mml:mrow><mml:mtable><mml:mtr><mml:mtd columnalign="right"><mml:mi>A</mml:mi></mml:mtd><mml:mtd columnalign="left"><mml:mo>=</mml:mo><mml:mfrac><mml:mrow><mml:mi>r</mml:mi><mml:mo>+</mml:mo><mml:mi>v</mml:mi></mml:mrow><mml:mrow><mml:mi>M</mml:mi></mml:mrow></mml:mfrac><mml:mo>,</mml:mo></mml:mtd></mml:mtr><mml:mtr><mml:mtd columnalign="right"><mml:mtext>E</mml:mtext><mml:mi>A</mml:mi></mml:mtd><mml:mtd columnalign="left"><mml:mo>=</mml:mo><mml:mfrac><mml:mrow><mml:mi>r</mml:mi><mml:mo>+</mml:mo><mml:mo stretchy="false">(</mml:mo><mml:mi>M</mml:mi><mml:mo>&#x02212;</mml:mo><mml:mi>r</mml:mi><mml:mo stretchy="false">)</mml:mo><mml:mi>q</mml:mi></mml:mrow><mml:mrow><mml:mi>M</mml:mi></mml:mrow></mml:mfrac><mml:mn>.</mml:mn></mml:mtd></mml:mtr></mml:mtable></mml:mrow></mml:math></disp-formula> Then,</p><p>
+<disp-formula id="eq6"><label>(5)</label><mml:math id="M5"><mml:mrow><mml:mtext>E</mml:mtext><mml:mi>S</mml:mi><mml:mo>=</mml:mo><mml:mfrac><mml:mrow><mml:mi>r</mml:mi><mml:mo>+</mml:mo><mml:mi>s</mml:mi><mml:mo>+</mml:mo><mml:mo stretchy="false">(</mml:mo><mml:mi>N</mml:mi><mml:mo>&#x02212;</mml:mo><mml:mi>s</mml:mi><mml:mo stretchy="false">)</mml:mo><mml:mi>p</mml:mi><mml:mo>+</mml:mo><mml:mo stretchy="false">(</mml:mo><mml:mi>M</mml:mi><mml:mo>&#x02212;</mml:mo><mml:mi>r</mml:mi><mml:mo stretchy="false">)</mml:mo><mml:mi>q</mml:mi></mml:mrow><mml:mrow><mml:mi>M</mml:mi><mml:mi>N</mml:mi></mml:mrow></mml:mfrac><mml:mn>.</mml:mn></mml:mrow></mml:math></disp-formula> Consider
+the following limiting circumstances: (1) (perfect match) when <italic>s</italic> &#x02192; <italic>N</italic> and <italic>r</italic> &#x02192; <italic>M</italic>, E<italic>S</italic> monotonically
+increases to the limit (<italic>M</italic> + <italic>N</italic>)/<italic>MN</italic>; (2) (totally random) when <italic>s</italic> &#x02192; 0 and <italic>r</italic> &#x02192; 0, E<italic>S</italic> monotonically decreases to the limit (<italic>Np</italic> + <italic>Mq</italic>)/<italic>MN</italic>; (3) (<italic>G</italic> has
+spurious genes) when <italic>N</italic> &#x02192; <italic>&#x0221e;</italic> and <italic>M</italic> is fixed, notice <italic>q</italic> = <italic>q</italic>(<italic>N</italic>) &#x02192; 1 in this case, E<italic>S</italic> will converge
+to <italic>p</italic>/<italic>M</italic>; (4) (<italic>Q</italic> has spurious QTL) when <italic>M</italic> &#x02192; <italic>&#x0221e;</italic> and <italic>N</italic> is fixed, notice <italic>p</italic> = <italic>p</italic>(<italic>M</italic>) &#x02192; 1 in this case, E<italic>S</italic> will converge to <italic>q</italic>/<italic>N</italic>. From the above, it can be concluded
+that the combined measure <italic>S</italic> will
+approach its maximum when a perfect match arises and decrease when the
+association weakens in some respect.</p></sec></sec><sec id="sec3"><title>3. Statistical
+Tests for Accuracy and Completeness</title><p>Until the biology is fully understood, we
+cannot be certain if the association between <italic>Q</italic> and <italic>G</italic> is due to chance. We,
+therefore, want to study the pair of hypotheses H<sub>0</sub>: there is no stronger association
+between QTL and genes than expected by chance, that is, we cannot benefit from
+combining the results; H<sub>a</sub>: the association is stronger than expected
+by chance. In this section, we determine the statistical significance
+of the observed levels of association by comparing with the null distribution of
+completely random association determined by simulation. Random selection of QTL
+is not readily done as selection of random intervals along the chromosomes because
+we do not know the location of all possible QTL. Hence random selected
+intervals are unlikely to model the true distribution of QTL. However, since
+the physical locations of all genes on the microarray are known, random sets of
+genes are readily created by choosing genes at random and considering the null
+distributions of completeness or accuracy of the QTL sets with respect to these
+randomly chosen genes.</p><p>To assess the strength of association
+between a QTL set <italic>Q</italic> and a gene set <italic>G</italic> of size <italic>N</italic>, we compute the completeness and accuracy of <italic>Q</italic>. We then select
+genes at random from all the genes represented on the microarray. The simplest
+way to do this is to select <italic>N</italic> genes
+at random from the array. However, since there is considerable variability in
+the percentage of tissue-specific genes on each chromosome and since the QTL
+may not be randomly distributed among chromosomes, we can also consider selecting <italic>N</italic>
+<sub><italic>i</italic></sub> genes from the <italic>i</italic>th chromosome, where <italic>N</italic>
+<sub><italic>i</italic></sub> is the number of genes in
+the gene set on the chromosome. We call the latter method the conditional
+method because the random selection strategy is conditional on the number of
+genes in <italic>G</italic> on each chromosome. By contrast, the former method, which selects
+genes completely at random, is called the unconditional method. It is not
+entirely clear when the conditional and unconditional methods are more
+appropriate or powerful. When the gene set and quantitative trait loci (QTL)
+are distributed across all of the chromosomes, we might expect that the
+conditional method will be more powerful as well as more precise. However, when
+there are chromosomes with no genes in <italic>G</italic>, the unconditional method should be
+more powerful, as it takes into account the probability that QTL and genes in
+the gene set may not be on the same chromosome, whereas the conditional method
+uses only information about the chromosomes which include genes in <italic>G</italic>. 
+Conversely, when there are chromosomes with no QTL in <italic>G</italic>, the conditional method
+may be more powerful because genes selected from these chromosomes will not
+contribute to completeness or accuracy under conditional random sampling
+strategy.</p><p>By
+repeatedly selecting gene sets at random either conditionally or
+unconditionally and computing the completeness and accuracy for <italic>Q</italic>, an unconditional
+or conditional null distribution is then simulated. The <italic>P</italic>-values for the
+observed completeness <italic>C</italic>, accuracy <italic>A</italic>, and combined measure <italic>S</italic> are the percentages of simulated
+datasets for which the simulated <italic>C</italic>, <italic>A</italic>,
+and <italic>S</italic> are as strong as or stronger
+than the corresponding observed values. The estimated <italic>P</italic>-values are
+displayed in <xref ref-type="table" rid="tab1">Table 1 </xref>based on 10000 sets of randomly selected genes. Since the <italic>P</italic>-values
+are based on count data, we also consider 3 continuity corrections which differ
+in how the rejection region includes the observed counts. The simulations took
+about 296 seconds on a 2.8 GHz computer with 2 GB of RAM running Windows XP.</p><p>As
+part of the simulation, we can also compute the distribution of number of genes
+covered by each QTL. Percentiles of this distribution can be used to identify quantitative
+trait loci (QTL) that have unusually large coverage on the observed data and
+are thus more likely to be associated with genes implicated in the QTL
+condition.</p><sec sec-type="subsection" id="subsec3.1"><title>3.1. Chi-Square Tests of Association</title><p>The count
+of nonempty QTL <italic>m</italic>
+<sub><italic>i</italic></sub> and
+covered genes <italic>n</italic>
+<sub><italic>i</italic></sub> of each
+chromosome can be used to construct a chi-square-type of test for either
+accuracy or completeness. Using chromosomes as the natural category, we define
+the chi-square (<italic>&#x1d4b3;</italic>
+<sup>2</sup>) test
+statistic as</p><p>
+<disp-formula id="eq7"><label>(6)</label><mml:math id="M6"><mml:mrow><mml:mtable><mml:mtr><mml:mtd columnalign="right"><mml:msup><mml:mrow><mml:mi>&#x1d4b3;</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msup></mml:mtd><mml:mtd columnalign="left"><mml:mo>=</mml:mo><mml:munderover><mml:mrow><mml:mstyle displaystyle="true"><mml:mrow><mml:mo>&#x02211;</mml:mo></mml:mrow></mml:mstyle></mml:mrow><mml:mrow><mml:mi>i</mml:mi><mml:mo>=</mml:mo><mml:mn>1</mml:mn></mml:mrow><mml:mrow><mml:mi>T</mml:mi></mml:mrow></mml:munderover><mml:mfrac><mml:mrow><mml:mo stretchy="false">(</mml:mo><mml:msub><mml:mrow><mml:mi>X</mml:mi></mml:mrow><mml:mrow><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo>&#x02212;</mml:mo><mml:mtext>E</mml:mtext><mml:msub><mml:mrow><mml:mi>X</mml:mi></mml:mrow><mml:mrow><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:msup><mml:mrow><mml:mo stretchy="false">)</mml:mo></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msup></mml:mrow><mml:mrow><mml:mtext>E</mml:mtext><mml:msub><mml:mrow><mml:mi>X</mml:mi></mml:mrow><mml:mrow><mml:mi>i</mml:mi></mml:mrow></mml:msub></mml:mrow></mml:mfrac><mml:mo>&#x02009;</mml:mo><mml:mtext>&#x02009;</mml:mtext><mml:mo>&#x0223c;</mml:mo><mml:mtext>&#x02009;</mml:mtext><mml:msubsup><mml:mrow><mml:mi>&#x1d4b3;</mml:mi></mml:mrow><mml:mrow><mml:mi>T</mml:mi><mml:mo>&#x02212;</mml:mo><mml:mn>1</mml:mn></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup><mml:mo>&#x02009;</mml:mo><mml:mtext>&#x02009;&#x02009;under&#x02009;&#x02009;</mml:mtext><mml:msub><mml:mrow><mml:mtext>H</mml:mtext></mml:mrow><mml:mrow><mml:mn>0</mml:mn></mml:mrow></mml:msub><mml:mtext>:</mml:mtext></mml:mtd></mml:mtr><mml:mtr><mml:mtd/><mml:mtd columnalign="left"><mml:mtext>the link is no different from random,</mml:mtext></mml:mtd></mml:mtr><mml:mtr><mml:mtd columnalign="right"><mml:msub><mml:mrow><mml:mi>X</mml:mi></mml:mrow><mml:mrow><mml:mi>i</mml:mi></mml:mrow></mml:msub></mml:mtd><mml:mtd columnalign="left"><mml:mo>=</mml:mo><mml:msub><mml:mrow><mml:mi>n</mml:mi></mml:mrow><mml:mrow><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mrow><mml:mi>m</mml:mi></mml:mrow><mml:mrow><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo>,</mml:mo></mml:mtd></mml:mtr></mml:mtable></mml:mrow></mml:math></disp-formula>where E<italic>X</italic>
+<sub><italic>i</italic></sub> under H<sub>0</sub> can be estimated by random
+sampling genes, and <italic>T</italic> is the total
+number of chromosomes. Under
+H<sub>0</sub>: the link is no different from random; E<italic>X</italic>
+<sub><italic>i</italic></sub> is the same as expected counts when genes are
+selected at random. For a given set of QTL, we can repeatedly sample random
+genes. The average of observed counts of nonempty QTL or covered genes is a
+consistent estimator for E<italic>X</italic>
+<sub><italic>i</italic></sub> and is quite accurate since we repeat sampling many times. A true association
+between QTL and genes will increase the observed counts which result in a larger
+chi-square test statistic. As well, the chi-square test provides us with
+additional insight in identifying potential candidate differentially expressed
+genes, if quantitative trait loci (QTL) are mapping the same or very similar
+quantitative traits as the partner microarray study. On the one hand, a
+chromosome that has a large positive value suggests a region of strong
+association with the gene set, and hence lends support to the hypotheses that
+the QTL and the covered genes are associated with the trait of interest. 
+Conversely, a chromosome for which <italic>X</italic>
+<sub><italic>i</italic></sub> &#x02212; E<italic>X</italic>
+<sub><italic>i</italic></sub> is a small positive value
+or a larger negative value suggests that the QTL and the covered genes may not
+be associated with the trait. Thus,
+association between the <italic>Q</italic> and <italic>G</italic> can also be used to select QTL and genes which
+are more likely to be of interest.</p></sec><sec sec-type="subsection" id="subsec3.2"><title>3.2. Materials</title><p>We apply our methods to a set of mouse QTL identified from the literature
+and a set of mouse genes identified from a microarray study. First, we
+identified a set of 120 QTL associated with drug abuse behaviors in mice [<xref rid="B4" ref-type="bibr">4</xref>] from
+the Mouse Genome Informatics (MGIs) database (<ext-link ext-link-type="uri" xlink:href="http://www.informatics.jax.org">http://www.informatics.jax.org</ext-link>). 
+A set of 166 genes that are preferentially expressed in the nucleus
+accumbens (NA) region of the mouse brain (the NA genes) was determined from a microarray study of brain tissues [<xref rid="B5" ref-type="bibr">5</xref>]
+using Affymetrix MG-U74Av2 arrays. This array contains about
+1/3 of the coding genes in the mouse genome. Briefly, the NA genes were
+identified as being expressed at least 1.5 fold higher in the nucleus accumbens
+compared to two other brain regions, the medial basal hypothalamus and preoptic
+area, in one-day-old C57BL/6J mouse pups. The study did not include replication, so the statistical significance
+of the expression differences cannot readily be assessed; association of these
+genes with QTL, therefore, becomes an important tool to help assess the
+biological significance of the observed differential expression.</p><p>The
+two brain regions used for comparison are physically close to the NA on the
+ventral surface of the brain but are largely derived from a different embryonic
+region of the brain (diencephalon compared to telencephalon for the NA). The NA
+plays an important role in drug abuse-related behavior. Our primary objective
+was to determine if the QTL and gene expression studies are detecting a set of
+genes in common that might be related to drug abuse behaviors. However, because the NA genes are selected
+based on their expression in a selected region of the brain, rather than their
+direct involvement in drug abuse behaviors, we need to be cautious about the
+biological interpretation of an association between the QTL and the gene set.</p></sec><sec sec-type="subsection" id="subsec3.3"><title>3.3. Results</title><p>
+<xref ref-type="fig" rid="fig1">Figure 1 </xref>shows the correspondence between the set of QTL and the set of NA genes. The
+long horizontal dashed lines are numbered to represent the mouse chromosomes. No
+data were available regarding gene expression or QTL on the very short Y
+chromosome. The positions of the NA genes were determined using the Affymetrix
+metadata for the MG-U74Av2 (version 1.10.0) array provided in the Bioconductor
+suite in R [<xref rid="B6" ref-type="bibr">6</xref>].</p><p>No
+obvious matches between the QTL set and the NA genes can be seen in <xref ref-type="fig" rid="fig1">Figure 1</xref>. 
+The visual impression does not support a strong association between QTL and
+genes. The observed
+completeness is 44.6%, and the observed accuracy is 64.2%. 
+The observed <italic>S</italic> is .0076, compared
+with the theoretical maximum for <italic>S</italic> of 0.014. <italic>p</italic>(<italic>M</italic>), and <italic>q</italic>(<italic>N</italic>)
+can be estimated from the simulation and hence we can estimate the three local
+minima under limiting circumstances 2, 3, and 4 discussed in <xref ref-type="sec" rid="sec2">Section 2</xref>.</p><p>
+<xref ref-type="table" rid="tab1">Table 1 </xref>displays the comparison of <italic>S</italic> values
+under both randomization and limiting circumstances. Although it is far from
+the maximum, the observed <italic>S</italic> is above
+all the estimated local minima for genes selected at random.</p><p>The <italic>P</italic>-values for completeness, accuracy, and <italic>S</italic> are in <xref ref-type="table" rid="tab2">Table 2</xref>. The <italic>P</italic>-values for the conditional tests are
+smaller than those for the unconditional tests, which is expected since there
+are chromosomes with NA genes but no QTL. However, there is no indication that
+there is significant association between the NA genes and the QTL set.</p><p>The results of the chi-square test are in <xref ref-type="table" rid="tab3">Table 3</xref>. The unconditional
+chi-square test supports the hypothesis that the completeness is higher than
+expected by chance, but accuracy is only marginally higher than expected by
+chance&#x02014;that is, more genes are covered than expected,
+but the number of QTL containing genes in <italic>G</italic> is about what is expected by
+chance. For example, chromosomes 2 and 16 have much higher positive values than
+expected under unconditional sampling which suggests that the genes on these
+two chromosomes are more likely to be associated with the drug abuse trait, and
+the QTL on these two chromosomes are more likely to be associated with the NA
+region than genome-wide average.</p><p>Two genes on chromosome 2, Pax6 (paired
+box gene 6) and Pcna (proliferating cell nuclear antigen) and one on chromosome
+16, Tiam1 (T-cell lymphoma invasion and metastasis 1) lie under QTL and have
+some relationship to addictive behavior traits. Given that differences in gene
+expression were used as the criterion for selecting genes, it is not unexpected that two of these genes, Pax6 and Tiam1, are transcription factors. Pax6
+plays a role in differentiation of precursor cells into neurons and glia and is
+altered in models of fetal alcohol syndrome [<xref rid="B10" ref-type="bibr">7</xref>]. Tiam1 is known to regulate
+growth cone morphology, a process that can be altered by drugs of abuse [<xref rid="B11" ref-type="bibr">8</xref>].</p><p>We note that chromosome 18 includes a
+gene that is just outside a QTL region. To better understand the effect of a
+small change in the QTL definition, we increased the length of the QTL by 0.5 Mb,
+which is less than a 5% increase in length for most QTL. Although most of the
+measures of association and their statistical significance are scarcely
+affected, the <italic>P</italic>-value for the conditional chi-square test of
+completeness changed from 0.910 to 0.182. This finding further supports the conjecture
+that the completeness in our study may be higher than expected by chance. On
+the other hand, this also demonstrates that the proposed chi-square test is not
+robust against the disturbance in data than the previous simulation-based
+tests.</p><p>A similar
+chi-square test can be used to determine if a particular QTL covers more genes
+than expected by chance. For example, the 3 QTL on chromosome 16 and the QTL on
+chromosome 18 all cover more genes than expected by chance, but none of the QTL
+on chromosome 19 are more accurate than expected by chance.</p></sec></sec><sec id="sec4"><title>4. Conclusion and Discussion</title><p>A strong
+association was expected between the NA genes and the drug abuse QTL, but this
+hypothesis was not fully supported by the data. A possible reason is that there
+are a number of QTL not associated with NA genes. In addition, this large set
+of QTL is associated with diverse drug abuse traits, including both
+physiological and psychological factors, and hence may be associated with
+multiple brain regions. As well, because the genes were selected from an
+unreplicated study based on fold change, we can expect large false detection
+and nondetection rates. A large false detection rate implies that the NA genes
+likely include several genes which are not associated with the NA and are,
+therefore, similar to genes selected at random. We can also expect a large
+number of false nondetections which should induce a correspondingly large
+impact on the power to detect the accuracy of the QTL.</p><p>Completeness, accuracy, and the combined
+measure have been proposed as methods to determine whether a set of QTL and a
+set of genes are associated. The statistical significance of the association can
+be estimated by selecting sets of genes at random from the population of genes
+from which the gene set was determined. When <italic>P</italic>-values or other measures
+of strength of association between the trait of interest and the QTL are
+available or when some QTL are of particular interest a priori, we might
+consider weighting the measures of accuracy so that a penalty is incurred if a
+QTL highly associated with the trait is empty, and a gain is incurred if a gene
+is covered by a highly associated QTL. Weights on the QTL can readily be
+incorporated in the simulations required to estimate the <italic>P</italic>-values
+because the QTL are fixed in the simulation. Weights on the genes are less
+readily handled because weights are not available for genes selected at random. 
+In this study, we did not use weights&#x02014;however, several
+QTL are represented more than once in the QTL set, because the same QTL was
+identified from multiple sources. For example, on chromosome 1, there are 3 QTL
+identified in 3 studies investigating different phenotypes and located
+identically. These QTL may be caused by the same gene or by nearby genes. The
+chromosome locations covered by these QTL have higher weight in the computation
+of both accuracy and completeness. Removing duplicate QTL did not alter the
+conclusions for this set of genes and QTL.</p><p>The chi-square test provides a simple
+method to identify QTL and genes from the gene set that are most highly
+associated. A QTL that covers more genes than expected by chance is likely to
+include a cluster of genes from the gene set, which lends credence to the
+hypotheses that the QTL and the covered genes are associated with the trait of
+interest. Some examples of this have been detected in these data, for example,
+the QTL on chromosomes 16 and 18 are more accurate than expected under
+unconditional sampling. The chi-square tests appear to be more sensitive than
+the other suggested tests to small changes in the definition of the QTL,
+particularly when a chromosome has only a small number of QTL, and the change
+in definition changes <italic>m</italic>
+<sub><italic>i</italic></sub> or <italic>n</italic>
+<sub><italic>i</italic></sub>. The other tests of accuracy and completeness
+or the combined measure appeared to be more robust against changes of the same
+magnitude.</p><p>The data and R code can be accessed from <ext-link ext-link-type="uri" xlink:href="http://www.stat.psu.edu/~naomi/QTLsoftware/">http://www.stat.psu.edu/~naomi/QTLsoftware/</ext-link>.</p></sec></body><back><ref-list><ref id="B1"><label>1</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Wayne</surname><given-names>ML</given-names></name><name><surname>McIntyre</surname><given-names>LM</given-names></name></person-group><article-title>Combining mapping and arraying: an approach to candidate gene identification</article-title><source><italic>Proceedings of the National Academy of Sciences of the United States of America</italic></source><year>2002</year><volume>99</volume><issue>23</issue><fpage>14903</fpage><lpage>14906</lpage><pub-id pub-id-type="pmid">12415114</pub-id></element-citation></ref><ref id="B2"><label>2</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Fischer</surname><given-names>G</given-names></name><name><surname>Ibrahim</surname><given-names>SM</given-names></name><name><surname>Brockmann</surname><given-names>GA</given-names></name><etal/></person-group><article-title>Expressionview: visualization of quantitative trait loci and gene-expression data in Ensembl</article-title><source><italic>Genome Biology</italic></source><year>2003</year><volume>4</volume><issue>11, R77</issue><fpage>1</fpage><lpage>6</lpage></element-citation></ref><ref id="B3"><label>3</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Wang</surname><given-names>J</given-names></name><name><surname>Williams</surname><given-names>RW</given-names></name><name><surname>Manly</surname><given-names>KF</given-names></name></person-group><article-title>WebQTL: web-based complex trait analysis</article-title><source><italic>Neuroinformatics</italic></source><year>2003</year><volume>1</volume><issue>4</issue><fpage>299</fpage><lpage>308</lpage><pub-id pub-id-type="pmid">15043217</pub-id></element-citation></ref><ref id="B4"><label>4</label><element-citation publication-type="book"><person-group person-group-type="author"><name><surname>Jung</surname><given-names>M</given-names></name></person-group><source><italic>unpublished honors</italic></source><year>2003</year><publisher-loc>University Park, Pa, USA</publisher-loc><publisher-name>B.S. thesis The Pennsylvania State University</publisher-name></element-citation></ref><ref id="B5"><label>5</label><element-citation publication-type="book"><person-group person-group-type="author"><name><surname>Vandenbergh</surname><given-names>DJ</given-names></name><name><surname>Mong</surname><given-names>JA</given-names></name><name><surname>Klein</surname><given-names>LC</given-names></name><etal/></person-group><article-title>Prenatal nicotine exposure regulates gene expression in a sexdependent manner</article-title><year>2004</year><publisher-loc>University Park, Pa, USA</publisher-loc><publisher-name>Department of Statistics, The Pennsylvania State University</publisher-name><comment>Tech. Rep.</comment></element-citation></ref><ref id="B6"><label>6</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Gentleman</surname><given-names>RC</given-names></name><name><surname>Carey</surname><given-names>VJ</given-names></name><name><surname>Bates</surname><given-names>DM</given-names></name><etal/></person-group><article-title>Bioconductor: open software development for computational biology and bioinformatics</article-title><source><italic>Genome Biology</italic></source><year>2004</year><volume>5</volume><issue>10, R80</issue><fpage>1</fpage><lpage>16</lpage></element-citation></ref><ref id="B10"><label>7</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Yelin</surname><given-names>R</given-names></name><name><surname>Kot</surname><given-names>H</given-names></name><name><surname>Yelin</surname><given-names>D</given-names></name><name><surname>Fainsod</surname><given-names>A</given-names></name></person-group><article-title>Early molecular effects of ethanol during vertebrate embryogenesis</article-title><source><italic>Differentiation</italic></source><year>2007</year><volume>75</volume><issue>5</issue><fpage>393</fpage><lpage>403</lpage><pub-id pub-id-type="pmid">17286601</pub-id></element-citation></ref><ref id="B11"><label>8</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Matsuo</surname><given-names>N</given-names></name><name><surname>Terao</surname><given-names>M</given-names></name><name><surname>Nabeshima</surname><given-names>Y-I</given-names></name><name><surname>Hoshino</surname><given-names>M</given-names></name></person-group><article-title>Roles of STEF/Tiam1, guanine nucleotide exchange factors for Rac1, in regulation of growth cone morphology</article-title><source><italic>Molecular and Cellular Neuroscience</italic></source><year>2003</year><volume>24</volume><issue>1</issue><fpage>69</fpage><lpage>81</lpage><pub-id pub-id-type="pmid">14550769</pub-id></element-citation></ref></ref-list></back><floats-group><fig id="fig1" position="float"><label>Figure 1</label><caption><p>Combined
+visualization of QTL and NA genes. The short discrete horizontal segments are
+the spans of the QTL defined as +/&#x02212;5 centimorgans (cM) from the peak QTL
+position. The small circles in the center of every segment are the peak
+positions of the QTL. Finally, the vertical lines are the NA genes.</p></caption><graphic xlink:href="ABI2008-719818.001"/></fig><table-wrap id="tab1" position="float"><label>Table 1</label><caption><p> Estimated limiting extrema of combined measure <italic>S</italic>.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="left" rowspan="1" colspan="1">Limiting case defined in <xref ref-type="sec" rid="sec2">Section 2</xref>
+</th><th align="center" rowspan="1" colspan="1">Conditional</th><th align="center" rowspan="1" colspan="1">Unconditional</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">Random selection</td><td align="center" rowspan="1" colspan="1">0.00406</td><td align="center" rowspan="1" colspan="1">0.00389</td></tr><tr><td align="left" rowspan="1" colspan="1">Spurious genes</td><td align="center" rowspan="1" colspan="1">0.0069</td><td align="center" rowspan="1" colspan="1">0.00160</td></tr><tr><td align="left" rowspan="1" colspan="1">Spurious QTL
+</td><td align="center" rowspan="1" colspan="1">0.00237</td><td align="center" rowspan="1" colspan="1">0.00229</td></tr><tr><td align="left" rowspan="1" colspan="1">Theoretical maximum <italic>S</italic>
+</td><td align="center" colspan="2" rowspan="1">.0144</td></tr><tr><td align="left" rowspan="1" colspan="1">Observed <italic>S</italic>
+</td><td align="center" colspan="2" rowspan="1">.00758</td></tr></tbody></table></table-wrap><table-wrap id="tab2" position="float"><label>Table 2</label><caption><p> Simulated
+one-sided <italic>P</italic>-value for the hypothesis H<sub>0</sub>:
+the association is not stronger than expected by chance.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="left" rowspan="1" colspan="1">Measure</th><th align="center" rowspan="1" colspan="1">Observed</th><th align="center" rowspan="1" colspan="1">Definition of <italic>P</italic>-value</th><th align="center" rowspan="1" colspan="1">Conditional</th><th align="center" rowspan="1" colspan="1">Unconditional</th></tr></thead><tbody><tr><td align="left" rowspan="3" colspan="1">
+<italic>C</italic> (Completeness)</td><td align="center" rowspan="3" colspan="1"> 0.446</td><td align="center" rowspan="1" colspan="1">
+<italic>p</italic> (&#x0003e;observed)</td><td align="center" rowspan="1" colspan="1">0.144</td><td align="center" rowspan="1" colspan="1">0.329</td></tr><tr><td align="center" rowspan="1" colspan="1">1/2<italic>p</italic> (# =observed) + <italic>p</italic> (&#x0003e;observed)</td><td align="center" rowspan="1" colspan="1">0.168</td><td align="center" rowspan="1" colspan="1">0.357</td></tr><tr><td align="center" rowspan="1" colspan="1">
+<italic>p</italic> (&#x02265;observed)</td><td align="center" rowspan="1" colspan="1">0.192</td><td align="center" rowspan="1" colspan="1">0.385</td></tr><tr><td align="center" colspan="5" rowspan="1">
+<hr/>
+</td></tr><tr><td align="left" rowspan="3" colspan="1">
+<italic>A</italic> (Accuracy)</td><td align="center" rowspan="3" colspan="1"> 0.642</td><td align="center" rowspan="1" colspan="1">
+<italic>p</italic> (&#x0003e;observed)</td><td align="center" rowspan="1" colspan="1">0.328</td><td align="center" rowspan="1" colspan="1">0.544</td></tr><tr><td align="center" rowspan="1" colspan="1">1/2<italic>p</italic> (# =observed) + <italic>p</italic> (&#x0003e;observed)</td><td align="center" rowspan="1" colspan="1">0.361</td><td align="center" rowspan="1" colspan="1">0.576</td></tr><tr><td align="center" rowspan="1" colspan="1">
+<italic>p</italic> (&#x02265;observed)</td><td align="center" rowspan="1" colspan="1">0.395</td><td align="center" rowspan="1" colspan="1">0.608</td></tr><tr><td align="center" colspan="5" rowspan="1">
+<hr/>
+</td></tr><tr><td align="left" rowspan="3" colspan="1">
+<italic>S</italic> (Combined)</td><td align="center" rowspan="3" colspan="1">.0076</td><td align="center" rowspan="1" colspan="1">
+<italic>p</italic> (&#x0003e;observed)</td><td align="center" rowspan="1" colspan="1">0.213</td><td align="center" rowspan="1" colspan="1">0.441</td></tr><tr><td align="center" rowspan="1" colspan="1">1/2<italic>p</italic> (# =observed) + <italic>p</italic> (&#x0003e;observed)</td><td align="center" rowspan="1" colspan="1">0.229</td><td align="center" rowspan="1" colspan="1">0.459</td></tr><tr><td align="center" rowspan="1" colspan="1">
+<italic>p</italic> (&#x02265;observed)</td><td align="center" rowspan="1" colspan="1">0.245</td><td align="center" rowspan="1" colspan="1">0.478</td></tr></tbody></table></table-wrap><table-wrap id="tab3" position="float"><label>Table 3</label><caption><p>
+<italic>P</italic>-value
+from the chi-square test for the hypothesis H<sub>0</sub>:
+the association is not different from expected by chance.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="left" rowspan="1" colspan="1">Chi-square test</th><th align="center" rowspan="1" colspan="1">Conditional</th><th align="center" rowspan="1" colspan="1">Unconditional</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">
+<italic>P-value</italic> (Completeness)</td><td align="center" rowspan="1" colspan="1">0.902</td><td align="center" rowspan="1" colspan="1">0.041*</td></tr><tr><td align="left" rowspan="1" colspan="1">
+<italic>P-value</italic> (Accuracy)</td><td align="center" rowspan="1" colspan="1">0.608</td><td align="center" rowspan="1" colspan="1">0.246</td></tr></tbody></table><table-wrap-foot><fn><p>*Significant at 5%
+level.</p></fn></table-wrap-foot></table-wrap></floats-group></article>

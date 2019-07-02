@@ -1,0 +1,305 @@
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.0 20120330//EN" "JATS-archivearticle1.dtd">
+<article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" article-type="research-article"><?properties open_access?><front><journal-meta><journal-id journal-id-type="nlm-ta">Adv Bioinformatics</journal-id><journal-id journal-id-type="iso-abbrev">Adv Bioinformatics</journal-id><journal-id journal-id-type="publisher-id">ABI</journal-id><journal-title-group><journal-title>Advances in Bioinformatics</journal-title></journal-title-group><issn pub-type="ppub">1687-8027</issn><issn pub-type="epub">1687-8035</issn><publisher><publisher-name>Hindawi Publishing Corporation</publisher-name></publisher></journal-meta><article-meta><article-id pub-id-type="pmid">19920990</article-id><article-id pub-id-type="pmc">2775662</article-id><article-id pub-id-type="doi">10.1155/2008/789026</article-id><article-categories><subj-group subj-group-type="heading"><subject>Research Article</subject></subj-group></article-categories><title-group><article-title>NCR-PCOPGene: An Exploratory Tool for Analysis of Sample-Classes Effect on Gene-Expression Relationships</article-title></title-group><contrib-group><contrib contrib-type="author"><name><surname>Cedano</surname><given-names>Juan</given-names></name><xref ref-type="aff" rid="I1"/></contrib><contrib contrib-type="author"><name><surname>Huerta</surname><given-names>Mario</given-names></name><xref ref-type="aff" rid="I1"/></contrib><contrib contrib-type="author"><name><surname>Querol</surname><given-names>Enrique</given-names></name><xref ref-type="aff" rid="I1"/><xref ref-type="corresp" rid="cor1">*</xref></contrib></contrib-group><aff id="I1">Departament de Bioqu&#x000ed;mica i Biolog&#x000ed;a Molecular, Institut de Biotecnologia i Biomedicina, Universitat Aut&#x000f2;noma de Barcelona, 08193 Bellaterra, Barcelona, Spain</aff><author-notes><corresp id="cor1">*Enrique Querol: <email>enric.querol@uab.es</email></corresp><fn fn-type="other"><p>Recommended by Pierre Rouz&#x000e9;</p></fn></author-notes><pub-date pub-type="ppub"><year>2008</year></pub-date><pub-date pub-type="epub"><day>10</day><month>12</month><year>2008</year></pub-date><volume>2008</volume><elocation-id>789026</elocation-id><history><date date-type="received"><day>14</day><month>2</month><year>2008</year></date><date date-type="rev-recd"><day>23</day><month>4</month><year>2008</year></date><date date-type="accepted"><day>17</day><month>10</month><year>2008</year></date></history><permissions><copyright-statement>Copyright &#x000a9; 2008 Juan Cedano et al.</copyright-statement><copyright-year>2008</copyright-year><license xlink:href="https://creativecommons.org/licenses/by/3.0/"><license-p>This is an open access article distributed under the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p></license></permissions><abstract><p>
+<italic>Background</italic>. Microarray technology is so expensive and powerful that it is essential to extract maximum value from microarray data. Our tools allow researchers to test and formulate from a hypothesis to entire models. <italic>Results</italic>. The objective of the NCRPCOPGene is to study the relationships among gene expressions under different conditions, to classify these conditions, and to study their effect on the different relationships. The web application makes it easier to define the sample classes, grouping the microarray experiments either by using (a) biological, statistical, or any other previous knowledge or (b) their effect on the expression relationship maintained among specific genes of interest. By means of the type (a) class definition, the researcher can add biological information to the gene-expression relationships. The type (b) class definition allows for linking genes correlated neither linearly nor nonlinearly. <italic>Conclusions</italic>. The PCOPGene tools are especially suitable for microarrays with large sample series. This application helps to identify cellular states and the genes involved in it in a flexible way. The application takes advantage of the ability of our system to relate gene expressions; even when these relationships are noncontinuous and cannot be found using linear or nonlinear analytical methods.</p></abstract></article-meta></front><body><sec id="sec1"><title>1. Introduction</title><p>DNA microarray technology enables
+high-throughput gene-expression analysis, which allows researchers to compare
+the activity of genes in multiple cellular conditions. There are several
+relevant web applications for microarray analysis, that is, GEO [<xref rid="B1" ref-type="bibr">1</xref>], BIOREL [<xref rid="B2" ref-type="bibr">2</xref>], ArrayExpress [<xref rid="B3" ref-type="bibr">3</xref>], and MicroGen [<xref rid="B4" ref-type="bibr">4</xref>]. Currently, most tools try to
+extract biological information from such high-throughput expression data
+combining information from coexpressed genes [<xref rid="B5" ref-type="bibr">5</xref>] as well as additional annotations
+extracted from Gene-Ontology [<xref rid="B6" ref-type="bibr">6</xref>], phylogenetic information [<xref rid="B7" ref-type="bibr">7</xref>], or pathway data [<xref rid="B8" ref-type="bibr">8</xref>]. In this paper, a different and
+complementary new approach based on the effect of the experiments on the
+fluctuations of gene-expression relationships is proposed.</p><p>The suitable data for our type of
+analysis can be provided by <bold>(a)</bold> temporal series, useful to study synchronous cellular events, and <bold>(b)</bold> serial analysis of gene-expression
+samples under different conditions (i.e., chemotherapy, temperature, radiation,
+starvation, etc.) which are more useful for studying asynchronous events. The
+progressive increase of microarray sample series [<xref rid="B9" ref-type="bibr">9</xref>] motivates a more thorough analysis
+of expression relationships and gene dependencies throughout these large
+series, trying to rescue global gene behaviours, cellular states and
+phenotypes. The GEO database [<xref rid="B1" ref-type="bibr">1</xref>] facilitates the study of the
+microarray experiments grouped into predefined classes introduced by the
+microarray authors. Nevertheless, if the researcher wants to understand the
+microarray experiments effect on the expression relationships and elucidate
+hidden cell states, he/she needs a more specific approach. To study the effect
+of the microarray experiments on the relationships among different sets of
+genes, our web tool allows the user to define flexible sample classes. It involves
+a significant new approach by going from the linear, nonlinear, and mutually exclusive
+gene relationships to the complex, noncontinuous dependence among genes or sets
+of genes.</p><p>Our strategy begins from the
+analysis of the &#x0201c;continuous gene-expression relationships&#x0201d; (abbreviated in the
+paper as &#x0201c;gene relationships&#x0201d; or &#x0201c;expression relationships&#x0201d;). This analysis
+provides the &#x0201c;inner pattern&#x0201d; of the expression relationships. 
+This &#x0201c;inner
+pattern&#x0201d; describes the relationship in an <italic>n</italic>-space
+(sample space of <italic>n</italic> dimensions), where
+each axis represents the expression level of each one of the genes which are
+being related, and from a data cloud with the microarray experiments. This
+pattern analysis detects the lineal, nonlineal, and mutually excluding
+relationships, providing a series of points in the <italic>n</italic>-space which describe the &#x0201c;inner pattern&#x0201d; of the expression
+relationship. Beyond this first analysis remains the second objective: the
+study of the &#x0201c;noncontinuous dependence&#x0201d; among gene expressions. To perform
+this, the sample classes are defined allowing for the study of their effect on
+gene expressions and the stated continuous dependencies. This task facilitates
+relating genes which do not have continuous relationships but rather have
+local, unidirectional, or other kinds of complex dependence in their
+expression. The final objective is that the sample classes defined help to
+identify the hidden cellular states and phenotype changes (and provide the
+genes involved).</p></sec><sec id="sec2"><title>2. Methods</title><p>Pattern
+extraction methodologies are very powerful techniques to extract biological
+knowledge from data, as was shown in our previous work [<xref rid="B10" ref-type="bibr">10</xref>],
+where this approach was used for analysis of populations, diagnosis, and
+prognosis. In the present work, a useful extension to high-throughput
+microarray analysis is presented.</p><sec sec-type="subsection" id="subsec1.1"><title>2.1. Preprocess</title><p>When microarray data are uploaded,
+the inner pattern of the expression relationship of all pairs of microarray
+genes is calculated automatically. These calculations are made by the principal
+curves of oriented points (PCOPs)
+calculus [<xref rid="B11" ref-type="bibr">11</xref>] and recognise the linear, nonlinear
+and mutually-excluding relationships between genes (both genes cannot be
+overexpressed or underexpressed at the same time, or one gene can be
+overexpressed if the other one is underexpressed) [<xref rid="B12" ref-type="bibr">12</xref>]. The noncorrelation factor between
+each pair of gene expressions is calculated in the preprocess pattern analysis,
+leading to the identification of those genes which are more correlated with
+each gene. How it will lead to the &#x0201c;analysis expansion&#x0201d; around the researcher's
+genes of interest is shown in Results, and a brief description of the PCOP
+calculation [<xref rid="B11" ref-type="bibr">11</xref>] is given in <xref ref-type="sec" rid="subsec2.4">Section 2.4</xref>.</p></sec><sec sec-type="subsection" id="subsec2.2"><title>2.2. Defining Sample Classes</title><p>The researcher could test his/her
+hypotheses and intuitions by defining the sample classes. The sample-classes
+definition can be made in the following three different ways.</p><p>
+<list list-type="roman-lower"><list-item><p>Selecting the samples from a range of gene-expression data.</p></list-item><list-item><p>Clustering the samples from a gene-expression relationship: once the inner pattern among a set of
+correlated genes of interest is calculated (once again by PCOP calculus [<xref rid="B11" ref-type="bibr">11</xref>]), the samples that constitute the
+different &#x0201c;local behaviours&#x0201d; of this inner pattern can be clustered (and a high
+correlation implies a better-fitted pattern). Then, the effect of these
+conditions can be studied on any other genes relationship, where these genes
+could not be correlated with the set initially used to cluster the microarray
+experiments. Note that although in the preprocess PCOP is calculated for two
+dimensions only (a pair of genes), now it is calculated for <italic>n</italic> &#x02265; 2 dimensions (the <italic>n</italic> genes of the gene set).</p></list-item><list-item><p>Classifying the microarray experiments into different classes using
+previous knowledge.</p></list-item></list>
+</p></sec><sec sec-type="subsection" id="subsec2.3"><title>2.3. Colouring the Sample Classes in a Genes Relationship</title><p>Now, the
+graphical interface facilitates the visualisation of the defined-classes effect
+on gene relationships by colouring the samples (as is shown in <xref ref-type="fig" rid="fig1">Figure 1</xref>) for
+every set of genes of interest with the intention of studying their effect. The
+study of this effect is especially relevant in the nonlinear relationships in
+order to understand the biological sense of the slope change, possibly due to a
+phenotype change.</p><p>The class definitions of types (i) (selecting the samples from a range of
+gene-expression values) and (ii) (clustering the samples from a gene-expression
+relationship) are made using these graphical visualisations of the
+initial-genes-of-interest pattern analysis. Type (iii) is made using the web
+interface that enquires for the samples belonging to each class, or directly
+uploading the file.</p></sec><sec sec-type="subsection" id="subsec2.4"><title>2.4. 
+Defining the Sample Classes from a Nonlinear Expression Relationship</title><p>The system makes use of the principal
+curves of oriented points (PCOPs)
+calculus to obtain the nonlinear inner pattern [<xref rid="B11" ref-type="bibr">11</xref>, <xref rid="B13" ref-type="bibr">13</xref>] used to cluster the samples (remember
+that PCOP calculus is also used to obtain the correlation degree between all
+pairs of microarray genes). The analysed variables with the PCOP method can be
+independent because the method uses a hidden variable for ordering the data (in
+contrast to other nonlinear analyses like regression curves) which is suitable
+for gene-expression comparisons [<xref rid="B14" ref-type="bibr">14</xref>]. PCOP is defined by the
+generalisation, at the local level, of the principal-components variance
+properties. From the sample-space data of <italic>n</italic> dimensions (one per gene expression), our system obtains discretised states
+named &#x0201c;principal oriented points&#x0201d; (POPs), which represent this principal
+component generalisation at the local level or local area. The series of principal
+oriented points (POPs) obtained makes up the principal curve of oriented points
+(PCOPs) or inner
+pattern of the data cloud [<xref rid="B11" ref-type="bibr">11</xref>, <xref rid="B13" ref-type="bibr">13</xref>]. The final series of POPs obtained
+will minimise the dispersion degree of the samples around PCOP [<xref rid="B11" ref-type="bibr">11</xref>, <xref rid="B13" ref-type="bibr">13</xref>]. 
+As a result, even with no isotropic distribution of the data, we obtain
+a very realistic inner pattern, compared, for example, with methods like least
+squares, and a very accurate data-dispersion measurement (the noncorrelation
+factor), compared with artificial intelligence methods [<xref rid="B11" ref-type="bibr">11</xref>, <xref rid="B15" ref-type="bibr">15</xref>].</p><p>Next, when the user selects the POPs
+(the different discretised states obtained in the PCOP calculus) using the
+graphical interface, the samples belonging to each POP scope or local area are
+selected. One of the main keys of PCOP calculus is precisely the scope
+detection of the local area of each POP, as has been explained in a previous
+work [<xref rid="B11" ref-type="bibr">11</xref>]. In this way, the different sample
+classes are finally defined based on the &#x0201c;local behaviours&#x0201d; of the gene-expression
+relationship. For more details about this clustering method based on the
+fluctuations of the inner pattern, consult our previous work [<xref rid="B10" ref-type="bibr">10</xref>].</p></sec><sec sec-type="subsection" id="subsec2.5"><title>2.5. Gene Search Based on the
+Distribution of the Classes along the Gene-Expression Range</title><p>To make it
+easier to relate the genes in a noncontinuous approach, the user can carry out
+a gene search based on the expression level required for each class defined. 
+This noncontinuous approach leads to the correlation of gene expressions that
+cannot be related by the continuous analysis facilitated by the pattern
+analysis (as shown in the actual examples described in <xref ref-type="sec" rid="sec3">Section 3</xref>). In the
+&#x0201c;class-distribution&#x0201d; search, the genes can be searched for some of the defined
+classes by being upregulated or downregulated, with respect to the basal value,
+or by being disjointed, overexpressed, or underexpressed, with respect to some
+of the other classes. All possible combinations are allowed where different
+combinations will supply different gene sets.</p></sec><sec sec-type="subsection" id="subsec2.6"><title>2.6. Contextualisation Consulting the GEO Database</title><p>In order to
+get complementary information from other public microarray data, the GEO
+database could be consulted. These queries attempt to know if the genes
+supplied by the &#x0201c;class-distribution&#x0201d; search tool (genes that follow the
+user-defined class distribution in their expression) are gene markers in the
+GEO datasets. To achieve this
+information, the NCR-PCOPGene queries the microarray &#x0201c;gene-centric&#x0201d; GEO Profiles
+[<xref rid="B1" ref-type="bibr">1</xref>]. The profiles across all GEO
+datasets where the query gene displays significant expression differences among
+the GEO-predefined sample classes are obtained. In this way, the queried gene
+can be considered, for example, as a marker of osmotic stress in a microarray
+to analyse cellular stress response, or as a marker of metastasis in another
+microarray to analyse disease states, and so forth. These query-gene properties can then be
+assigned to the sample classes obtained with the 
+NCR-PCOPGene.</p></sec><sec sec-type="subsection" id="subsec2.7"><title>2.7. 
+Availability and Requirements</title><p>
+<list list-type="order"><list-item><p>
+<italic>Project name:</italic> PCOPGene.</p></list-item><list-item><p>
+<italic>Project home page: </italic>
+<ext-link ext-link-type="uri" xlink:href="http://ibb.uab.es/revresearch/">http://ibb.uab.es/revresearch/</ext-link>
+</p></list-item><list-item><p>
+<italic> Operating system(s):</italic> Web-based application.</p></list-item><list-item><p>
+<italic>Programming language:</italic> PHP, Java, flash script, CGI,
+C++, Matlab (interfaces for Matlab users).</p></list-item><list-item><p>
+<italic>Requirements:</italic> Mozilla 5.0, sea monkey 1.0, Firefox 1.0 or Explorer 6.0. flash plug-in 7.0 and Java 1.3.1 or higher
+versions.</p></list-item><list-item><p>
+<italic> Licence:</italic> free access; source codes available in the web.</p></list-item><list-item><p>
+<italic>Any restrictions to use by nonacademics:</italic> we prefer no use for profit.</p></list-item></list>
+</p><p>A
+demo user for visualising the above examples is available. A multimedia
+tutorial is provided to describe the application use and it is indexed from the
+application help icon. For mathematical and computational details, technical
+reports are also available in the web.</p></sec></sec><sec id="sec3"><title>3. Results</title><p>Let us describe some real-use cases
+of the NCR-PCOPGene and the relevance of the new knowledge supplied (the
+gene-expression dependence put forward in the examples are new and unknown,
+until now). The three ways to define the sample classes and a basic-analysis
+procedure have been used.</p><sec sec-type="subsection" id="subsec3.1"><title>3.1. Microarray Data</title><p>The suitable data to be analysed by
+the NCR-PCOPGene are microarrays with large synchronous or asynchronous sample
+series. The analysis presented in the paper uses microarray data provided by
+the National Cancer Institute (USA) [<xref rid="B16" ref-type="bibr">16</xref>]. They correspond to the profiles of
+9703 cDNAS representing ~8000 unique genes of 60 cell-lines, in relation to the
+activity profiles of 1400 drugs. They provide a resulting table of 1376 genes
+and 118 compounds with the most representative substances and genes normalised
+for the 60 cell-lines (suitable data for knowledge discovery using our tools).</p></sec><sec sec-type="subsection" id="subsec3.2"><title>3.2. Basic Analysis Procedure</title><p>The analysis begins in the
+researcher's genes of interest, usually gene markers of a specific disease,
+cell state, or function. As was commented on in 
+<xref ref-type="sec" rid="sec2">Section 2</xref>, the correlation factors between all
+microarray pairs of genes (for the linearly, nonlinearly, and mutually
+excluding relationships) are automatically calculated when the microarray data
+are uploaded (the preprocess). Thus, for each gene the system provides its rank
+of best-correlated genes and the user can expand the initial
+correlated-gene-set based on these ranks [<xref rid="B14" ref-type="bibr">14</xref>]. And then finally, the user can
+launch the PCOP calculus of the gene set.</p><p>Once the pattern analysis of the
+query genes has been performed, the graphical interface will show their
+expression-relationship, inner pattern, and their fluctuations. Also, their
+noncorrelation factor of the set is provided (remember that a better correlation
+among the initial gene-set implies an inner pattern that fits better,
+facilitating the detection of the fluctuations and slope changes, and also the
+clustering of the different microarray experiments associated with each one).</p><p>To find the expression dependence of
+these initial sets of correlated genes with other genes either linearly or
+nonlinearly correlated with the first ones (on the contrary, it is easier and
+faster to perform PCOP analysis directly), the user should proceed as follows:
+first, he/she must discretise the continuous relationship among the initial
+gene set forming the different classes (by simply clicking on the POPs along
+the relationship's inner-pattern in the plot interface); second, applying the
+&#x0201c;classes-distribution&#x0201d; search tool for a certain distribution of that discretisation,
+the genes that follow the required distribution in their expressions are
+obtained. Finally, the researcher can now perform the pattern analysis of the
+genes provided and observe, in its interface visualisation, the effect of each
+sample class on its expression relationship (with the samples of the classes
+coloured, as in <xref ref-type="fig" rid="fig1">Figure 1</xref>). This procedure will show the noncontinuous
+dependence among the genes provided by the search and the initial gene set in
+the manner specified in the search. If the distribution required in the search
+is changed, the genes provided and their noncontinuous dependence, with respect
+to the initial ones, will vary too.</p></sec><sec sec-type="subsection" id="subsec3.3"><title>3.3. Example 1: Defining the Sample
+Classes from a Nonlinear Genes Relationship</title><p>Let us now look at a real analysis. 
+We wish to relate the Soluble Guanylate Cyclase Beta1 3 (<italic>SGC</italic>) and Quiescin <italic>Q6
+(Q6)</italic> genes (our genes of interest). The <italic>SGC</italic> is underexpressed in cellular
+stress [<xref rid="B17" ref-type="bibr">17</xref>], whereas <italic>Q6</italic> is overexpressed in the
+last phases of tissue remodelling [<xref rid="B18" ref-type="bibr">18</xref>]. Additionally, we would like to
+relate this pair of genes to GATA-binding protein 3 (<italic>GATA3</italic>) and acute myeloid leukaemia 1 (<italic>AML1</italic>,
+<italic>RUNX1</italic>). <italic>GATA3</italic> is involved in growth control and the maintenance of the
+differentiated state in epithelial cells [<xref rid="B19" ref-type="bibr">19</xref>]. The impairment of the <italic>AML1</italic> function deregulates the pathways
+leading to cellular proliferation and differentiation [<xref rid="B20" ref-type="bibr">20</xref>]. 
+The two gene sets show a correlation between their respective members
+(noncorrelation factors of <italic>SGC</italic> versus
+<italic>Q6</italic> = 0.08; <italic>GATA3</italic> versus <italic>AML1</italic> = 0.1) and their inner pattern can
+be calculated and visualised in the graphical interfaces, as is shown in <xref ref-type="fig" rid="fig1">Figure 1</xref>. The problem is that these two sets of genes are neither linearly nor
+nonlinearly correlated (noncorrelation factor for <italic>SGC</italic> versus <italic>Q6</italic> versus <italic>GATA3</italic> versus <italic>AML1</italic> = 0.28). But perhaps they are maintaining a noncontinuous
+dependence in their expressions, and we cannot discern it with the analysis for
+continuous data-clouds. However, we can try to find it using the classes'
+definition.</p><p>To perform this, two clusters are built from the <italic>SGC</italic> and <italic>Q6</italic> relationship
+by selecting the POPs located in the two extremes of their inner-pattern
+relationship, one corresponding to the cellular-stress samples and the other to
+the tissue-remodelling samples (<xref ref-type="fig" rid="fig1">Figure 1</xref>, <italic>SGC</italic> and <italic>Q6</italic> relationship). These clusters
+will constitute two different sample classes.</p><p>Now, the classes are applied to the <italic>GATA3</italic> and <italic>AML1</italic> relationship, painting their
+respective samples with red and blue colours (<xref ref-type="fig" rid="fig2">Figure 2</xref>). As can be observed in
+<xref ref-type="fig" rid="fig2">Figure 2</xref>, almost all samples corresponding to cellular stress (red) appear with
+an underexpression of <italic>GATA3</italic> and <italic>AML1</italic>, indicating that the two genes are
+not overexpressed in cellular stress. However, the tissue-remodelling-class
+samples (blue) appear along the <italic>GATA3</italic> and <italic>AML1</italic> relationship as being over-
+and underexpressed and indicate that some of these tissue-remodelling
+conditions are affected by the <italic>GATA3</italic> and <italic>AML1</italic> differentiation ways while
+some are not. This points out that the overexpression of <italic>GATA3</italic> and <italic>AML1</italic> implies an
+overexpression of <italic>SGC</italic> and <italic>Q6</italic>, but not the opposite. Note that this
+&#x0201c;unidirectional&#x0201d; relationship is impossible to detect by pattern- or
+correlation-analysis methods.</p></sec><sec sec-type="subsection" id="subsec3.4"><title>3.4. Example 2: Defining the Sample Classes from
+Selecting Expression Ranges</title><p>As seen
+above, there are some experiments involved in tissue remodelling, but not in
+the <italic>GATA3</italic> differentiation processes. 
+It would be interesting to study them. For this purpose, those samples where <italic>GATA3</italic> is overexpressed were selected
+(using the graphical interface) to define a new sample class 
+(<xref ref-type="fig" rid="fig1">Figure 1</xref>, <italic>GATA3</italic> and <italic>AML1</italic> relationship).</p><p>This class of samples is coloured in the <italic>SGC</italic> and <italic>Q6</italic> relationship, as shown in
+<xref ref-type="fig" rid="fig3">Figure 3</xref>. As we can see, the differentiation induced by <italic>GATA3</italic> is independent of the tissue-remodelling level achieved by
+the <italic>SGC</italic> and <italic>Q6</italic> relationship. Note that the sample selection from POP is the
+appropriate method to classify cellular states because the cause or effect of a
+cell state is the combined expression of multiple genes.</p></sec><sec sec-type="subsection" id="subsec3.5"><title>3.5. Example 3: Defining the Sample Classes by
+Classifying the Experiments Using Previous Knowledge</title><p>Previous
+knowledge can arise basically from two different origins: a biological/clinical
+origin or a statistical one. In our case,
+the microarray experiments are grouped by their linear correlation using principal
+components, but other methods like biclustering [<xref rid="B21" ref-type="bibr">21</xref>, <xref rid="B22" ref-type="bibr">22</xref>] or Locally Linear Embedding [<xref rid="B23" ref-type="bibr">23</xref>, <xref rid="B24" ref-type="bibr">24</xref>] can be used with better accuracy to
+define the classes. Note that in order to define the classes, the microarray
+experiments play the variable role and the genes make up the data cloud. Defining the classes by the microarray-experiments correlation, sets
+of genes are similarly expressed under the conditions of certain experiments (a
+class), but not under the conditions of the others. Thus, we can establish the
+hypothesis that each sample class represents a differentiated cell process,
+with the genes implicated in it acting jointly.</p><p>The effect
+of the defined classes on relationships among genes of interest can now be
+observed. Colouring these classes in the relationship among the four genes of
+the above examples (<xref ref-type="fig" rid="fig1">Figure 1</xref>, <italic>GATA3,
+RUNX, SGC,</italic> and <italic>Q6</italic> relationship),
+and remembering the observations of the above examples, the genes that may act
+jointly would be (i)
+the genes involved in cell stress (yellow and red) and (ii) the genes involved in tissue
+remodelling (green and blue), this last set being divided into genes related to <italic>GATA3</italic> and <italic>AML1</italic> differentiation
+(green), and those not implicated in it (blue).</p></sec><sec sec-type="subsection" id="subsec3.6"><title>3.6. Example 4: Gene Search Based on
+the Distribution of the Classes along Their Expression Range</title><p>With the
+classes obtained in the last example (<xref ref-type="fig" rid="fig1">Figure 1</xref>, <italic>GATA3, RUNX, SGC,</italic> and <italic>Q6</italic> relationship) and using the &#x0201c;class-distribution&#x0201d; gene-search tool, it is
+interesting to search the genes which mark the &#x0201c;transition&#x0201d; from the cell
+process involved in tissue remodelling without <italic>GATA3</italic> differentiation (blue) to the cell process linked to tissue
+remodelling with <italic>GATA3</italic> differentiation (green). For this purpose, the following &#x0201c;class-distribution&#x0201d;
+gene search must be performed: the blue and green classes are overexpressed, with
+respect to the basal value; the rest of the classes are underexpressed, with respect to the
+basal value; and the green-class samples are more overexpressed than the blue-class
+samples.</p><p>Furthermore,
+we can identify gene markers of specific cell processes or pathologies (in
+relation to their expression levels) from the supplied genes by means of the
+queries made by the application against the &#x0201c;gene-centric&#x0201d; GEO profiles. Thus,
+the analysis can be focused on the relevant genes for biomedical user interest.</p></sec></sec><sec id="sec4"><title>4. Conclusions</title><p>NCR-PCOPGene
+strength resides in <bold>(a)</bold> the flexibility of the classes' definition, due to the
+nonlinear pattern analysis of gene expressions and the sample clustering along
+the inner pattern, combined with <bold>(b)</bold> the high-throughput approach of microarray technology, which, by means of the
+&#x0201c;class-distribution&#x0201d; gene search and the gene-correlation table, leads the
+researcher to expand his/her analysis. As a result, our application can help to
+relate gene expressions when their relationships are noncontinuous and cannot
+be found using linear or nonlinear analytical methods.</p><p>The
+flexibility of the tool leads to the combination of the three ways for
+determining the classes shown in this paper, to define and redefine the classes. 
+For example, using the &#x0201c;<italic>class definition
+from a nonlinear genes relationship</italic>&#x0201d; way, the classes can be clustered from
+two different, uncorrelated, initial gene sets (as long as no sample appears in
+more than one class). Therefore, the user could search the genes that are
+partially related to both sets of genes in a specific manner (e.g.,
+being correlated with one set in the underexpression, but with the other in the
+overexpression analyses). Or initially using the &#x0201c;<italic>previous-knowledge</italic>&#x0201d; way, the user redefines the predefined classes by their effect on the
+gene-expression-relationships (performing subclasses from the original ones to
+study subprocesses in which the genes of interest are involved).</p><p>In summary,
+it is a powerful tool to study genes of interest and test researchers'
+hypotheses by taking advantage of the high-throughput capability of microarray
+technology.</p></sec></body><back><ack><title>Acknowledgments</title><p>This research was supported by
+Grants BFU2004-06377-C02-01 and BIO2007-67904-C02-01 from the Ministerio de Ciencia y Tecnolog&#x000ed;a (MCYT), Spain, and by
+the Centre de Refer&#x000e8;ncia de R+D de Biotecnologia de la Generalitat de
+Catalunya. The English of this manuscript has been read and corrected by Mr. 
+Chuck Simmons, a native, English-speaking instructor of English of this
+University. These authors contributed equally to this work.</p></ack><ref-list><ref id="B1"><label>1</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Barrett</surname><given-names>T</given-names></name><name><surname>Suzek</surname><given-names>TO</given-names></name><name><surname>Troup</surname><given-names>DB</given-names></name><etal/></person-group><article-title>NCBI GEO: mining millions of expression profiles&#x02014;database and tools</article-title><source><italic>Nucleic Acids Research</italic></source><year>2005</year><volume>33, database issue</volume><fpage>D562</fpage><lpage>D566</lpage><pub-id pub-id-type="pmid">15608262</pub-id></element-citation></ref><ref id="B2"><label>2</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Antonov</surname><given-names>AV</given-names></name><name><surname>Tetko</surname><given-names>IV</given-names></name><name><surname>Mewes</surname><given-names>HW</given-names></name></person-group><article-title>A systematic approach to infer biological relevance and biases of gene network structures</article-title><source><italic>Nucleic Acids Research</italic></source><year>2006</year><volume>34</volume><issue>1</issue><fpage>p. e6</fpage></element-citation></ref><ref id="B3"><label>3</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Parkinson</surname><given-names>H</given-names></name><name><surname>Sarkans</surname><given-names>U</given-names></name><name><surname>Shojatalab</surname><given-names>M</given-names></name><etal/></person-group><article-title>ArrayExpress&#x02014;a public repository for microarray gene expression data at the EBI</article-title><source><italic>Nucleic Acids Research</italic></source><year>2005</year><volume>33, database issue</volume><fpage>D553</fpage><lpage>D555</lpage><pub-id pub-id-type="pmid">15608260</pub-id></element-citation></ref><ref id="B4"><label>4</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Burgarella</surname><given-names>S</given-names></name><name><surname>Cattaneo</surname><given-names>D</given-names></name><name><surname>Pinciroli</surname><given-names>F</given-names></name><name><surname>Masseroli</surname><given-names>M</given-names></name></person-group><article-title>MicroGen: a MIAME compliant web system for microarray experiment information and workflow management</article-title><source><italic>BMC Bioinformatics</italic></source><year>2005</year><volume>6</volume><issue>supplement 4, article S6</issue><fpage>1</fpage><lpage>6</lpage><pub-id pub-id-type="pmid">15631638</pub-id></element-citation></ref><ref id="B5"><label>5</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Frickey</surname><given-names>T</given-names></name><name><surname>Weiller</surname><given-names>G</given-names></name></person-group><article-title>Analyzing microarray data using CLANS</article-title><source><italic>Bioinformatics</italic></source><year>2007</year><volume>23</volume><issue>9</issue><fpage>1170</fpage><lpage>1171</lpage><pub-id pub-id-type="pmid">17344239</pub-id></element-citation></ref><ref id="B6"><label>6</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Nam</surname><given-names>D</given-names></name><name><surname>Kim</surname><given-names>S-B</given-names></name><name><surname>Kim</surname><given-names>S-K</given-names></name><name><surname>Yang</surname><given-names>S</given-names></name><name><surname>Kim</surname><given-names>S-Y</given-names></name><name><surname>Chu</surname><given-names>I-S</given-names></name></person-group><article-title>ADGO: analysis of differentially expressed gene sets using composite GO annotation</article-title><source><italic>Bioinformatics</italic></source><year>2006</year><volume>22</volume><issue>18</issue><fpage>2249</fpage><lpage>2253</lpage><pub-id pub-id-type="pmid">16837524</pub-id></element-citation></ref><ref id="B7"><label>7</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Frickey</surname><given-names>T</given-names></name><name><surname>Lupas</surname><given-names>A</given-names></name></person-group><article-title>CLANS: a Java application for visualizing protein families based on pairwise similarity</article-title><source><italic>Bioinformatics</italic></source><year>2004</year><volume>20</volume><issue>18</issue><fpage>3702</fpage><lpage>3704</lpage><pub-id pub-id-type="pmid">15284097</pub-id></element-citation></ref><ref id="B8"><label>8</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Thimm</surname><given-names>O</given-names></name><name><surname>Bl&#x000e4;sing</surname><given-names>O</given-names></name><name><surname>Gibon</surname><given-names>Y</given-names></name><etal/></person-group><article-title>MAPMAN: a user-driven tool to display genomics data sets onto diagrams of metabolic pathways and other biological processes</article-title><source><italic>The Plant Journal</italic></source><year>2004</year><volume>37</volume><issue>6</issue><fpage>914</fpage><lpage>939</lpage><pub-id pub-id-type="pmid">14996223</pub-id></element-citation></ref><ref id="B9"><label>9</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Hall</surname><given-names>PA</given-names></name><name><surname>Todd</surname><given-names>CB</given-names></name><name><surname>Hyland</surname><given-names>PL</given-names></name><etal/></person-group><article-title>The septin-binding protein anillin is overexpressed in diverse human tumors</article-title><source><italic>Clinical Cancer Research</italic></source><year>2005</year><volume>11</volume><issue>19</issue><fpage>6780</fpage><lpage>6786</lpage><pub-id pub-id-type="pmid">16203764</pub-id></element-citation></ref><ref id="B10"><label>10</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Cedano</surname><given-names>J</given-names></name><name><surname>Huerta</surname><given-names>M</given-names></name><name><surname>Estrada</surname><given-names>I</given-names></name><etal/></person-group><article-title>A web server for automatic analysis and extraction of relevant biological knowledge</article-title><source><italic>Computers in Biology and Medicine</italic></source><year>2007</year><volume>37</volume><issue>11</issue><fpage>1672</fpage><lpage>1675</lpage><pub-id pub-id-type="pmid">17531966</pub-id></element-citation></ref><ref id="B11"><label>11</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Delicado</surname><given-names>P</given-names></name><name><surname>Huerta</surname><given-names>M</given-names></name></person-group><article-title>Principal curves of oriented points: theoretical and computational improvements</article-title><source><italic>Computational Statistics</italic></source><year>2003</year><volume>18</volume><issue>2</issue><fpage>293</fpage><lpage>315</lpage></element-citation></ref><ref id="B12"><label>12</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Huerta</surname><given-names>M</given-names></name><name><surname>Cedano</surname><given-names>J</given-names></name><name><surname>Querol</surname><given-names>E</given-names></name></person-group><article-title>Analysis of nonlinear relations between expression profiles by the principal curves of oriented-points approach</article-title><source><italic>Journal of Bioinformatics and Computational Biology</italic></source><year>2008</year><volume>6</volume><issue>2</issue><fpage>367</fpage><lpage>386</lpage><pub-id pub-id-type="pmid">18464328</pub-id></element-citation></ref><ref id="B13"><label>13</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Delicado</surname><given-names>P</given-names></name></person-group><article-title>Another look at principal curves and surfaces</article-title><source><italic>Journal of Multivariate Analysis</italic></source><year>2001</year><volume>77</volume><issue>1</issue><fpage>84</fpage><lpage>116</lpage></element-citation></ref><ref id="B14"><label>14</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Huerta</surname><given-names>M</given-names></name><name><surname>Cedano</surname><given-names>J</given-names></name><name><surname>Querol</surname><given-names>E</given-names></name></person-group><article-title>Analysis of nonlinear relations between expression profiles by the principal curves of oriented-points approach</article-title><source><italic>Journal of Bioinformatics and Computational Biology</italic></source><year>2008</year><volume>6</volume><issue>2</issue><fpage>367</fpage><lpage>386</lpage><pub-id pub-id-type="pmid">18464328</pub-id></element-citation></ref><ref id="B15"><label>15</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Sandilya</surname><given-names>S</given-names></name><name><surname>Kulkarni</surname><given-names>SR</given-names></name></person-group><article-title>Principal curves with bounded turn</article-title><source><italic>IEEE Transactions on Information Theory</italic></source><year>2002</year><volume>48</volume><issue>10</issue><fpage>2789</fpage><lpage>2793</lpage></element-citation></ref><ref id="B16"><label>16</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Scherf</surname><given-names>U</given-names></name><name><surname>Ross</surname><given-names>DT</given-names></name><name><surname>Waltham</surname><given-names>M</given-names></name><etal/></person-group><article-title>A gene expression database for the molecular pharmacology of cancer</article-title><source><italic>Nature Genetics</italic></source><year>2000</year><volume>24</volume><issue>3</issue><fpage>236</fpage><lpage>244</lpage><pub-id pub-id-type="pmid">10700175</pub-id></element-citation></ref><ref id="B17"><label>17</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Roelofs</surname><given-names>J</given-names></name><name><surname>Van Haastert</surname><given-names>PJM</given-names></name></person-group><article-title>Characterization of two unusual guanylyl cyclases from <italic>Dictyostelium</italic>
+</article-title><source><italic>The Journal of Biological Chemistry</italic></source><year>2002</year><volume>277</volume><issue>11</issue><fpage>9167</fpage><lpage>9174</lpage><pub-id pub-id-type="pmid">11777934</pub-id></element-citation></ref><ref id="B18"><label>18</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Thorpe</surname><given-names>C</given-names></name><name><surname>Hoober</surname><given-names>KL</given-names></name><name><surname>Raje</surname><given-names>S</given-names></name><etal/></person-group><article-title>Sulfhydryl oxidases: emerging catalysts of protein disulfide bond formation in eukaryotes</article-title><source><italic>Archives of Biochemistry and Biophysics</italic></source><year>2002</year><volume>405</volume><issue>1</issue><fpage>1</fpage><lpage>12</lpage><pub-id pub-id-type="pmid">12176051</pub-id></element-citation></ref><ref id="B19"><label>19</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Usary</surname><given-names>J</given-names></name><name><surname>Llaca</surname><given-names>V</given-names></name><name><surname>Karaca</surname><given-names>G</given-names></name><etal/></person-group><article-title>Mutation of <italic>GATA3</italic> in human breast tumors</article-title><source><italic>Oncogene</italic></source><year>2004</year><volume>23</volume><issue>46</issue><fpage>7669</fpage><lpage>7678</lpage><pub-id pub-id-type="pmid">15361840</pub-id></element-citation></ref><ref id="B20"><label>20</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Michaud</surname><given-names>J</given-names></name><name><surname>Scott</surname><given-names>HS</given-names></name><name><surname>Escher</surname><given-names>R</given-names></name></person-group><article-title>AML1 interconnected pathways of leukemogenesis</article-title><source><italic>Cancer Investigation</italic></source><year>2003</year><volume>21</volume><issue>1</issue><fpage>105</fpage><lpage>136</lpage><pub-id pub-id-type="pmid">12643014</pub-id></element-citation></ref><ref id="B21"><label>21</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Getz</surname><given-names>G</given-names></name><name><surname>Domany</surname><given-names>E</given-names></name></person-group><article-title>Coupled two-way clustering server</article-title><source><italic>Bioinformatics</italic></source><year>2003</year><volume>19</volume><issue>9</issue><fpage>1153</fpage><lpage>1154</lpage><pub-id pub-id-type="pmid">12801877</pub-id></element-citation></ref><ref id="B22"><label>22</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Tanay</surname><given-names>A</given-names></name><name><surname>Sharan</surname><given-names>R</given-names></name><name><surname>Shamir</surname><given-names>R</given-names></name></person-group><article-title>Discovering statistically significant biclusters in gene expression data</article-title><source><italic>Bioinformatics</italic></source><year>2002</year><volume>18</volume><issue>supplement 1</issue><fpage>S136</fpage><lpage>S144</lpage><pub-id pub-id-type="pmid">12169541</pub-id></element-citation></ref><ref id="B23"><label>23</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Roweis</surname><given-names>ST</given-names></name><name><surname>Saul</surname><given-names>LK</given-names></name></person-group><article-title>Nonlinear dimensionality reduction by locally linear embedding</article-title><source><italic>Science</italic></source><year>2000</year><volume>290</volume><issue>5500</issue><fpage>2323</fpage><lpage>2326</lpage><pub-id pub-id-type="pmid">11125150</pub-id></element-citation></ref><ref id="B24"><label>24</label><element-citation publication-type="confproc"><person-group person-group-type="author"><name><surname>Chao</surname><given-names>S</given-names></name><name><surname>Lihui</surname><given-names>C</given-names></name></person-group><article-title>Feature dimension reduction for microarray data analysis using locally linear embedding</article-title><conf-name>In: Proceedings of the 3rd Asia-Pacific Bioinformatics Conference (APBC '05), vol. 1</conf-name><conf-date>January 2005</conf-date><conf-loc>Singapore</conf-loc><fpage>211</fpage><lpage>217</lpage></element-citation></ref></ref-list></back><floats-group><fig id="fig1" position="float"><label>Figure 1</label><caption><p>Sample class definitions using the PCOPGene web interface. <italic>Example 1</italic>: in the <italic>SGC(GUCY1B3)</italic> and <italic>Q6(QSN6)</italic> relationship ((a) <italic>f</italic>* = 0.08), the samples of the two extremes of the <italic>SGC/Q6</italic> inner pattern are clustered into two classes by clicking on the POPs, these classes are coloured in the <italic>GATA3</italic> and <italic>AML1(RUNX1)</italic> relationship ((b) <italic>f</italic> = 0.10). <italic>Example 2</italic>: in the <italic>GATA3</italic> and <italic>AML1(RUNX1)</italic> comparison window (b), the samples of <italic>GATA3 </italic> over-expressed are grouped with the range-selection facility and coloured in the <italic>SGC</italic> and <italic>Q6</italic> relationship (a). <italic>Example 3:</italic> in the <italic>GATA3</italic>, <italic>AML1(RUNX1)</italic>, <italic>SGC</italic> and <italic>Q6</italic> relationship ((c) <italic>f</italic> = 0.28), the plot of the <italic>SGC</italic> and <italic>Q6</italic> plane is shown. The coloured classes shown have been obtained by clustering the microarray experiments according to their correlation. These classes represent differentiated cell processes with different genes involved. (<italic>f</italic>* = non-correlation factor provided by the PCOP 
+calculus [<xref rid="B10" ref-type="bibr">10</xref>]).</p></caption><graphic xlink:href="ABI2008-789026.001"/></fig><fig id="fig2" position="float"><label>Figure 2</label><caption><p>
+<italic>Example 1:</italic> effect of classes derived from <italic>Q6</italic> and <italic>SGC</italic> on <italic>GATA3</italic> and <italic>AML1</italic> expression. In the picture is shown the <italic>GATA3</italic> (<italic>x</italic> axis) and <italic>AML1</italic> (<italic>y</italic> axis) relationship, where the data-cloud shows the microarray experiments and the PCOP, connecting the POPs, describes the inner pattern of the expression relationship. The samples under-expressed in the <italic>Q6</italic> and <italic>SGC</italic> relationship are coloured in red, and the samples over-expressed in the <italic>Q6</italic> and <italic>SGC</italic> relationship are coloured in blue. This points out that the under-expression of <italic>Q6</italic> and <italic>SGC</italic> implies an under-expression of <italic>GATA3</italic> and <italic>AML1</italic>, but that an over-expression of <italic>Q6 </italic> and <italic>SGC</italic> does not always imply an over-expression of <italic>GATA3</italic> and <italic>AML1</italic>. The data set represents the activity of 118 substances normalised for 60 cell-lines
+[<xref rid="B16" ref-type="bibr">16</xref>].</p></caption><graphic xlink:href="ABI2008-789026.002"/></fig><fig id="fig3" position="float"><label>Figure 3</label><caption><p>
+<italic>Example 2:</italic> effect of over-expressed class from <italic>GATA3</italic> and <italic>AML1</italic> on <italic>SGC</italic> and <italic>Q6</italic> expression: <italic>SGC</italic> (<italic>x</italic> axis) and <italic>Q6</italic> (<italic>y</italic> axis) relationship, where the data-cloud shows the microarray experiments and the PCOP, connecting the POPs, describes the inner pattern of the expression relationship. The samples of the class representing the over-expression of <italic>GATA3</italic> and <italic>AML1</italic> are coloured. In this way, the four gene expressions are related, <italic>SGC</italic> and <italic>Q6</italic> linearly, with <italic>GATA3</italic> and <italic>AML1</italic> maintaining a complex noncontinuous relationship with the other two. The data set represents the activity of 118 substances normalised for 60 cell-lines [<xref rid="B16" ref-type="bibr">16</xref>].</p></caption><graphic xlink:href="ABI2008-789026.003"/></fig></floats-group></article>

@@ -1,0 +1,381 @@
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.0 20120330//EN" "JATS-archivearticle1.dtd">
+<article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" article-type="research-article"><?properties open_access?><front><journal-meta><journal-id journal-id-type="nlm-ta">Adv Bioinformatics</journal-id><journal-id journal-id-type="iso-abbrev">Adv Bioinformatics</journal-id><journal-id journal-id-type="publisher-id">ABI</journal-id><journal-title-group><journal-title>Advances in Bioinformatics</journal-title></journal-title-group><issn pub-type="ppub">1687-8027</issn><issn pub-type="epub">1687-8035</issn><publisher><publisher-name>Hindawi Publishing Corporation</publisher-name></publisher></journal-meta><article-meta><article-id pub-id-type="pmid">19920991</article-id><article-id pub-id-type="pmc">2774577</article-id><article-id pub-id-type="doi">10.1155/2008/897019</article-id><article-categories><subj-group subj-group-type="heading"><subject>Research Article</subject></subj-group></article-categories><title-group><article-title>Automated Quantitative Assessment of Proteins' Biological Function in Protein Knowledge Bases</article-title></title-group><contrib-group><contrib contrib-type="author"><name><surname>Mayr</surname><given-names>Gabriele</given-names></name><xref ref-type="aff" rid="I1">
+<sup>1</sup>
+</xref></contrib><contrib contrib-type="author"><name><surname>Lepperdinger</surname><given-names>G&#x000fc;nter</given-names></name><xref ref-type="aff" rid="I2">
+<sup>2</sup>
+</xref></contrib><contrib contrib-type="author"><name><surname>Lackner</surname><given-names>Peter</given-names></name><xref ref-type="aff" rid="I1">
+<sup>1</sup>
+</xref><xref ref-type="corresp" rid="cor1">*</xref></contrib></contrib-group><aff id="I1"><sup>1</sup>Department of Molecular Biology, University Salzburg, Hellbrunner Strasse 34, 5020 Salzburg, Austria</aff><aff id="I2"><sup>2</sup>Institute for Biomedical Aging Research, Austrian Academy of Sciences, Rennweg 10, 6020 Innsbruck, Austria</aff><author-notes><corresp id="cor1">*Peter Lackner: <email>peter.lackner@sbg.ac.at</email></corresp><fn fn-type="other"><p>Recommended by Rita Casadio</p></fn></author-notes><pub-date pub-type="ppub"><year>2008</year></pub-date><pub-date pub-type="epub"><day>30</day><month>6</month><year>2008</year></pub-date><volume>2008</volume><elocation-id>897019</elocation-id><history><date date-type="received"><day>29</day><month>2</month><year>2008</year></date><date date-type="rev-recd"><day>30</day><month>4</month><year>2008</year></date><date date-type="accepted"><day>12</day><month>5</month><year>2008</year></date></history><permissions><copyright-statement>Copyright &#x000a9; 2008 Gabriele Mayr et al.</copyright-statement><copyright-year>2008</copyright-year><license xlink:href="https://creativecommons.org/licenses/by/3.0/"><license-p>This is an open access article distributed under the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p></license></permissions><abstract><p>Primary protein sequence data are archived in databases together with information regarding corresponding biological functions. In this respect, UniProt/Swiss-Prot is currently the most comprehensive collection and it is routinely cross-examined when trying to unravel the biological role of hypothetical proteins. Bioscientists frequently extract single entries and further evaluate those on a subjective basis. In lieu of a standardized procedure for scoring the existing knowledge regarding individual proteins, we here report about a computer-assisted method, which we applied to score the present knowledge about any given Swiss-Prot entry. Applying this quantitative score allows the comparison of proteins with respect to their sequence yet highlights the comprehension of functional data. <italic>pfs</italic> analysis may be also applied for quality control of individual entries or for database management in order to rank entry listings.</p></abstract></article-meta></front><body><sec id="sec1"><title>1. Introduction</title><p>Life scientists seek to accumulate knowledge about the
+distinct functions of biomolecules. Currently, approximately 20000 gene loci
+with a total of up to 35000 transcripts have been reported for the human genome
+and transcriptome, respectively [<xref rid="B1" ref-type="bibr">1</xref>, <xref rid="B2" ref-type="bibr">2</xref>]. Genomics and proteomics also greatly support efforts of
+systems biology, which may certainly provide a better understanding of complex
+biological processes at the organismic level. The prerequisite for this endeavour
+is to gain as much knowledge as possible about any functional feature in
+respect to any particular gene product. Therefore, many disciplines in life
+sciences use protein sequence data for comparative studies in order to assess
+distinct functional properties in the context of particular biological
+situations. Beside printed publications, most data acquired have been collected
+and assembled into a variety of publicly available databases [<xref rid="B3" ref-type="bibr">3</xref>&#x02013;<xref rid="B5" ref-type="bibr">5</xref>]. These are generally accepted to represent a common source of
+knowledge for research related to biochemistry, molecular biology, biomedicine,
+or systems biology. In addition, to simply archiving data, interdisciplinary
+efforts are currently being undertaken to fully annotate genomic and proteomic
+sequence data sets [<xref rid="B6" ref-type="bibr">6</xref>]. The overall goal in this context is to increase the 
+general
+and detailed understanding about genomes and proteomes.</p><p>UniProtKB/Swiss-Prot and UniProtKB/TrEMBL store protein
+primary data and associated biological and biochemical information. These two
+are often used as the prime source for data mining. In this study, we focused
+on the knowledge regarding functional aspects of proteins archived in
+Swiss-Prot because this repository is generally believed to be a high-quality,
+manually curated protein knowledge base [<xref rid="B7" ref-type="bibr">7</xref>]. Moreover, relevant information is primarily extracted from
+original publications and review articles, and qualified feedback from external
+experts is also taken into consideration by the curators of Swiss-Prot. By
+implementing standardized operational procedures, they build up and edit
+individual entries [<xref rid="B8" ref-type="bibr">8</xref>]. Briefly, Swiss-Prot entries contain information concerning literature references,
+functional descriptions, domain structure, isoforms, and many more selected
+information regarding the respective protein [<xref rid="B3" ref-type="bibr">3</xref>]. Most entries provide a summary of functional aspects as
+well as other details, such as posttranslational modifications within their 
+<italic>COMMENTS</italic> field. Firm data such as those derived from biochemical analyses are assigned
+clear-cut attributes. For instance, the various properties of an enzyme are
+recorded by a <italic>CATALYTIC ACTIVITY</italic> as
+well as by a <italic>FUNCTION</italic> attribute. Yet,
+in cases other than enzymes, any other biological function can also be found
+within the <italic>FUNCTION</italic> attribute. 
+Biologically, relevant information is also reflected in the protein name (<italic>DESCRIPTION</italic> line). Other categories such as 
+<italic>ENZYME
+REGULATION, PATHWAY, and TISSUE</italic> provide only little further information
+concerning the protein functional properties than already defined by <italic>FUNCTION OR CATALYTIC ACTIVITY.</italic>
+</p><p>When using computer-assisted methods, the primary structure
+of proteins can be easily searched for likely regions of resemblance. Annotated
+knowledge can be adopted by applying automated bioinformatic routines for those
+sequences, which are not explicitly listed in Swiss-Prot, but however, share
+remarkable similarity with experimentally well-studied proteins or protein
+sequence motifs that have previously been characterized in detail [<xref rid="B7" ref-type="bibr">7</xref>, <xref rid="B9" ref-type="bibr">9</xref>, <xref rid="B10" ref-type="bibr">10</xref>]. It has now become generally accepted that information
+available for proteins from closely-related species can be linked to the human
+proteome. However, complex information regarding experimental data still has to
+be manually extracted from published literature or databases. In order to
+enhance this tedious procedure, we here report a novel method, which weighs the
+quality of an entry with respect to proposed functional properties of proteins. 
+In order to accomplish that, all textual descriptions within Swiss-Prot were
+scanned for expressions that specify whether experimental analysis regarding
+the proteins' biological function is yet in progress or whether published
+results are still insufficient in order to accurately deduce the protein's role
+with respect to any particular biological mechanism, pathway, or process. The
+output of our computer-assisted examination resulted in a score for every
+database entry, which grades the currently existing knowledge and was,
+therefore, termed the &#x0201c;protein's function score&#x0201d; (<italic>pfs</italic>).</p><p>In parallel to the development
+of the <italic>pfs</italic> procedure, we performed a
+peer survey. A representative group of trained biologists was asked to manually
+assess the functional knowledge for 30 randomly selected Swiss-Prot entries. The
+outcome and feedback guided us when specifically moulding the computer-assisted
+procedure for the evaluation of currently available information concerning the individual
+functional properties of proteins. The resulting computational measure was subsequently used for benchmarking of the current knowledge regarding entries in data repositories and
+libraries. This relation allowed us to incorporate <italic>pfs</italic> into the result list of protein-protein sequence comparisons. This particular feature
+provides a reliable indication of how well a particular query hit has been
+previously annotated regarding functional assignments. Precomputed protein's function scores (<italic>pfs</italic>) and online BLASTP searches against <italic>pfs</italic>-annotated Swiss-Prot database are accessible at <ext-link ext-link-type="uri" xlink:href="http://biwww.che.sbg.ac.at/PFS/">http://biwww.che.sbg.ac.at/PFS/</ext-link>.</p></sec><sec id="sec2"><title>2. Methods</title><sec sec-type="subsection" id="subsec2.1"><title>2.1. Peer Survey</title><p>Database entries were randomly selected. 13 peers comprising of one
+undergraduate student who has been trained in molecular biology, five PhD
+students, five post doctoral fellows, and three principal investigators working
+as scientists in the field were asked to validate the information provided with
+these particular entries and to regard the displayed existing knowledge about
+the protein as high, medium, or low.</p></sec><sec sec-type="subsection" id="subsec2.2"><title>2.2. Computing Knowledge Factor-quantitative Evaluation
+of Database Entries</title><p>A simple rule was generated in
+order to yield a solid estimate for the information content of Swiss-Prot: for
+every single entry, a score was compiled named <italic>pfs</italic>, which is the sum of factors computed for the respective
+sections of a Swiss-Prot entry, where LITERATURE REFERENCES is denoted <italic>f</italic>
+<sub>1</sub>,
+DESCRIPTION = <italic>f</italic>
+<sub><italic>d</italic></sub>, FUNCTION,
+and CATALYTIC ACTIVITY = <italic>f</italic>
+<sub><italic>f</italic></sub> (<xref ref-type="fig" rid="fig1">Figure 1</xref>). At the beginning of the
+evaluation procedure, value &#x0201c;1&#x0201d; was assigned to <italic>f</italic>
+<sub>1</sub>, <italic>f</italic>
+<sub><italic>d</italic></sub>, and 
+<italic>f</italic>
+<sub><italic>f</italic></sub>
+as long as the corresponding section displayed any
+content. Before summing up all increments, which would yield highest possible
+value <italic>of 3</italic> for 
+<italic>pfs</italic>, all fields were
+searched for words or phrases of devaluating meanings, which in due course
+result in the decrease of the relevant factors, 
+<italic>f</italic>
+<sub>1</sub>, <italic>f</italic>
+<sub><italic>d</italic></sub>, and <italic>f</italic>
+<sub><italic>f</italic></sub>. Terms were selected, which reflect the deliberation
+of authors to express uncertainty (<xref ref-type="table" rid="tab1">Table 1</xref>). Several of the terms with a
+specified meaning have been defined by Swiss-Prot [<xref rid="B11" ref-type="bibr">11</xref>]. For example, the <italic>DESCRIPTION</italic> or <italic>FUNCTION</italic> fields may contain terms which underline the
+complete or near inability to assign biological function, such as
+&#x0201c;unknown,&#x0201d; &#x0201c;not known,&#x0201d; &#x0201c;unnamed,&#x0201d;
+&#x0201c;hypothetical,&#x0201d;
+and &#x0201c;uncharacterized.&#x0201d; In cases where the <italic>DESCRIPTION</italic> field contains the term &#x0201c;putative,&#x0201d; 
+<italic>f</italic>
+<sub><italic>d</italic></sub>
+is decreased to 0.5. If the <italic>DESCRIPTION</italic> includes
+&#x0201c;unnamed,&#x0201d; this would result in a zero contribution to <italic>pfs</italic>. In
+addition to this, a factor was assigned less weight when the entry was
+qualified as to be deposited &#x0201c;by similarity.&#x0201d; During the
+computational evaluation, each field was split into single sentences and each
+sentence was searched for devaluation phrases. When analyzing a sentence, the
+phrase list was searched from top to bottom. The first match determined the
+reduction of the respective factor <italic>f</italic>. 
+Validation of literature references was processed as follows: firstly, every
+single literature reference was evaluated with respect to the same criteria as
+described for <italic>f</italic>
+<sub><italic>d</italic></sub> and <italic>f</italic>
+<sub><italic>f</italic></sub>, that is, every single
+literature reference was searched for keywords, and subsequently, the average
+raw literature factor was calculated. Exceptionally, Swiss-Prot entries may be
+the result of automated submissions of genome or expressed sequence tags (ESTs) sequencing
+data. The accompanying publications rarely address functional questions nor do
+they experimentally verify bioinformatic analyses via firm biochemical
+investigations prior to submission to Swiss-Prot. Therefore, Swiss-Prot added a
+special attribute for large scale experiments, such as genome sequencing or
+functional genomic approaches. These publication formats were rated zero. 
+Apparently, a large number of publications is often a good reflection of accumulating knowledge. However, 
+<italic>f</italic>
+<sub>1</sub> (<italic>pfs</italic> increment for literature) should not overwhelm the value of
+functionally-related terms as defined before. As a matter of fact, entries for
+proteins with largely unknown molecular function typically have <italic>f</italic>
+<sub><italic>d</italic></sub> and 
+<italic>f</italic>
+<sub><italic>f</italic></sub>
+values that are low or close to zero. In cases of
+entries that contain numerous publications, the mere addition of an average raw
+literature factor to the aforementioned low <italic>f</italic>
+<sub><italic>d</italic></sub>
+and <italic>f</italic>
+<sub><italic>f</italic></sub> would yield a
+deceptively high <italic>pfs</italic> value. Therefore,
+the average raw literature factor was compared to the assessment calculated
+from the sections <italic>DESCRIPTION</italic>, <italic>FUNCTION</italic>, and 
+<italic>CATALYTIC ACTIVITY</italic>, respectively. 
+The average literature factor was factorized by
+multiplication with the maximum of <italic>f</italic>
+<sub><italic>d</italic></sub> and <italic>f</italic>
+<sub><italic>f</italic></sub>. The
+proposed scheme has been built and refined iteratively by reading the content
+of several hundred Swiss-Prot entries and checking the coherence with the
+calculated <italic>pfs</italic>. The source code for
+computing pfs for Swiss-Prot is available upon request.</p></sec></sec><sec id="sec3"><title>3. Results</title><sec sec-type="subsection" id="subsec3.1"><title>3.1. Evaluation of Database Entries by Peers</title><p>Scientists, who routinely use
+Swiss-Prot or have been trained to extract information about protein from a
+variety of data repositories, were asked to evaluate 30 randomly picked
+Swiss-Prot entries. Eventually, the quality of all data as provided within the
+Swiss-Prot entry for this particular protein should be regarded as being high,
+medium, or low (<xref ref-type="table" rid="tab2">Table 2</xref>). In cases, where the biological role or the functional
+property of the respective proteins is properly described by published data,
+the cumulative knowledge about this protein was considered high. In cases,
+where there is still experimental data necessary to clarify the biological
+function of the protein or the data are purely descriptive, the information
+content presented in such entries was ranked medium or low. No further sources
+of information than those provided by Swiss-Prot had been allowed for this
+particular evaluation. In a few cases, there appeared only little concordance
+between peer evaluation results (see <xref ref-type="table" rid="tab2">Table 2</xref>, column &#x0201c;maj&#x0201d;). As a lowest degree
+of consistence, 38% was
+obtained regarding database entries P01827 and Q9N2B6, respectively. Total
+agreement was achieved again in two cases, Q57910 and P05484. Random scoring would have resulted in 30%
+of the entries gaining the lowest possible concordance score (39%) and 90% achieving
+&#x0003c;62% of consensus, which is in strong contrast what was attained by the
+peer group. The lowest possible as well as the highest concordance score were much
+lower, 7% and 50% respectively. Apparently, there seems to be a bias due to
+personal appreciation in respect to knowledge archived in biological databases. 
+For instance, PI3 assigned grade &#x0201c;high&#x0201d; to two thirds of the entries, while Ph2
+accounted the same number of entries as containing little knowledge. Additionally,
+the peers also had to report one field for every particular database entry,
+which had the highest impact on her/his individual decision. In 35% of the
+decisions, the COMMENT-FUNCTION line was considered most important, in 16%,
+it was the protein's name as provided in the DESCRIPTION line, and in 13%, the
+reference list was most appealing for the evaluating peers. Lines such as
+COMMENTS, FEATURES, COMMENTS-CATALYTIC ACTIVITY, CROSS REFERENCES, or KEYWORDS were chosen only in
+below 10% of the cases of the individual decision making processes. Most
+interesting in this context, peers rarely pointed out that the decision was
+decisively influenced by literature citations that are embedded in most
+Swiss-Prot entries. We would furthermore like to note that peers, who applied
+subjective decision making criteria when validating the currently archived
+knowledge about a protein's function, did not raise any objections to grade individual
+entries according to set quality ratings such as low, medium, or high. This
+strongly suggested to us that any quantitative measure resulting from a
+standardized procedure, with particular attention paying to biological function
+information as contained in individual database entries would be also appreciated.</p></sec><sec sec-type="subsection" id="subsec3.2"><title>3.2. Computational Evaluation of Database Entries</title><p>Quality assessment of all
+Swiss-Prot entries was done by putting weight on to what is currently known
+about the biological function(s) of an individual protein. The information is abstracted
+in the respective sections of a Swiss-Prot entry <italic>LITERATURE REFERENCES</italic>,
+<italic>DESCRIPTION</italic> and <italic>FUNCTION</italic>, and 
+<italic>CATALYTIC ACTIVITY</italic>. These
+fields were also highly appreciated by the peers for measuring biological
+function. Therefore, the text included in these sections was carefully evaluated
+for particular specifications of down-weighing characterizations as shown in
+<xref ref-type="table" rid="tab1">Table 1</xref>. Next, the above-mentioned database fields of every single Swiss-Prot
+entry were examined, and the respective information content was weighed in
+order to recount and score the currently existing knowledge with regard to the
+protein's functional properties. As described in the methods section, summing
+the resulting scores that had been calculated from the database lines equals <italic>pfs</italic> with a maximum value of 3 (<xref ref-type="fig" rid="fig1">Figure 1</xref>). The evaluation scheme acts on the assumption that any field contains
+standardized textual information. In order to ensure that, the procedure relies
+not only on parsing of the quantity of text contained in every field, we determined
+whether there is any correlation between word counts of the individual fields reference
+title, COMMENTS or DESCRIPTION, and <italic>pfs</italic>. 
+When plotting log (number of words) against <italic>pfs</italic>,
+only a weak correlation of <italic>r</italic> = 0.66 after applying Pearson's formula could be
+observed (when omitting log scaling, correlation decreases to <italic>r</italic> = 0.42). In
+addition to this, we observed a rather broad distribution with respect to word
+count, which makes it hard to believe that <italic>pfs</italic> may be deduced by merely counting words. We furthermore analyzed the degree of
+consent between peers scoring and <italic>pfs</italic>. 
+Taking the entire data set into account, only a week correlation of <italic>r</italic> = 0.58
+could be revealed. When selecting only those cases that resulted in a
+concordance score of &#x0003e;62%, which was half of the entries, a correlation of <italic>r</italic> = 0.78 was obtained.</p><p>As a next step, <italic>pfs</italic> was used to classify all Swiss-Prot
+entries by sorting them into three categories, representing a &#x0201c;low&#x0201d; (0 &#x0003c; 1),
+&#x0201c;medium&#x0201d; (1-2), and &#x0201c;high&#x0201d; degree of knowledge (&#x0003e;2) presently available with
+respect to function and/or biological role (<xref ref-type="table" rid="tab3">Table 3</xref>). Low knowledge results
+from the fact that the number of publications is low and/or the amount of
+extracted functional information is minute or currently still unavailable. For
+proteins with moderate knowledge, either many publications or some evidence of
+a particular biological function is publicly accessible. Solid knowledge with a
+high <italic>pfs</italic> is only reflected by
+well-documented, reliable information concerning biological function, in
+particular, clear-cut statements without speculative statements or negative
+expressions concerning function. The <italic>pfs</italic> for all Swiss-Prot entries 
+can be obtained online at
+<ext-link ext-link-type="uri" xlink:href="http://biwww.che.sbg.ac.at/PFS/">http://biwww.che.sbg.ac.at/PFS/</ext-link>.</p><p>Due to the fact that this
+novel quality score reflects commonly available knowledge concerning a
+protein's function, we next appended <italic>pfs</italic> to the headers of sequence data files, which we subsequently used for sequence
+comparisons. When performing protein-protein sequence comparisons with the aid
+of BLASTP as a search algorithm and Swiss-Prot as a data source, now, the
+result lists displayed not only a generic protein name, but also provided a
+list with additional notice specifying the functional information content of
+any particular hit. In this way, the most informative link becomes highlighted,
+and furthermore, the quality and quantity of functional data, which are
+available for a set of proteins related to the subject sequence, can be
+immediately extracted. This service is also freely accessible online at <ext-link ext-link-type="uri" xlink:href="http://biwww.che.sbg.ac.at/PFS/">http://biwww.che.sbg.ac.at/PFS/</ext-link>.</p></sec></sec><sec id="sec4"><title>4. Discussion</title><p>Functional annotations of
+proteins are collected and provided in databases. Although bioinformatic
+analyses are regarded to provide unprecedented precision and high performance
+and are thus being employed to specifically define biological mechanisms at the
+molecular, genomic, and cellular level, most researchers in life science still
+(like to) read and survey data collections 
+without applying a
+standardized validation method. Since knowledge regarding the
+biological function of proteins is not evenly distributed in databases, and standardized bioinformatic procedures, which would allow
+individual researchers to specifically qualify information
+provided in knowledge databases, have not been established yet, which allow individual researchers to specifically qualify information
+provided in knowledge databases, we developed a novel method. Assessment and
+cross validation of the current knowledge regarding proteins presented in Swiss-Prot
+by this linguistic analysis yielded results, which can be hardly achieved by
+any sort of peer evaluation procedure. In line with this, it is also not
+surprising that only in selected cases a strong correlation between results of
+the presented peer data and <italic>pfs</italic> characterization became apparent. Moreover, assignment of <italic>pfs</italic> can be easily adjusted to validate other scientific databases,
+which, for example, accumulate large amounts of textual descriptions or papers. 
+In the context of annotated protein data, <italic>pfs</italic> can now be employed to determine the knowledge status of large sets of proteins
+or groups of homologous proteins as well as to tentatively assign potential functions
+to any proteome.</p><p>Considering the impact on daily
+research, we propose that <italic>pfs</italic> is
+appended to protein identifiers within a sequence comparison result list. In
+this way, nonexperts in a particular field quickly obtain a ranked listing of
+knowledge distribution when examining the hit list. In addition, tagging
+protein identifiers with <italic>pfs</italic> are most
+helpful for identifying links, which guide one to the most informative database
+entry. Hence, we regard <italic>pfs</italic> as an
+important improvement for accelerating data mining strategies and to providing
+new avenues for evaluating data derived from genomic and proteomic projects. In
+the near future, this tool may become an invaluable tool for curators of
+knowledge databases, primarily to earmark entries which are of minor quality,
+in order to either eliminate the entry or to improve it during a subsequent
+update.</p></sec></body><back><ack><title>Acknowledgments</title><p>We thank Natalie Sampson
+(Institute for Biomedical Aging Research), Stephan Reitinger, and Julius
+Halaschek-Wiener (both University of British Columbia at Vancouver) for fruitful discussions and
+careful reading of the manuscript. This work was supported by Grant P15909-N04
+of the Austrian Science Foundation (FWF). G&#x000fc;nter Lepperdinger is an APART
+fellow of the Austrian Academy
+of Sciences and
+supported by the Jubilee Fund of the Austrian National Bank (OeNB 12518) and
+the Austrian Science Fund, FWF (FSP093).</p></ack><glossary><title>Abbreviations</title><def-list><def-item><term><italic>Pfs</italic>: </term><def><p>Protein's function
+score</p></def></def-item><def-item><term>BLASTP: </term><def><p>Basic local
+alignment search tool.</p></def></def-item></def-list></glossary><ref-list><ref id="B1"><label>1</label><element-citation publication-type="journal"><collab>International Human Genome Sequencing Consortium</collab><article-title>Finishing the euchromatic sequence of the human genome</article-title><source><italic>Nature</italic></source><year>2004</year><volume>431</volume><issue>7011</issue><fpage>931</fpage><lpage>945</lpage><pub-id pub-id-type="pmid">15496913</pub-id></element-citation></ref><ref id="B2"><label>2</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Imanishi</surname><given-names>T</given-names></name><name><surname>Itoh</surname><given-names>T</given-names></name><name><surname>Suzuki</surname><given-names>Y</given-names></name><etal/></person-group><article-title>Integrative annotation of 21,037 human genes validated by full-length cDNA clones</article-title><source><italic>PLoS Biology</italic></source><year>2004</year><volume>2</volume><issue>6</issue><fpage>p. e162</fpage><pub-id pub-id-type="pmid">15103394</pub-id></element-citation></ref><ref id="B3"><label>3</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Apweiler</surname><given-names>R</given-names></name></person-group><article-title>Functional information in SWISS-PROT: the basis for large-scale characterisation of protein sequences</article-title><source><italic>Briefings in Bioinformatics</italic></source><year>2001</year><volume>2</volume><issue>1</issue><fpage>9</fpage><lpage>18</lpage><pub-id pub-id-type="pmid">11465066</pub-id></element-citation></ref><ref id="B4"><label>4</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Camon</surname><given-names>E</given-names></name><name><surname>Magrane</surname><given-names>M</given-names></name><name><surname>Barrell</surname><given-names>D</given-names></name><etal/></person-group><article-title>The Gene Ontology Annotation (GOA) database: sharing knowledge in Uniprot with Gene Ontology</article-title><source><italic>Nucleic Acids Research</italic></source><year>2004</year><volume>32, database issue</volume><fpage>D262</fpage><lpage>D266</lpage><pub-id pub-id-type="pmid">14681408</pub-id></element-citation></ref><ref id="B5"><label>5</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Peri</surname><given-names>S</given-names></name><name><surname>Navarro</surname><given-names>JD</given-names></name><name><surname>Kristiansen</surname><given-names>TZ</given-names></name><etal/></person-group><article-title>Human protein reference database as a discovery resource for proteomics</article-title><source><italic>Nucleic Acids Research</italic></source><year>2004</year><volume>32, database issue</volume><fpage>D497</fpage><lpage>D501</lpage><pub-id pub-id-type="pmid">14681466</pub-id></element-citation></ref><ref id="B6"><label>6</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Boeckmann</surname><given-names>B</given-names></name><name><surname>Blatter</surname><given-names>M-C</given-names></name><name><surname>Famiglietti</surname><given-names>L</given-names></name><etal/></person-group><article-title>Protein variety and functional diversity: Swiss-Prot annotation in its biological context</article-title><source><italic>Comptes Rendus Biologies</italic></source><year>2005</year><volume>328</volume><issue>10-11</issue><fpage>882</fpage><lpage>899</lpage><pub-id pub-id-type="pmid">16286078</pub-id></element-citation></ref><ref id="B7"><label>7</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Apweiler</surname><given-names>R</given-names></name><name><surname>Bairoch</surname><given-names>A</given-names></name><name><surname>Wu</surname><given-names>CH</given-names></name><etal/></person-group><article-title>UniProt: the Universal Protein knowledgebase</article-title><source><italic>Nucleic Acids Research</italic></source><year>2004</year><volume>32, database issue</volume><fpage>D115</fpage><lpage>D119</lpage><pub-id pub-id-type="pmid">14681372</pub-id></element-citation></ref><ref id="B8"><label>8</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Junker</surname><given-names>VL</given-names></name><name><surname>Apweiler</surname><given-names>R</given-names></name><name><surname>Bairoch</surname><given-names>A</given-names></name></person-group><article-title>Representation of functional information in the SWISS-PROT data bank</article-title><source><italic>Bioinformatics</italic></source><year>1999</year><volume>15</volume><issue>12</issue><fpage>1066</fpage><lpage>1067</lpage><pub-id pub-id-type="pmid">10746001</pub-id></element-citation></ref><ref id="B9"><label>9</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Riley</surname><given-names>ML</given-names></name><name><surname>Schmidt</surname><given-names>T</given-names></name><name><surname>Wagner</surname><given-names>C</given-names></name><name><surname>Mewes</surname><given-names>H-W</given-names></name><name><surname>Frishman</surname><given-names>D</given-names></name></person-group><article-title>The PEDANT genome database in 2005</article-title><source><italic>Nucleic Acids Research</italic></source><year>2005</year><volume>33, database issue</volume><fpage>D308</fpage><lpage>D310</lpage><pub-id pub-id-type="pmid">15608204</pub-id></element-citation></ref><ref id="B10"><label>10</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Zhang</surname><given-names>Y</given-names></name><name><surname>Yin</surname><given-names>Y</given-names></name><name><surname>Chen</surname><given-names>Y</given-names></name><etal/></person-group><article-title>PCAS&#x02014;a precomputed proteome annotation database resource</article-title><source><italic>BMC Genomics</italic></source><year>2003</year><volume>4, article 42</volume><fpage>1</fpage><lpage>7</lpage><pub-id pub-id-type="pmid">12529184</pub-id></element-citation></ref><ref id="B11"><label>11</label><element-citation publication-type="journal"><person-group person-group-type="author"><name><surname>Bairoch</surname><given-names>A</given-names></name><name><surname>Apweiler</surname><given-names>R</given-names></name><name><surname>Wu</surname><given-names>CH</given-names></name><etal/></person-group><article-title>The Universal Protein Resource (UniProt)</article-title><source><italic>Nucleic Acids Research</italic></source><year>2005</year><volume>33, database issue</volume><fpage>D154</fpage><lpage>D159</lpage><pub-id pub-id-type="pmid">15608167</pub-id></element-citation></ref></ref-list></back><floats-group><fig id="fig1" position="float"><label>Figure 1</label><caption><p>
+<italic>Computation of <italic>pfs.</italic> (A)</italic>
+<italic>pfs</italic> was calculated with regard to the validity of bibliographic
+citations as well
+as a description and comments section. In line 9, the FUNCTION and CATALYTIC
+ACTIVITY records were evaluated. In step 2, automated entries resulting from
+large-scale experimental approaches were detached from further analysis. (B) Section 
+evaluation. In every section,
+every single sentence was evaluated independently. Lines 12&#x02013;14 are required in
+case literature citations contain down-weighting phrases, yet conclusions regarding
+functional properties of a protein have eventually been made by mere resemblance
+at the primary sequence level (Swiss-Prot term: &#x0201c;BY SIMILARITY&#x0201d;).</p></caption><graphic xlink:href="ABI2008-897019.001"/></fig><table-wrap id="tab1" position="float"><label>Table 1</label><caption><p>
+<italic>Expressions
+and corresponding weights used in pfs calculation:</italic>
+terminology of devaluating meaning frequently used in
+Swiss-Prot entries, which were applied in (1).</p></caption><table frame="hsides" rules="groups"><tbody><tr><td align="left" rowspan="1" colspan="1">Unknown</td><td align="center" rowspan="1" colspan="1">0.0</td></tr><tr><td align="left" rowspan="1" colspan="1">Not known</td><td align="center" rowspan="1" colspan="1">0.0</td></tr><tr><td align="left" rowspan="1" colspan="1">Not yet known</td><td align="center" rowspan="1" colspan="1">0.0</td></tr><tr><td align="left" rowspan="1" colspan="1">unnamed </td><td align="center" rowspan="1" colspan="1">0.0</td></tr><tr><td align="left" rowspan="1" colspan="1">Uncharacterized</td><td align="center" rowspan="1" colspan="1">0.0</td></tr><tr><td align="left" rowspan="1" colspan="1">Potential</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Not clear</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Not yet clear</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">By similarity</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Putative</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Similar to</td><td align="center" rowspan="1" colspan="1"> 0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Possible</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Seems to</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Thought to</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Could be</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Uncertain</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Potentially</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Might</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">May</td><td align="center" rowspan="1" colspan="1">0.5</td></tr><tr><td align="left" rowspan="1" colspan="1">Presumably</td><td align="center" rowspan="1" colspan="1">0.75</td></tr><tr><td align="left" rowspan="1" colspan="1">Probably</td><td align="center" rowspan="1" colspan="1">0.75</td></tr><tr><td align="left" rowspan="1" colspan="1">Probable </td><td align="center" rowspan="1" colspan="1">0.75</td></tr></tbody></table></table-wrap><table-wrap id="tab2" position="float"><label>Table 2</label><caption><p>
+<italic>Peer survey</italic>. 
+30 randomly picked Swiss-Prot entries (accession number: AccNum) were evaluated
+by trained biologists (undergraduate: un; PhD student: Ph; postdoctoral
+fellows: po; principal investigators: PI). Grades given for the provided
+information, in particular concerning functional properties as exemplified
+within an entry were &#x0201c;low&#x0201d; (L), &#x0201c;medium&#x0201d; (M) or &#x0201c;high&#x0201d; (H). The concordance of the ranking
+assigned by the peers is depicted (maj %), pfs: protein
+function score.</p></caption><graphic xlink:href="ABI2008-897019.002"/></table-wrap><table-wrap id="tab3" position="float"><label>Table 3</label><caption><p>
+<italic> pfs analysis of Swiss-Prot
+entries</italic>. 
+Absolute numbers of individual entries that were
+grouped according to computed <italic>pfs</italic> value are
+shown for the most prominent species in Swiss-Prot.</p></caption><table frame="hsides" rules="groups"><thead><tr><th align="center" colspan="6" rowspan="1">
+<italic>pfs</italic>
+</th><th align="left" rowspan="1" colspan="1">
+<italic>Species</italic>
+</th></tr><tr><th align="left" rowspan="1" colspan="1">
+<italic>n</italic>
+</th><th align="center" rowspan="1" colspan="1">0 </th><th align="center" rowspan="1" colspan="1"> &#x0003c;1 </th><th align="center" rowspan="1" colspan="1"> 1-2 </th><th align="center" rowspan="1" colspan="1"> &#x0003e;2 </th><th align="center" rowspan="1" colspan="1"> 3 </th><th align="left" rowspan="1" colspan="1">
+</th></tr></thead><tbody><tr><td align="left" rowspan="1" colspan="1">17169</td><td align="center" rowspan="1" colspan="1">880</td><td align="center" rowspan="1" colspan="1">956</td><td align="center" rowspan="1" colspan="1">4973</td><td align="center" rowspan="1" colspan="1">11240</td><td align="center" rowspan="1" colspan="1">5238</td><td align="left" rowspan="1" colspan="1">
+<italic>Homo sapiens</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">13826</td><td align="center" rowspan="1" colspan="1">441</td><td align="center" rowspan="1" colspan="1">480</td><td align="center" rowspan="1" colspan="1">5326</td><td align="center" rowspan="1" colspan="1">8020</td><td align="center" rowspan="1" colspan="1">3545</td><td align="left" rowspan="1" colspan="1">
+<italic>Mus musculus</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">6493</td><td align="center" rowspan="1" colspan="1">1609</td><td align="center" rowspan="1" colspan="1">1650</td><td align="center" rowspan="1" colspan="1">941</td><td align="center" rowspan="1" colspan="1">3902</td><td align="center" rowspan="1" colspan="1">2470</td><td align="left" rowspan="1" colspan="1">
+<italic>Saccharomyces cerevisiae</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">6312</td><td align="center" rowspan="1" colspan="1">123</td><td align="center" rowspan="1" colspan="1">138</td><td align="center" rowspan="1" colspan="1">1710</td><td align="center" rowspan="1" colspan="1">4464</td><td align="center" rowspan="1" colspan="1">2278</td><td align="left" rowspan="1" colspan="1">
+<italic>Rattus norvegicus</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">6065</td><td align="center" rowspan="1" colspan="1">202</td><td align="center" rowspan="1" colspan="1">594</td><td align="center" rowspan="1" colspan="1">2233</td><td align="center" rowspan="1" colspan="1">3238</td><td align="center" rowspan="1" colspan="1">1613</td><td align="left" rowspan="1" colspan="1">
+<italic>Arabidopsis thaliana</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">4402</td><td align="center" rowspan="1" colspan="1">955</td><td align="center" rowspan="1" colspan="1">1024</td><td align="center" rowspan="1" colspan="1">1117</td><td align="center" rowspan="1" colspan="1">2261</td><td align="center" rowspan="1" colspan="1">1661</td><td align="left" rowspan="1" colspan="1">
+<italic>Eschericia coli</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">4272</td><td align="center" rowspan="1" colspan="1">130</td><td align="center" rowspan="1" colspan="1">145</td><td align="center" rowspan="1" colspan="1">2454</td><td align="center" rowspan="1" colspan="1">1673</td><td align="center" rowspan="1" colspan="1">995</td><td align="left" rowspan="1" colspan="1">
+<italic>Bos taurus</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">3072</td><td align="center" rowspan="1" colspan="1">657</td><td align="center" rowspan="1" colspan="1">797</td><td align="center" rowspan="1" colspan="1">1310</td><td align="center" rowspan="1" colspan="1">965</td><td align="center" rowspan="1" colspan="1">609</td><td align="left" rowspan="1" colspan="1">
+<italic>Caenorhabditis elegans</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">2860</td><td align="center" rowspan="1" colspan="1">753</td><td align="center" rowspan="1" colspan="1">760</td><td align="center" rowspan="1" colspan="1">641</td><td align="center" rowspan="1" colspan="1">1459</td><td align="center" rowspan="1" colspan="1">940</td><td align="left" rowspan="1" colspan="1">
+<italic>Bacillus subtilis</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">2612</td><td align="center" rowspan="1" colspan="1">17</td><td align="center" rowspan="1" colspan="1">19</td><td align="center" rowspan="1" colspan="1">580</td><td align="center" rowspan="1" colspan="1">2013</td><td align="center" rowspan="1" colspan="1">1031</td><td align="left" rowspan="1" colspan="1">
+<italic>Drosophila melanogaster</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">2199</td><td align="center" rowspan="1" colspan="1">49</td><td align="center" rowspan="1" colspan="1">56</td><td align="center" rowspan="1" colspan="1">1118</td><td align="center" rowspan="1" colspan="1">1025</td><td align="center" rowspan="1" colspan="1">515</td><td align="left" rowspan="1" colspan="1">
+<italic>Xenopus laevis</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1935</td><td align="center" rowspan="1" colspan="1">58</td><td align="center" rowspan="1" colspan="1">63</td><td align="center" rowspan="1" colspan="1">1656</td><td align="center" rowspan="1" colspan="1">216</td><td align="center" rowspan="1" colspan="1">107</td><td align="left" rowspan="1" colspan="1">
+<italic>Pongo pygmaeus</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1837</td><td align="center" rowspan="1" colspan="1">21</td><td align="center" rowspan="1" colspan="1">25</td><td align="center" rowspan="1" colspan="1">597</td><td align="center" rowspan="1" colspan="1">1215</td><td align="center" rowspan="1" colspan="1">652</td><td align="left" rowspan="1" colspan="1">
+<italic>Gallus gallus</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1774</td><td align="center" rowspan="1" colspan="1">421</td><td align="center" rowspan="1" colspan="1">460</td><td align="center" rowspan="1" colspan="1">1090</td><td align="center" rowspan="1" colspan="1">224</td><td align="center" rowspan="1" colspan="1">136</td><td align="left" rowspan="1" colspan="1">
+<italic>Haemophilus influenzae</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1652</td><td align="center" rowspan="1" colspan="1">47</td><td align="center" rowspan="1" colspan="1">54</td><td align="center" rowspan="1" colspan="1">900</td><td align="center" rowspan="1" colspan="1">698</td><td align="center" rowspan="1" colspan="1">481</td><td align="left" rowspan="1" colspan="1">
+<italic>Salmonella typhimurium</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1536</td><td align="center" rowspan="1" colspan="1">36</td><td align="center" rowspan="1" colspan="1">43</td><td align="center" rowspan="1" colspan="1">982</td><td align="center" rowspan="1" colspan="1">511</td><td align="center" rowspan="1" colspan="1">211</td><td align="left" rowspan="1" colspan="1">
+<italic>Brachydanio rerio</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1420</td><td align="center" rowspan="1" colspan="1">410</td><td align="center" rowspan="1" colspan="1">495</td><td align="center" rowspan="1" colspan="1">770</td><td align="center" rowspan="1" colspan="1">155</td><td align="center" rowspan="1" colspan="1">107</td><td align="left" rowspan="1" colspan="1">
+<italic>Mycobacterium tuberculosis</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1401</td><td align="center" rowspan="1" colspan="1">6</td><td align="center" rowspan="1" colspan="1">20</td><td align="center" rowspan="1" colspan="1">489</td><td align="center" rowspan="1" colspan="1">892</td><td align="center" rowspan="1" colspan="1">412</td><td align="left" rowspan="1" colspan="1">
+<italic>Oryza sativa</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1234</td><td align="center" rowspan="1" colspan="1">1</td><td align="center" rowspan="1" colspan="1">2</td><td align="center" rowspan="1" colspan="1">256</td><td align="center" rowspan="1" colspan="1">976</td><td align="center" rowspan="1" colspan="1">586</td><td align="left" rowspan="1" colspan="1">
+<italic>Sus scrofa</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">1226</td><td align="center" rowspan="1" colspan="1">26</td><td align="center" rowspan="1" colspan="1">36</td><td align="center" rowspan="1" colspan="1">744</td><td align="center" rowspan="1" colspan="1">446</td><td align="center" rowspan="1" colspan="1">324</td><td align="left" rowspan="1" colspan="1">
+<italic>Pseudomonas aeruginosa</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">919</td><td align="center" rowspan="1" colspan="1">3</td><td align="center" rowspan="1" colspan="1">11</td><td align="center" rowspan="1" colspan="1">829</td><td align="center" rowspan="1" colspan="1">79</td><td align="center" rowspan="1" colspan="1">51</td><td align="left" rowspan="1" colspan="1">
+<italic>Yersinia pestis</italic>
+</td></tr><tr><td align="left" rowspan="1" colspan="1">
+<bold>283454</bold>
+</td><td align="center" rowspan="1" colspan="1">
+<bold>14317</bold>
+</td><td align="center" rowspan="1" colspan="1">
+<bold>17142</bold>
+</td><td align="center" rowspan="1" colspan="1">
+<bold>165127</bold>
+</td><td align="center" rowspan="1" colspan="1">
+<bold>101185</bold>
+</td><td align="center" rowspan="1" colspan="1">
+<bold>59443</bold>
+</td><td align="left" rowspan="1" colspan="1">
+<bold>Total</bold>
+</td></tr></tbody></table></table-wrap></floats-group></article>

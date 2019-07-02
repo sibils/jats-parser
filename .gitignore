@@ -1,0 +1,10 @@
+data2/
+mv-datafiles.sh
+mylog
+mylog.2
+mylog.old
+mystats
+mystruc
+out/
+stats-fig.txt
+statstxt
