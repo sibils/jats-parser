@@ -8,8 +8,11 @@ See also https://lxml.de/parsing.html
 ## How to use
 
 ### process_xml.py
+
 Turns a PMC publication file (in XML JATS format) into json file written on the disk and send some stats on stdout
+
 The *data* diectory contains some XML JATS publication files copied from  Europe PMC for test purpose
+
 The json output is written in the *out* subirectory
 
 **Usage**
@@ -24,9 +27,13 @@ Parsing a list of files
     find data -name "*.xml" -exec python ./process_xml.py {} \;
 
 ### jsonpmc_httpserver.py
+
 Simple http server providing a json version of a publication given a pmcid.
+
 The server listen http requests on port 8088 and responds ro requests like _/parse/pmc/{som pmcid}_ .
+
 The server retrieves the XML JAT version of the corresponding publication by calling the ebi API.
+
 It then uses **process_xml.py** to parse the XML. The response is a json version of the publication.
 
 **Usage**
