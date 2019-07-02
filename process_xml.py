@@ -10,6 +10,7 @@ import json
 from optparse import OptionParser
 from datetime import datetime
 from lxml import etree
+from unidecode import unidecode
 
 
 
@@ -53,6 +54,21 @@ def get_fig_parents(fname, someroot):
 		line = 'fig-stats' + '\t' + fname + '\t<' + p + '>:' + str(parents[p])
 		lines.append(line)
 	return lines
+
+def get_tw_parents(fname, someroot):
+	parents={}
+	tws = someroot.xpath('/article/body//table-wrap')
+	if tws is not None:
+		for tw in tws:
+			parent_tag=tw.getparent().tag
+			if parents.get(parent_tag) is None: parents[parent_tag]=0
+			parents[parent_tag]=parents[parent_tag]+1
+	lines=[]
+	for p in parents:
+		line = 'tw-stats' + '\t' + fname + '\t<' + p + '>:' + str(parents[p])
+		lines.append(line)
+	return lines
+
 
 def get_body_structure(fname, someroot):
 	line = 'pam-struc' + '\t'
@@ -222,8 +238,35 @@ def coalesce(*arg):
 def handle_boxed_text_elements(someroot):
 	bt_list = someroot.xpath('//boxed-text')
 	if bt_list is None: return
+	if bt_list==[]: return
 	for bt in bt_list: bt.getparent().remove(bt)
 	file_status_add_error('WARNING: removed some <boxed-text> element(s)')
+
+
+
+def handle_table_wrap(pmcid, tw):
+	# table label
+	label = ''
+	label_node = tw.find('label')
+	if label_node is not None: label = label_node.text or ''
+	# table caption
+	caption = ''
+	caption_node = tw.find('caption/p')
+	if caption_node is None: caption_node = tw.find('caption/title')
+	if caption_node is not None:
+		caption = clean_string(' '.join(caption_node.itertext()))
+	# table content
+	columns=[]
+	row_values=[]
+	table_tree = tw.find('table')
+	if table_tree is None: table_tree = tw.find('alternatives/table')
+	if table_tree is not None:
+		table_xml = etree.tostring(table_tree)
+		#columns, row_values = table_to_df(table_xml)
+	return {'tag': 'table', 'label': label,
+			'caption': caption,
+			'table_columns': columns,
+			'table_values': row_values}
 
 
 # modifies the original XML by
@@ -281,11 +324,15 @@ def handle_fig(pmcid, fig):
 
 def handle_paragraph(pmcid,el):
 	contentList=[]
-	figs = el.xpath('fig')
-	if figs is not None:
-		for fig in figs:
-			contentList.append(handle_fig(pmcid,fig))
-			fig.getparent().remove(fig)
+	#subs = el.xpath([]'fig','table-wrap')
+	#if subs is not None:
+	for sub_el in el.iterchildren(['fig','table-wrap']):
+		if sub_el.tag == 'fig':
+			contentList.append(handle_fig(pmcid,sub_el))
+		elif sub_el.tag == 'table-wrap':
+			contentList.append(handle_table_wrap(pmcid,sub_el))
+		sub_el.getparent().remove(sub_el)
+
 	content = {'tag': el.tag, 'text': clean_string(' '.join(el.itertext()))}
 	contentList.insert(0,content)
 
@@ -321,6 +368,13 @@ def handle_body_section_flat(pmcid, sec, level, implicit, block_id):
 			block_id[-1] = block_id[-1] + 1
 			content['id'] = build_id(block_id)
 			mainSection['contents'].append(content)
+
+		elif el.tag == 'table-wrap':
+			content = handle_table_wrap(pmcid,el)
+			block_id[-1] = block_id[-1] + 1
+			content['id'] = build_id(block_id)
+			mainSection['contents'].append(content)
+
 		else:
 			content = {'tag': el.tag, 'text': clean_string(' '.join(el.itertext()))}
 			block_id[-1] = block_id[-1] + 1
@@ -414,7 +468,9 @@ def parse_PMC_XML_core(xmlstr, root):
 		block_id[-1] = block_id[-1] + 1
 	dict_doc['sections'] = sections
 
-	weHaveContentOutOfSections = len(root.xpath('/article/body/p'))>0
+	non_sec_body_children = root.xpath('/article/body')[0].iterchildren(['p', 'fig', 'table-wrap'])
+	weHaveContentOutOfSections = sum(1 for el in non_sec_body_children) > 0
+	#weHaveContentOutOfSections = len(root.xpath('/article/body/p'))>0
 	if weHaveContentOutOfSections:
 		implicitSec = root.xpath('/article/body')[0]
 		sectionList = handle_body_section_flat(dict_doc['_id'], implicitSec, 1, True, block_id)
@@ -454,6 +510,11 @@ def main():
 
 	normal = True
 
+	lines = get_fig_parents(input_file,root)
+	lines.extend(get_tw_parents(input_file,root))
+	for l in lines: print(l)
+
+
 	if normal:
 		dict_doc = parse_PMC_XML_core(xmlstr,root)
 		if len(dict_doc['sections'])<2: file_status_add_error("ERROR: no section after title")
@@ -465,8 +526,6 @@ def main():
 	if normal:
 		print(get_body_structure(input_file,root))
 
-	lines = get_fig_parents(input_file,root)
-	for l in lines: print(l)
 
 
 	if normal:
