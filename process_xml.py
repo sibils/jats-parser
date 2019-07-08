@@ -83,6 +83,14 @@ def get_body_structure(fname, someroot):
 			line += el.tag + ','
 	return line
 
+def get_keywords(someroot):
+	kwd_list = someroot.xpath('/article//kwd')
+	if kwd_list is None: return []
+	result = []
+	for k in kwd_list:
+		result.append(clean_string(' '.join([t for t in k.itertext()])))
+	return result
+
 def get_multiple_texts_from_xpath(someroot, somepath, withErrorOnNoValue):
 	result = ''
 	x = someroot.xpath(somepath)
@@ -343,7 +351,10 @@ def handle_body_section_flat(pmcid, sec, level, implicit, block_id):
 	id = ''.join(sec.xpath('@id'))
 	title = ''.join(sec.xpath("title/text()"))
 	label = ''.join(sec.xpath("label/text()"))
-	mainSection = {'implicit':implicit, 'level': level, 'id': build_id(block_id), 'name': clean_string(coalesce(title, label,'')), 'contents':[]}
+	mainSection = {'implicit':implicit, 'level': level, 'id': build_id(block_id),
+		'title': clean_string(coalesce(title,'')),
+		'label': clean_string(coalesce(label,'')),
+		'contents':[]}
 	# we add main section to the list before any other sub sections
 	sectionList.append(mainSection)
 	# print(indent(level) + 'level: ' + str(level) + ' - name: ' + mainSection['name'])
@@ -353,6 +364,8 @@ def handle_body_section_flat(pmcid, sec, level, implicit, block_id):
 			block_id[-1] = block_id[-1] + 1
 			sectionList.extend(handle_body_section_flat(pmcid, el, level + 1, False, block_id))
 		elif el.tag == 'title':
+			continue
+		elif el.tag == 'label':
 			continue
 		elif isinstance(el,etree._Comment):
 			continue
@@ -459,6 +472,7 @@ def parse_PMC_XML_core(xmlstr, root):
 	dict_doc['endPage'] = lp
 	dict_doc['medlinePgn'] = build_medlinePgn(fp,lp)
 	dict_doc['abstract'] = get_abstract(root)
+	dict_doc['keywords'] = get_keywords(root)
 	sections = []
 	block_id.append(1)
 	sections.append({'implicit':True, 'level':1, 'id':'1', 'name':'Title', 'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['full_title']}]})
