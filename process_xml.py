@@ -214,7 +214,7 @@ def get_initials(multiple_names):
 	return initials
 
 def clean_string(s):
-	# replaces new line, unbreakable space, TAB with SPACE and strip the fial string
+	# replaces new line, unbreakable space, TAB with SPACE and strip the final string
 	return s.replace('\n', ' ').replace(u'\u00a0', ' ').replace('\t', ' ').strip()
 
 
@@ -253,16 +253,8 @@ def handle_boxed_text_elements(someroot):
 
 
 def handle_table_wrap(pmcid, tw):
-	# table label
-	label = ''
-	label_node = tw.find('label')
-	if label_node is not None: label = label_node.text or ''
-	# table caption
-	caption = ''
-	caption_node = tw.find('caption/p')
-	if caption_node is None: caption_node = tw.find('caption/title')
-	if caption_node is not None:
-		caption = clean_string(' '.join(caption_node.itertext()))
+	label=get_clean_text(tw.find('label'))
+	caption=get_clean_text(tw.find('caption'))
 	# table content
 	columns=[]
 	row_values=[]
@@ -270,70 +262,139 @@ def handle_table_wrap(pmcid, tw):
 	if table_tree is None: table_tree = tw.find('alternatives/table')
 	if table_tree is not None:
 		table_xml = etree.tostring(table_tree)
-		#columns, row_values = table_to_df(table_xml)
+		columns, row_values = table_to_df(table_xml)
 	return {'tag': 'table', 'label': label,
 			'caption': caption,
 			'table_columns': columns,
-			'table_values': row_values}
+			'table_values': row_values,
+			'xml':table_xml.decode("utf-8")}
 
+
+def table_to_df(table_text):
+	table_tree = etree.fromstring(table_text)
+	columns = []
+	for tr in table_tree.xpath('thead/tr'):
+		for c in tr.getchildren():
+			columns.append(' '.join(c.itertext()))
+
+	row_values = []
+	len_rows = []
+	for tr in table_tree.findall('tbody/tr'):
+		es = tr.xpath('td')
+		row_value = [' '.join(e.itertext()) for e in es]
+		len_rows.append(len(es))
+		row_values.append(row_value)
+
+	print('len_rows:' + str(len(len_rows)))
+	if len(len_rows) >= 1:
+		len_row = max(set(len_rows), key=len_rows.count)
+		row_values = [r for r in row_values if len(r) == len_row] # remove row with different length
+		return columns, row_values
+	else:
+		return None, None
+
+def get_clean_text(el):
+	if el is None: return ''
+	return clean_string(' '.join(el.itertext()))
+
+def modify_insert_text_in_sub_element(ins_texts, subel_tag, el):
+	texts=[]
+	texts.extend(ins_texts)
+	subel = el.find(subel_tag) # only first match cos cardinality for caption and label is 0-1
+	if (subel is not None): texts.append(' '.join(subel.itertext()))
+	new_text = clean_string(' '.join(texts))
+	# rebuild subelement with its new text content
+	for subel in el.iterchildren(subel_tag): el.remove(subel)
+	new_subel = etree.SubElement(el, subel_tag)
+	new_subel.text = new_text
+
+# easy way to get value of
+# attribute 'href' or '{http://www.w3.org/1999/xlink}href'
+def get_xlink_href(el):
+	if el is None: return None
+	for k in el.keys():
+		if k[-4:]=='href': return el.get(k)
+	return None
+
+# modifies the original XML by:
+# 1. moving <table-wrap> elements next to their embedding <supplementary_material> element
+# 2. removing <supplementary_material> elements from XML
+# Note: we ignore implicit embedded figure (there may be a figure label, caption, etc...)
+def handle_supplementary_material_elements(someroot):
+	sm_list = someroot.xpath('//supplementary-material')
+	if sm_list is None: return
+	for sm in sm_list:
+		for tw in sm.iterchildren('table-wrap'):
+			sm.addprevious(tw)
+
+		# after moving <table-wrap> elements try build a figure
+		# obj with the remaining content if any
+		label=get_clean_text(sm.find('label'))
+		caption=get_clean_text(sm.find('caption'))
+		media=[ get_xlink_href(m) for m in sm.xpath('media') ]
+		graph=[ get_xlink_href(g) for g in sm.xpath('graphic') ]
+		if (label != '' or caption != '') and (len(media)>0 or len(graph)>0):
+			fig = etree.SubElement(sm.getparent(), 'fig')
+			fig.attrib['id']='implicit-figure'
+			etree.SubElement(fig,'label').text=label
+			etree.SubElement(fig,'caption').text=caption
+			for m in media: etree.SubElement(fig,'media').attrib['href']=m
+			for g in graph: etree.SubElement(fig,'graphic').attrib['href']=g
+
+		# removes supplementary_material which is now unnecesssary
+		sm.getparent().remove(sm)
+
+
+# modifies the original XML by:
+# 1. adding <table-wrap-group> caption and label text to each child <table-wrap> element caption
+# 2. moving <table-wrap> elements next to their embedding <table-wrap-group>
+# 3. removing <table-wrap-group> elements from XML
+def handle_table_wrap_group_elements(someroot):
+	g_list = someroot.xpath('//table-wrap-group')
+	if g_list is None: return
+	for g in g_list:
+		# store table-wrap-group caption and label
+		g_captions=[]
+		for gc in g.iterchildren('caption'): g_captions.append(' '.join(gc.itertext()))
+		g_labels=[]
+		for gl in g.iterchildren('label'): g_labels.append(' '.join(gl.itertext()))
+		for tw in g.xpath('table-wrap'):
+			modify_insert_text_in_sub_element(g_labels, 'label', tw)
+			modify_insert_text_in_sub_element(g_captions, 'caption', tw)
+			# moves tw as the previous sibling of table-wrap-group
+			g.addprevious(tw)
+		# removes fig-group which is now unnecesssary
+		g.getparent().remove(g)
 
 # modifies the original XML by
 # 1. adding <fig-group> caption text to each child <fig> element caption
 # 2. moving <fig> elements next to their embedding <fig-group>
-# 3. removing <fig-group> handle_fig_group_elements
+# 3. removing <fig-group> from elements from XML
 def handle_fig_group_elements(someroot):
 	fg_list = someroot.xpath('//fig-group')
 	if fg_list is None: return
 	for fg in fg_list:
 		# store fig-group caption
 		fg_captions=[]
-		for fgc in fg.iterchildren('caption'):
-			fg_captions.append(' '.join(fgc.itertext()))
+		for fgc in fg.iterchildren('caption'): fg_captions.append(' '.join(fgc.itertext()))
 		for fig in fg.xpath('fig'):
-			# concat fig-group ad fig captions
-			captions=[]
-			captions.extend(fg_captions)
-			cpt = fig.find('caption')
-			if (cpt is not None): captions.append(' '.join(cpt.itertext()))
-			caption = clean_string(' '.join(captions))
-			# rebuild fig caption element with new content
-			for fc in fig.iterchildren('caption'): fig.remove(fc)
-			new_caption = etree.SubElement(fig, 'caption')
-			new_caption.text = caption
+			modify_insert_text_in_sub_element(fg_captions, 'caption', fig)
 			# moves fig as the previous sibling of fig-group
 			fg.addprevious(fig)
 		# removes fig-group which is now unnecesssary
 		fg.getparent().remove(fg)
 
 def handle_fig(pmcid, fig):
-	fig_id = fig.attrib['id']
-
-	fig_label = ''
-	lbl = fig.find('label')
-	if (lbl is not None): fig_label = clean_string(' '.join(lbl.itertext()))
-
-	captions=[]
-	parent = fig.getparent()
-	if (parent.tag=='fig-group'):
-		for pc in parent.iterchildren('caption'):
-			captions.append(' '.join(cpt.itertext()))
-	cpt = fig.find('caption')
-	if (cpt is not None): captions.append(' '.join(cpt.itertext()))
-	caption = clean_string(' '.join(captions))
-
-	img_src='notfound.jpg'
-	graphic = fig.find('graphic')
-	if graphic is not None:
-		href = graphic.get('{http://www.w3.org/1999/xlink}href')
-		if href is not None:
-			img_src = 'https://europepmc.org/articles/PMC' + pmcid + '/bin/' + href + '.jpg'
-
-	return {'tag':'fig', 'text': caption, 'fig_id': fig_id, 'label': fig_label, 'img_src': img_src}
+	fig_id = fig.get('id') or ''
+	fig_label = get_clean_text(fig.find('label'))
+	fig_caption = get_clean_text(fig.find('caption'))
+	media_hrefs = [ get_xlink_href(el) for el in fig.xpath('media') ]
+	graph_hrefs = [ get_xlink_href(el) for el in fig.xpath('graphic') ]
+	#img_src = 'https://europepmc.org/articles/PMC' + pmcid + '/bin/' + href + '.jpg'
+	return {'tag':'fig', 'caption': fig_caption, 'fig_id': fig_id, 'label': fig_label, 'media': media_hrefs, 'graphics': graph_hrefs, 'pmcid':pmcid}
 
 def handle_paragraph(pmcid,el):
 	contentList=[]
-	#subs = el.xpath([]'fig','table-wrap')
-	#if subs is not None:
 	for sub_el in el.iterchildren(['fig','table-wrap']):
 		if sub_el.tag == 'fig':
 			contentList.append(handle_fig(pmcid,sub_el))
@@ -436,6 +497,8 @@ def parse_PMC_XML_core(xmlstr, root):
 		root = etree.fromstring(xmlstr)
 
 	etree.strip_tags(root,'italic')
+	handle_supplementary_material_elements(root)
+	handle_table_wrap_group_elements(root)
 	handle_fig_group_elements(root)
 	handle_boxed_text_elements(root)
 
