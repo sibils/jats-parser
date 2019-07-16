@@ -603,13 +603,11 @@ def parse_PMC_XML_core(xmlstr, root):
 		non_sec_body_children = body.iterchildren(['p', 'fig', 'table-wrap'])
 		weHaveContentOutOfSections = sum(1 for el in non_sec_body_children) > 0
 		if weHaveContentOutOfSections:
-			print("case 1")
 			implicitSec = body
 			sectionList = handle_body_section_flat(dict_doc['_id'], implicitSec, 1, True, block_id)
 			block_id[-1] = block_id[-1] + 1
 			dict_doc['sections'].extend(sectionList)
 		else:
-			print("case 2")
 			for sec in root.xpath('/article/body/sec'):
 				sectionList = handle_body_section_flat(dict_doc['_id'], sec, 1, False, block_id)
 				block_id[-1] = block_id[-1] + 1
