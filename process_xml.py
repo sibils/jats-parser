@@ -25,14 +25,17 @@ def get_file_content(name):
 	f.close()
 	return f_text
 
+# helper function, used for stats printing
 def get_cardinality(n):
 	if n>1: return 'N'
 	return str(n)
 
+# helper function, used for stats printing
 def get_el_cardinality(someroot, somepath):
 	c = get_cardinality(len(someroot.xpath(somepath)))
 	return somepath + ':' + c
 
+# helper function, used for stats printing
 def get_stats(fname, someroot):
 	line = 'pam-stats' + '\t'
 	line += fname + '\t'
@@ -41,6 +44,8 @@ def get_stats(fname, someroot):
 	line += get_el_cardinality(someroot,'/article/body/sec')
 	return line
 
+# helper function, used for stats printing
+# lists the tags of elements containing a <fig> for a given file
 def get_fig_parents(fname, someroot):
 	parents={}
 	figs = someroot.xpath('/article/body//fig')
@@ -55,6 +60,8 @@ def get_fig_parents(fname, someroot):
 		lines.append(line)
 	return lines
 
+# helper function, used for stats printing
+# lists the tags of elements containing a <table-wrap> for a given file
 def get_tw_parents(fname, someroot):
 	parents={}
 	tws = someroot.xpath('/article/body//table-wrap')
@@ -70,6 +77,8 @@ def get_tw_parents(fname, someroot):
 	return lines
 
 
+# helper function, used for stats printing
+# lists the tags of elements that are direct children of <body>
 def get_body_structure(fname, someroot):
 	line = 'pam-struc' + '\t'
 	line += fname + '\t'
@@ -88,27 +97,29 @@ def get_keywords(someroot):
 	if kwd_list is None: return []
 	result = []
 	for k in kwd_list:
-		result.append(clean_string(' '.join([t for t in k.itertext()])))
+		result.append(clean_string(' '.join(k.itertext())))
 	return result
 
 def get_multiple_texts_from_xpath(someroot, somepath, withErrorOnNoValue):
 	result = ''
 	x = someroot.xpath(somepath)
-	if len(x) >= 1:
-		result = clean_string(' '.join([el.text for el in x]))
-	elif withErrorOnNoValue is True:
-		file_status_add_error("ERROR, element not found: " + somepath)
+	for el in x: result += ' '.join(el.itertext())
+	if len(result) >= 1:
+		result=clean_string(result)
+	elif withErrorOnNoValue:
+		file_status_add_error("ERROR, no text for element: " + somepath)
 	return result
 
 def get_text_from_xpath(someroot, somepath, withWarningOnMultipleValues, withErrorOnNoValue):
 	result = ''
 	x = someroot.xpath(somepath)
 	if len(x) >= 1:
-		result = x[0].text
+		result = get_clean_text(x[0])
+		#result = x[0].text
 		if len(x) > 1 and withWarningOnMultipleValues is True :
 			file_status_add_error('WARNING: multiple elements found: ' + somepath)
 	elif withErrorOnNoValue is True:
-		file_status_add_error("ERROR, element not found: " + somepath)
+		file_status_add_error("ERROR, no text for element: " + somepath)
 	return result
 
 def get_pub_date_by_type(someroot,selector,pubtype,format):
@@ -173,10 +184,18 @@ def get_affiliations(someroot):
 	affs = someroot.xpath('/article/front/article-meta/contrib-group/aff')
 	for aff in affs:
 		id=aff.get('id')
-		label=''
-		for el in aff.iterchildren('label'):
-			if el.tag=='label' : label = el.text
-		name = clean_string( ''.join( aff.itertext(['aff','institution','country']) ) )
+		# extract label text and then remove node
+		label_node = aff.find('label')
+		label = get_clean_text(label_node)
+		if label_node is not None: aff.remove(label_node)
+		# try to build name from institut and country
+		institution = get_clean_text(aff.find('institution'))
+		country = get_clean_text(aff.find('country'))
+		if len(institution)>0 and len(country)>0:
+			name = institution + ', ' + country
+		# otherwise build name from any text found in there
+		else:
+			name = get_clean_text(aff)
 		result.append({'id':id, 'label':label, 'name': clean_string(name)})
 	return result
 
@@ -225,13 +244,11 @@ def get_abstract(someroot):
 		content += ' '.join(xi.itertext()) + ' '
 	return clean_string(content)
 
+# helper function, for stats printing
 def indent(level):
 	spaces = ''
 	for i in range(1,level): spaces += '  '
 	return spaces
-
-def do_nothing():
-	return
 
 def coalesce(*arg):
   for el in arg:
@@ -250,6 +267,10 @@ def handle_boxed_text_elements(someroot):
 	for bt in bt_list: bt.getparent().remove(bt)
 	file_status_add_error('WARNING: removed some <boxed-text> element(s)')
 
+# we remove all elements and their subtree having tag in tag_list
+def remove_subtree_of_elements(someroot, tag_list):
+	el_list = someroot.iter(tag_list)
+	for el in el_list: el.getparent().remove(el)
 
 
 def handle_table_wrap(pmcid, tw):
@@ -285,7 +306,6 @@ def table_to_df(table_text):
 		len_rows.append(len(es))
 		row_values.append(row_value)
 
-	print('len_rows:' + str(len(len_rows)))
 	if len(len_rows) >= 1:
 		len_row = max(set(len_rows), key=len_rows.count)
 		row_values = [r for r in row_values if len(r) == len_row] # remove row with different length
@@ -327,8 +347,7 @@ def handle_supplementary_material_elements(someroot):
 		for tw in sm.iterchildren('table-wrap'):
 			sm.addprevious(tw)
 
-		# after moving <table-wrap> elements try build a figure
-		# obj with the remaining content if any
+		# after moving <table-wrap> elements try build a figure obj with the remaining content if any
 		label=get_clean_text(sm.find('label'))
 		caption=get_clean_text(sm.find('caption'))
 		media=[ get_xlink_href(m) for m in sm.xpath('media') ]
@@ -393,21 +412,33 @@ def handle_fig(pmcid, fig):
 	#img_src = 'https://europepmc.org/articles/PMC' + pmcid + '/bin/' + href + '.jpg'
 	return {'tag':'fig', 'caption': fig_caption, 'fig_id': fig_id, 'label': fig_label, 'media': media_hrefs, 'graphics': graph_hrefs, 'pmcid':pmcid}
 
+# a paragraph <p> may contain <fig> and / or <table-wrap> elements.
+# if this is the case figs & tables are extracted from the paragraph, parsed with their own handler
+# and appended as additional contents in the content list returned
 def handle_paragraph(pmcid,el):
 	contentList=[]
 	for sub_el in el.iterchildren(['fig','table-wrap']):
 		if sub_el.tag == 'fig':
+			# parse the inner fig and add result to content list
 			contentList.append(handle_fig(pmcid,sub_el))
 		elif sub_el.tag == 'table-wrap':
+			# parse the inner table and add result to content list
 			contentList.append(handle_table_wrap(pmcid,sub_el))
+		# remove fig / table from paragraph
 		sub_el.getparent().remove(sub_el)
-
+	# now we got rif of any table, fig, so let's build paragraph content and
+	# set result at first rank in content list
 	content = {'tag': el.tag, 'text': clean_string(' '.join(el.itertext()))}
 	contentList.insert(0,content)
-
 	return contentList
 
+# recursive function used to parse the article body.
+# the body tree is traversed depth first:
+# on encountering a section <sec> element, the function calls itself
+# on encountering <p>, <fig> and <table-wrap> elements, dedicated handlers are called
+# on encountering another element, a default handler is used
 def handle_body_section_flat(pmcid, sec, level, implicit, block_id):
+
 	sectionList = []
 	id = ''.join(sec.xpath('@id'))
 	title = ''.join(sec.xpath("title/text()"))
@@ -421,41 +452,52 @@ def handle_body_section_flat(pmcid, sec, level, implicit, block_id):
 	# print(indent(level) + 'level: ' + str(level) + ' - name: ' + mainSection['name'])
 	block_id.append(0)
 	for el in sec:
+
+		# recursive call for any embedded section
 		if el.tag == 'sec':
 			block_id[-1] = block_id[-1] + 1
 			sectionList.extend(handle_body_section_flat(pmcid, el, level + 1, False, block_id))
+
+		# ignore elements handled elsewhere or that are unnecessary
 		elif el.tag == 'title':
 			continue
 		elif el.tag == 'label':
 			continue
 		elif isinstance(el,etree._Comment):
 			continue
-		elif el.tag == 'p': # returns paragraph content item and embedded figures as siblings
+
+		# returns paragraph content plus any embedded figures or tables as sibling contents
+		elif el.tag == 'p':
 			contentList = handle_paragraph(pmcid, el)
 			for content in contentList:
 				block_id[-1] = block_id[-1] + 1
 				content['id'] = build_id(block_id)
 				mainSection['contents'].append(content)
 
-		elif el.tag == 'fig':  # handle figures that are child of <body> or <sec>
+		# handle figures that are child of <body> or <sec>
+		elif el.tag == 'fig':
 			content = handle_fig(pmcid, el)
 			block_id[-1] = block_id[-1] + 1
 			content['id'] = build_id(block_id)
 			mainSection['contents'].append(content)
 
+		# handle tables that are child of <body> or <sec>
 		elif el.tag == 'table-wrap':
 			content = handle_table_wrap(pmcid,el)
 			block_id[-1] = block_id[-1] + 1
 			content['id'] = build_id(block_id)
 			mainSection['contents'].append(content)
 
+		# default handler: just keep tag and get all text
 		else:
 			content = {'tag': el.tag, 'text': clean_string(' '.join(el.itertext()))}
 			block_id[-1] = block_id[-1] + 1
 			content['id'] = build_id(block_id)
 			mainSection['contents'].append(content)
+
 	block_id.pop()
 	return sectionList
+
 
 def build_id(a):
 	#print(a)
@@ -496,12 +538,18 @@ def parse_PMC_XML_core(xmlstr, root):
 	if root is None:
 		root = etree.fromstring(xmlstr)
 
+	# Preprocessing tasks: simplify / clean up of the original xml
+	# To be kept here before any parsing aimed at retrieving data
 	etree.strip_tags(root,'italic')
+	etree.strip_elements(root, 'inline-formula','disp-formula', with_tail=False)
+	#remove_subtree_of_elements(root,['inline-formula','disp-formula'])
 	handle_supplementary_material_elements(root)
 	handle_table_wrap_group_elements(root)
 	handle_fig_group_elements(root)
 	handle_boxed_text_elements(root)
+	# End preprocessing
 
+	# Now retrieve data from refactored XML
 	dict_doc = {}
 	dict_doc['affiliation_list'] = get_affiliations(root)
 	dict_doc['author_list'] = get_authors(root)
@@ -545,19 +593,20 @@ def parse_PMC_XML_core(xmlstr, root):
 		block_id[-1] = block_id[-1] + 1
 	dict_doc['sections'] = sections
 
-	non_sec_body_children = root.xpath('/article/body')[0].iterchildren(['p', 'fig', 'table-wrap'])
-	weHaveContentOutOfSections = sum(1 for el in non_sec_body_children) > 0
-	#weHaveContentOutOfSections = len(root.xpath('/article/body/p'))>0
-	if weHaveContentOutOfSections:
-		implicitSec = root.xpath('/article/body')[0]
-		sectionList = handle_body_section_flat(dict_doc['_id'], implicitSec, 1, True, block_id)
-		block_id[-1] = block_id[-1] + 1
-		dict_doc['sections'].extend(sectionList)
-	else:
-		for sec in root.xpath('/article/body/sec'):
-			sectionList = handle_body_section_flat(dict_doc['_id'], sec, 1, False, block_id)
+	body=root.find('body')
+	if body is not None:
+		non_sec_body_children = body.iterchildren(['p', 'fig', 'table-wrap'])
+		weHaveContentOutOfSections = sum(1 for el in non_sec_body_children) > 0
+		if weHaveContentOutOfSections:
+			implicitSec = body
+			sectionList = handle_body_section_flat(dict_doc['_id'], implicitSec, 1, True, block_id)
 			block_id[-1] = block_id[-1] + 1
 			dict_doc['sections'].extend(sectionList)
+		else:
+			for sec in root.xpath('/article/body/sec'):
+				sectionList = handle_body_section_flat(dict_doc['_id'], sec, 1, False, block_id)
+				block_id[-1] = block_id[-1] + 1
+				dict_doc['sections'].extend(sectionList)
 
 	return dict_doc
 
@@ -616,7 +665,8 @@ def main():
 		if not os.path.exists(subdir):
 			os.makedirs(subdir)
 		output_file += '.json'
-		out_file = codecs.open(subdir + '/' + output_file,'w','utf-8')
+		#out_file = codecs.open(subdir + '/' + output_file,'w','utf-8')
+		out_file = codecs.open(subdir + '/' + output_file,'w','iso-8859-1')
 		out_file.write(json.dumps(dict_doc, sort_keys=True, indent=2))
 		out_file.close()
 
