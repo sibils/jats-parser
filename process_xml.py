@@ -276,9 +276,12 @@ def remove_subtree_of_elements(someroot, tag_list):
 def handle_table_wrap(pmcid, tw):
 	label=get_clean_text(tw.find('label'))
 	caption=get_clean_text(tw.find('caption'))
+	media_hrefs = [ get_xlink_href(el) for el in tw.xpath('media') ]
+	graph_hrefs = [ get_xlink_href(el) for el in tw.xpath('graphic') ]
 	# table content
 	columns=[]
 	row_values=[]
+	table_xml=b''
 	table_tree = tw.find('table')
 	if table_tree is None: table_tree = tw.find('alternatives/table')
 	if table_tree is not None:
@@ -286,6 +289,8 @@ def handle_table_wrap(pmcid, tw):
 		columns, row_values = table_to_df(table_xml)
 	return {'tag': 'table', 'label': label,
 			'caption': caption,
+			'media':media_hrefs,
+			'graphics':graph_hrefs,
 			'table_columns': columns,
 			'table_values': row_values,
 			'xml':table_xml.decode("utf-8")}
@@ -598,11 +603,13 @@ def parse_PMC_XML_core(xmlstr, root):
 		non_sec_body_children = body.iterchildren(['p', 'fig', 'table-wrap'])
 		weHaveContentOutOfSections = sum(1 for el in non_sec_body_children) > 0
 		if weHaveContentOutOfSections:
+			print("case 1")
 			implicitSec = body
 			sectionList = handle_body_section_flat(dict_doc['_id'], implicitSec, 1, True, block_id)
 			block_id[-1] = block_id[-1] + 1
 			dict_doc['sections'].extend(sectionList)
 		else:
+			print("case 2")
 			for sec in root.xpath('/article/body/sec'):
 				sectionList = handle_body_section_flat(dict_doc['_id'], sec, 1, False, block_id)
 				block_id[-1] = block_id[-1] + 1
