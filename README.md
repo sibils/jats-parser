@@ -83,25 +83,19 @@ The parsing of the publication produces a json object. It is a dictionary with t
 **id**
 
 A string identifying the section generated during the parsing process.
-
 Sections in the input XML can embed each other. But in the generated json they are all siblings, flattened in a sequence (the _sections_ array).
-
 The hierarchical structure of the section and of any of its content is reflected in its id.
-
 For instance, a section with id _1.3.2_ comes just after section with id _1.3.1_ and both are subparts of section with id _1.3_ in the original XML.
 
 **level**
 
 Reflects the embedding level of the section in the original XML file.
-
 Sections that are children of the _body_ element in the XML have level 1.
-
 A section that is a child of another _section_ that is a child of the _body_ element of the XML will have level 2.
 
 **implicit**
 
 The XML of many publications do not use sections of use paragraphs ( _p_ element ) outside of any section just below the _body_ element.
-
 In this case, we create an _implicit_ section (equivalent to the body) to keep the json structure consistent.
 The _title_ and _abstract_ sections are set as implicit.
 
@@ -118,11 +112,8 @@ Often empty.
 **contents**
 
 A list of textual elements that are part of the section.
-
 Like sections, the content elements also have an _id_ reflecting their hierachical position in the XML tree.
-
 The _tag_ is the name of the XML element containing the textual element.
-
 The most common tags are paragraphs _p_ , figures _fig_ and tables _table_ .
 The field _caption_ contains the text for _fig_ and _table_ elements.
 The field _text_ contains the text for paragraphs _p_ and other elements.
@@ -171,5 +162,4 @@ J_Entrep_Educ/PMC5985942.nxml , Qual_Saf_Health_Care/PMC2602740.nxml
 ### Encoding
 
 alpha - α is seen as "\u03b1" in shell but as α in browser.
-
 The _unidecode_ method used pubmed_oa_parser.py could also be used to turn greek letters and other special ones into their ascii closest equivalent.
