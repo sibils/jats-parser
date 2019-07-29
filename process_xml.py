@@ -215,7 +215,7 @@ def get_authors(someroot):
 				if el.get('rid') != None: affiliation_list.append(el.get('rid'))
 
 		author = {}
-		author['affiliation_list'] = affiliation_list
+		author['affiliationList'] = affiliation_list
 		author['lastName'] = surname
 		author['firstName'] = givennames
 		author['initials'] = get_initials(givennames)
@@ -291,8 +291,8 @@ def handle_table_wrap(pmcid, tw):
 			'caption': caption,
 			'media':media_hrefs,
 			'graphics':graph_hrefs,
-			'table_columns': columns,
-			'table_values': row_values,
+			'tableColumns': columns,
+			'tableValues': row_values,
 			'xml':table_xml.decode("utf-8")}
 
 
@@ -415,7 +415,7 @@ def handle_fig(pmcid, fig):
 	media_hrefs = [ get_xlink_href(el) for el in fig.xpath('media') ]
 	graph_hrefs = [ get_xlink_href(el) for el in fig.xpath('graphic') ]
 	#img_src = 'https://europepmc.org/articles/PMC' + pmcid + '/bin/' + href + '.jpg'
-	return {'tag':'fig', 'caption': fig_caption, 'fig_id': fig_id, 'label': fig_label, 'media': media_hrefs, 'graphics': graph_hrefs, 'pmcid':pmcid}
+	return {'tag':'fig', 'caption': fig_caption, 'figId': fig_id, 'label': fig_label, 'media': media_hrefs, 'graphics': graph_hrefs, 'pmcid':pmcid}
 
 # a paragraph <p> may contain <fig> and / or <table-wrap> elements.
 # if this is the case figs & tables are extracted from the paragraph, parsed with their own handler
@@ -556,8 +556,8 @@ def parse_PMC_XML_core(xmlstr, root):
 
 	# Now retrieve data from refactored XML
 	dict_doc = {}
-	dict_doc['affiliation_list'] = get_affiliations(root)
-	dict_doc['author_list'] = get_authors(root)
+	dict_doc['affiliationList'] = get_affiliations(root)
+	dict_doc['authorList'] = get_authors(root)
 
 	# note: we use xref to retrieve author affiliations above this line
 	etree.strip_tags(root,'xref')
@@ -570,16 +570,16 @@ def parse_PMC_XML_core(xmlstr, root):
 	dict_doc['journal'] = get_multiple_texts_from_xpath(root, '/article/front/journal-meta/journal-title-group/journal-title', True)
 
 	# note: I did not see any multiple <article-title> elements but we retrieve each element of the hypothetical list just in case
-	dict_doc['full_title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
+	dict_doc['fullTitle'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
 
 	dict_doc['pmid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmid"]', True, False)
 	dict_doc['doi'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="doi"]', True, False)
 	dict_doc['pmcid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, True)
 	dict_doc['_id'] = dict_doc['pmcid']
 
-	dict_doc['publication_date_alt'] = get_pub_date(root, 'd-M-yyyy')
-	dict_doc['publication_date'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
-	dict_doc['publication_year'] = get_pub_date(root, 'yyyy')
+	dict_doc['publicationDateAlt'] = get_pub_date(root, 'd-M-yyyy')
+	dict_doc['publicationDate'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
+	dict_doc['publicationYear'] = get_pub_date(root, 'yyyy')
 	dict_doc['issue'] = get_text_from_xpath(root, '/article/front/article-meta/issue', True, False)
 	dict_doc['volume'] = get_text_from_xpath(root, '/article/front/article-meta/volume', True, False)
 	fp = get_text_from_xpath(root, '/article/front/article-meta/fpage', False, False)
@@ -591,7 +591,7 @@ def parse_PMC_XML_core(xmlstr, root):
 	dict_doc['keywords'] = get_keywords(root)
 	sections = []
 	block_id.append(1)
-	sections.append({'implicit':True, 'level':1, 'id':'1', 'name':'Title', 'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['full_title']}]})
+	sections.append({'implicit':True, 'level':1, 'id':'1', 'name':'Title', 'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['fullTitle']}]})
 	block_id[-1] = block_id[-1] + 1
 	if dict_doc['abstract'] != '':
 		sections.append({'implicit':True, 'level':1, 'id':'2', 'name':'Abstract', 'contents': [{'tag':'p', 'id':'2.1', 'text': dict_doc['abstract']}]})
@@ -622,7 +622,6 @@ def parse_PMC_XML_core(xmlstr, root):
 # - - - - - - - - - - - - - - - - -
 def main():
 # - - - - - - - - - - - - - - - - -
-
 	usage = "%prog file"
 	parser = OptionParser()
 	parser.add_option("-f","--file", dest="filename", help="Process one file for now")
@@ -635,47 +634,36 @@ def main():
 	file_status_init()
 	file_status_set_name(input_file)
 	print('------ ' + str(datetime.now()) + ' ' + input_file)
-
 	xmlstr=get_file_content(input_file)
 	root = etree.fromstring(xmlstr)
-
-	normal = True
 
 	lines = get_fig_parents(input_file,root)
 	lines.extend(get_tw_parents(input_file,root))
 	for l in lines: print(l)
 
-
+	normal = True
 	if normal:
 		dict_doc = parse_PMC_XML_core(xmlstr,root)
 		if len(dict_doc['sections'])<2: file_status_add_error("ERROR: no section after title")
 		if not file_status_ok(): file_status_print()
-
-	if normal:
 		print(get_stats(input_file,root))
-
-	if normal:
 		print(get_body_structure(input_file,root))
-
-
-
-	if normal:
 		output_file='outfile'
 		subdir='out'
 		if 'pmcid' in dict_doc.keys():
 			subdir = subdir + '/' + dict_doc['pmcid'][0:2]
 			output_file = 'pmc'+ dict_doc['pmcid']
-		# if 'pmid' in dict_doc.keys():
-		# 	output_file += '_PMID'+dict_doc['pmid']
 		if not os.path.exists(subdir):
 			os.makedirs(subdir)
 		output_file += '.json'
-		#out_file = codecs.open(subdir + '/' + output_file,'w','utf-8')
-		out_file = codecs.open(subdir + '/' + output_file,'w','iso-8859-1')
+		out_file = codecs.open(subdir + '/' + output_file,'w','utf-8')
 		out_file.write(json.dumps(dict_doc, sort_keys=True, indent=2))
 		out_file.close()
 
 
+# - - - - - - - - - - - - - - - - - - -
+# ignore this, for test purpose only
+# - - - - - - - - - - - - - - - - - - -
 def test():
 	parser = OptionParser()
 	root = etree.XML('<root><some>stuff before</some><fig-group><caption><p>fg caption</p></caption><fig><caption><p>fig 1 caption</p></caption></fig><fig id="totofig"><caption><p>fig 2 caption</p>something else</caption></fig></fig-group>1-hi there<child><a href="toto">2-toto href</a></child>3-something normal<b>4-something in bold</b>some tail</root>')
@@ -687,27 +675,12 @@ def test():
 	with open('./pam.xml', 'wb') as f:
 		f.write(etree.tostring(et))
 
-# 	x = ' '.join(root.itertext())
-#	 	for el in root.iter():
-# 		print(el.tag)
-# 		print(el.text)
-# 	print('now everything:')
- 	#print(root)
-	# does not respect order as we would like
-	# for el in root.iter("*"):
-	# 	print(el.tag)
-	# 	if not el.text is None: print(el.text)
-	# 	if not el.tail is None: print(el.tail)
-
 
 # - - - - - - -
 # globals
 # - - - - - - -
-
 block_id=[]
-
 file_status = file_status_init()
-
 if __name__ == '__main__':
 	#test()
 	main()
