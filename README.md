@@ -65,18 +65,18 @@ https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 
 ### Main object structure
 
-The parsing of the publication produces a json object. It is a dictionary with the follwing keys:
+The parsing of the publication produces a json object. It is a dictionary with the following fields:
 
-* _id: the numeric part of the PMC identifier
-* pmcid, pmid, doi: publication identifiers when available
-* journal, issue, volume, startPage, endPage, medlinePgn, medlineTA: journal infos
-* affiliationList, authorList:
+* _id : the numeric part of the PMC identifier
+* pmcid, pmid, doi : publication identifiers when available
+* journal, issue, volume, startPage, endPage, medlinePgn, medlineTA : journal infos
+* affiliationList, authorList
 * publicationDate, publicationDateAlt
 * articleType
-* keywords: an array of keywords
+* keywords : an array of keywords
 * fullTitle
 * abstract
-* sections: an array of elements with the publication content, the publication title and the abstract are the first two sections in the array (if they exist)
+* sections : an array of elements with the publication content, the publication title and the abstract are the first two sections in the array (if they exist)
 
 ### Section structure
 
@@ -85,17 +85,17 @@ The parsing of the publication produces a json object. It is a dictionary with t
 A string identifying the section generated during the parsing process.
 Sections in the input XML can embed each other. But in the generated json they are all siblings, flattened in a sequence (the _sections_ array).
 The hierarchical structure of the section and of any of its content is reflected in its id.
-For instance, a section with id _1.3.2_ comes just after section with id _1.3.1_ and and both are subparts of section with id _1.3_ in the original XML.
+For instance, a section with id _1.3.2_ comes just after section with id _1.3.1_ and both are subparts of section with id _1.3_ in the original XML.
 
 **level**
 
 Reflects the embedding level of the section in the original XML file.
-Sections that are children of the _<body>_ element in the XML have level 1.
-A section that is a child of another _<section>_ that is a child of the _<body>_ element of the XML will have level 2.
+Sections that are children of the _body_ element in the XML have level 1.
+A section that is a child of another _section_ that is a child of the _body_ element of the XML will have level 2.
 
 **implicit**
 
-The XML of many publications do not use sections of use paragraphs ( _<p>_ element ) outside of any section just below the _<body>_ element. In this case, we create an _implicit_ section (equivalent to the body) to keep the json structure consistent.
+The XML of many publications do not use sections of use paragraphs ( _p_ element ) outside of any section just below the _body_ element. In this case, we create an _implicit_ section (equivalent to the body) to keep the json structure consistent.
 The _title_ and _abstract_ sections are set as implicit.
 
 **label**
@@ -126,13 +126,13 @@ Figures (elements with tag = _fig_) have specific fields:
 * caption : the figure caption as given in the XML
 * graphics, media and pmcid: identifiers allowing to build an URL containing an image of the figure
 
-In XML, _<fig>_ may appear in:
+In XML, _fig_ may appear in:
 
-* <body>, <sec> the moest usual cases
-* <p> in this case, the paragraph is split in several subparts, the figure becoming one of them
-* <fig-group> : is removed from the XML, its tables are handled normally, see Endosc_Int_Open/PMC4423251.xml ,Curr_Health_Sci_J/PMC3945237.xml
-* <boxed-text> : IGNORED. Are out of main body text flow: ignored by removing them
-* <disp-quote> : uses the default handler if not included in p or sec
+* _body_, _sec_ the most usual cases
+* _p_ in this case, the paragraph is split in several subparts, the figure becoming one of them
+* _fig-group_ : is removed from the XML, its tables are handled normally, see Endosc_Int_Open/PMC4423251.xml ,Curr_Health_Sci_J/PMC3945237.xml
+* _boxed-text_ : IGNORED. Are out of main body text flow: ignored by removing them
+* _disp-quote_ : uses the default handler if not included in p or sec
 
 ### Handling tables
 
@@ -145,17 +145,17 @@ Tables (elements with tag = _table_) have specific fields:
 * graphics, media and pmcid: identifiers allowing to build an URL containing an image of the table
 * xml : the XML to be used to display the table in an HTML page
 
-In XML, _<table-wrap>_ may appear in:
+In XML, _table-wrap_ may appear in:
 
-* <sec> : section is the most usual container of a table
-* <body> : in this case, the body is treated as a section
-* <boxed-text>:  is removed from the XML, its tables are handled normally
-* <p> in this case, the paragraph is split in several subparts, the table becoming one of them. i.e. 3_Biotech/PMC3324826.xml
-* <supplementary-material> is removed from the XML, its tables are handled normally, implicit <fig> elements in it are also handled, see Biomark_Cancer/PMC3122269.nxml , Eur_J_Rheumatol/PMC6267743.nxml , Adv_Appl_Bioinform_Chem/PMC3459542.nxml
-* <table-wrap-group> is removed from the XML, its tables are handled normally. Common label and caption tags are dispatched in each table in there. See Front_Genet/PMC3202977.nxml , Hum_Gene_Ther/PMC4442602.nxml ,	Intern_Med/PMC5088533.nxml , J_Hum_Reprod_Sci/PMC2700667.nxml
-* <disp-quote> : An extract or extended quoted passage from another work, usually made typographically distinct from surrounding text. The table caption appears as the _text_ value of the content element with tag _disp-quote_(default handler). See
+* _sec_ : section is the most usual container of a table
+* _body_ : in this case, the body is treated as a section
+* _boxed-text_:  is removed from the XML, its tables are handled normally
+* _p_ in this case, the paragraph is split in several subparts, the table becoming one of them. i.e. 3_Biotech/PMC3324826.xml
+* _supplementary-material_ is removed from the XML, its tables are handled normally, implicit _fig_ elements in it are also handled, see Biomark_Cancer/PMC3122269.nxml , Eur_J_Rheumatol/PMC6267743.nxml , Adv_Appl_Bioinform_Chem/PMC3459542.nxml
+* _table-wrap-group_ is removed from the XML, its tables are handled normally. Common label and caption tags are dispatched in each table in there. See Front_Genet/PMC3202977.nxml , Hum_Gene_Ther/PMC4442602.nxml ,	Intern_Med/PMC5088533.nxml , J_Hum_Reprod_Sci/PMC2700667.nxml
+* _disp-quote_ : An extract or extended quoted passage from another work, usually made typographically distinct from surrounding text. The table caption appears as the _text_ value of the content element with tag _disp-quote_(default handler). See
 J_Entrep_Educ/PMC5985942.nxml , Qual_Saf_Health_Care/PMC2602740.nxml
-* <fig> : IGNORED. A rare case. The table content only appears in the detailed figure popup but not in full text viewer on PMC website, so the table-wrap content ignored in this case. See Pharmaceutics/PMC2997712.nxml
+* _fig_ : IGNORED. A rare case. The table content only appears in the detailed figure popup but not in full text viewer on PMC website, so the table-wrap content ignored in this case. See Pharmaceutics/PMC2997712.nxml
 
 ### Encoding
 
