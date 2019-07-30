@@ -211,8 +211,12 @@ def get_authors(someroot):
 				if el.text != None: surname = clean_string(el.text)
 			elif el.tag == 'given-names':
 				if el.text != None: givennames = clean_string(el.text)
+			# affiliations
 			elif el.tag == 'xref' and el.get('ref-type')=='aff':
 				if el.get('rid') != None: affiliation_list.append(el.get('rid'))
+			# affiliations (alternative)
+			elif el.tag == 'aff':
+				if el.text != None: affiliation_list.append(clean_string(el.text))
 
 		author = {}
 		author['affiliationList'] = affiliation_list
