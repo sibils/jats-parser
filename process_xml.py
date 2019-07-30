@@ -597,10 +597,10 @@ def parse_PMC_XML_core(xmlstr, root):
 	block_id.append(1)
 
 	if dict_doc['fullTitle'] != '':
-		sections.append({'implicit':True, 'level':1, 'id':'1', 'title':'Title', 'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['fullTitle']}]})
+		sections.append({'implicit':True, 'level':1, 'id':'1', 'label':'', 'title':'Title', 'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['fullTitle']}]})
 		block_id[-1] = block_id[-1] + 1
 	if dict_doc['abstract'] != '':
-		sections.append({'implicit':True, 'level':1, 'id':'2', 'title':'Abstract', 'contents': [{'tag':'p', 'id':'2.1', 'text': dict_doc['abstract']}]})
+		sections.append({'implicit':True, 'level':1, 'id':'2', 'label':'', 'title':'Abstract', 'contents': [{'tag':'p', 'id':'2.1', 'text': dict_doc['abstract']}]})
 		block_id[-1] = block_id[-1] + 1
 	dict_doc['sections'] = sections
 
