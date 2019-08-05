@@ -187,7 +187,10 @@ def get_affiliations(someroot):
 		# extract label text and then remove node
 		label_node = aff.find('label')
 		label = get_clean_text(label_node)
-		if label_node is not None: aff.remove(label_node)
+		# !!! DO NOT USE line below: it removes the node tail as well
+		# if label_node is not None: aff.remove(label_node, keep_tail=True)
+		# use line below instead
+		if label_node is not None: label_node.text = ''
 		# try to build name from institut and country
 		institution = get_clean_text(aff.find('institution'))
 		country = get_clean_text(aff.find('country'))
@@ -640,13 +643,11 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 
 # ------------------------------------------
 
-def getPmcFtpAddress(xmlstr):
+def getPmcFtpUrl(xmlstr):
 	root = etree.fromstring(xmlstr)
-	lnk = root.find('/OA/records/record/link')
-	if lnk is not None:
-		return lnk.get('href')
-	else:
-		return None
+	lnk = root.xpath('/OA/records/record/link')
+	if lnk is not None and len(lnk) == 1: return lnk[0].get('href')
+	return None
 
 # - - - - - - - - - - - - - - - - -
 def main():
