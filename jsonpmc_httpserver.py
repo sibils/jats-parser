@@ -1,12 +1,49 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import http.client
-from process_xml import parse_PMC_XML
-
+from ftplib import FTP
+from process_xml import parse_PMC_XML,getPmcFtpUrl
+import tarfile
+import os
 
 def getPmcXml(pmcid):
-    connection = http.client.HTTPSConnection("www.ebi.ac.uk")
-    url = '/europepmc/webservices/rest/PMC' + pmcid + '/fullTextXML'
+
+    os.makedirs('tmp', exist_ok=True)
+
+    ftpurl = getFtpArchiveUrl(pmcid)
+    if ftpurl is None:
+        msg = 'Could not get an ftp archive for pmcid: ' + pmcid
+        return {'status':400, 'reason':msg, 'data':None}
+    targzfile = saveFileFromFtp(ftpurl)
+    if targzfile is None:
+        msg = 'Could not get file from ftp url: ' + ftpurl
+        return {'status':400, 'reason':msg, 'data':None}
+    nxmlfile = getNxmlFileFromArchive(targzfile)
+    if nxmlfile is None:
+        msg = 'Could not extract nxml file from archive: ' + targzfile
+        return {'status':400, 'reason':msg, 'data':None}
+    xmlstr=None
+    with open(nxmlfile, 'r') as nf:
+        xmlstr = nf.read()
+    if xmlstr is None:
+        msg = 'Could not read content from extracted file: ' + nxmlfile
+        return {'status':400, 'reason':msg, 'data':None}
+
+    return {'status':200, 'reason':'OK', 'data':xmlstr}
+
+
+def getNxmlFileFromArchive(archive):
+    with tarfile.open(archive, "r") as tar:
+        for filename in tar.getnames():
+            if filename[-4:] == 'nxml':
+                print(filename)
+                tar.extract(filename, path='tmp')
+                return 'tmp/' + filename
+    return None
+
+def getFtpArchiveUrl(pmcid):
+    connection = http.client.HTTPSConnection("www.ncbi.nlm.nih.gov")
+    url = '/pmc/utils/oa/oa.fcgi?id=' + pmcid
     connection.request("GET", url)
     response = connection.getresponse()
     output={}
@@ -14,8 +51,29 @@ def getPmcXml(pmcid):
     output["reason"]=response.reason
     output["data"]=response.read()
     connection.close()
-    return output
+    ftpurl = None
+    if output["status"] == 200:
+        ftpurl = getPmcFtpUrl(output["data"])
+    return ftpurl
 
+def saveFileFromFtp(ftpurl):
+    #
+    # extract domain, path and filename from url.
+    # Example:
+    # ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_package/20/f2/PMC4804230.tar.gz
+    # ['ftp:', '', 'ftp.ncbi.nlm.nih.gov', 'pub', 'pmc', 'oa_package', '20', 'f2', 'PMC4804230.tar.gz']
+    #
+    url_els=ftpurl.split('/')
+    if len(url_els) < 4: return None
+    domain = url_els[2]
+    remotedir = '/'.join(url_els[3:-1])
+    remotefile = url_els[-1]
+    localfile = 'tmp/' + remotefile
+    with FTP(domain, 'anonymous', 'pamichel@infomaniak.ch') as ftp:
+        if remotedir != '' : ftp.cwd(remotedir)
+        with open(localfile, 'wb') as f:
+            ftp.retrbinary('RETR ' + remotefile, f.write)
+    return localfile
 
 class GP(BaseHTTPRequestHandler):
     def _set_headers(self,statusCode):
@@ -57,7 +115,6 @@ class GP(BaseHTTPRequestHandler):
             msg='handle parsing of pmc file: ' + pmcid
             print(msg)
             output=getPmcXml(pmcid)
-            print(output)
             if output['status']==200:
                 xmlstr=output['data']
                 obj = parse_PMC_XML(xmlstr)
@@ -65,8 +122,7 @@ class GP(BaseHTTPRequestHandler):
                 self.sendResponse(response, 200)
                 return
             else:
-                error_msg  ='EuropePMC server said '
-                error_msg += str(output['status']) + ' - ' + output['reason']
+                error_msg = str(output['status']) + ' - ' + output['reason']
 
         elif self.path[0:11]=='/annot/pmc/':
             parts=self.path[11:].split('?')
