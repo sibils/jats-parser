@@ -219,9 +219,10 @@ def get_authors(someroot):
 				if el.text != None: affiliation_list.append(clean_string(el.text))
 
 		author = {}
-		author['affiliationList'] = affiliation_list
-		author['lastName'] = surname
-		author['firstName'] = givennames
+		author['affiliations'] = affiliation_list
+		author['last_name'] = surname
+		author['first_name'] = givennames
+		author['name'] = (givennames + ' ' + surname).strip()
 		author['initials'] = get_initials(givennames)
 		result.append(author)
 	if len(result)==0: file_status_add_error("WARNING: no authors")
@@ -295,8 +296,8 @@ def handle_table_wrap(pmcid, tw):
 			'caption': caption,
 			'media':media_hrefs,
 			'graphics':graph_hrefs,
-			'tableColumns': columns,
-			'tableValues': row_values,
+			'table_columns': columns,
+			'table_values': row_values,
 			'xml':table_xml.decode("utf-8")}
 
 
@@ -419,7 +420,7 @@ def handle_fig(pmcid, fig):
 	media_hrefs = [ get_xlink_href(el) for el in fig.xpath('media') ]
 	graph_hrefs = [ get_xlink_href(el) for el in fig.xpath('graphic') ]
 	#img_src = 'https://europepmc.org/articles/PMC' + pmcid + '/bin/' + href + '.jpg'
-	return {'tag':'fig', 'caption': fig_caption, 'figId': fig_id, 'label': fig_label, 'media': media_hrefs, 'graphics': graph_hrefs, 'pmcid':pmcid}
+	return {'tag':'fig', 'caption': fig_caption, 'fig_id': fig_id, 'label': fig_label, 'media': media_hrefs, 'graphics': graph_hrefs, 'pmcid':pmcid}
 
 # a paragraph <p> may contain <fig> and / or <table-wrap> elements.
 # if this is the case figs & tables are extracted from the paragraph, parsed with their own handler
@@ -522,8 +523,9 @@ def print_section(s):
 
 # ------------------------------------------
 
-def file_status_init():
-	return {'name':'', 'errors':[]}
+def file_status_reset():
+	file_status['name'] = ''
+	file_status['errors'].clear()
 
 def file_status_set_name(n):
 	file_status['name'] = n
@@ -541,11 +543,21 @@ def file_status_print():
 	print(msg)
 
 def parse_PMC_XML(xmlstr):
-	return parse_PMC_XML_core(xmlstr,None)
+	return parse_PMC_XML_core(xmlstr,None, None)
 
-def parse_PMC_XML_core(xmlstr, root):
+def parse_PMC_XML_core(xmlstr, root, input_file):
 	if root is None:
 		root = etree.fromstring(xmlstr)
+
+	if input_file is None:
+		input_file = '(unknown file name)'
+
+	# (re)init stats variable
+	file_status_reset()
+	file_status_set_name(input_file)
+
+	# (re)init global variable block_id used for building section / block ids
+	block_id.clear()
 
 	# Preprocessing tasks: simplify / clean up of the original xml
 	# To be kept here before any parsing aimed at retrieving data
@@ -558,46 +570,50 @@ def parse_PMC_XML_core(xmlstr, root):
 	handle_boxed_text_elements(root)
 	# End preprocessing
 
-	# Now retrieve data from refactored XML
+
+	# (re)init output variable
 	dict_doc = {}
-	dict_doc['affiliationList'] = get_affiliations(root)
-	dict_doc['authorList'] = get_authors(root)
+
+	# Now retrieve data from refactored XML
+	dict_doc['affiliations'] = get_affiliations(root)
+	dict_doc['authors'] = get_authors(root)
 
 	# note: we use xref to retrieve author affiliations above this line
 	etree.strip_tags(root,'xref')
 
-	dict_doc['articleType'] = root.xpath('/article')[0].get('article-type')
+	dict_doc['article_type'] = root.xpath('/article')[0].get('article-type')
 
 	# note: we can get multiple journal-id elements with different journal-id-type attributes
-	dict_doc['medlineTA'] = get_text_from_xpath(root, '/article/front/journal-meta/journal-id', False, True)
+	dict_doc['medline_ta'] = get_text_from_xpath(root, '/article/front/journal-meta/journal-id', False, True)
 
-	dict_doc['journal'] = get_multiple_texts_from_xpath(root, '/article/front/journal-meta/journal-title-group/journal-title', True)
+	dict_doc['journal'] = get_multiple_texts_from_xpath(root, '/article/front/journal-meta//journal-title', True)
 
 	# note: I did not see any multiple <article-title> elements but we retrieve each element of the hypothetical list just in case
-	dict_doc['fullTitle'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
+	dict_doc['title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
 
 	dict_doc['pmid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmid"]', True, False)
 	dict_doc['doi'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="doi"]', True, False)
 	dict_doc['pmcid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, True)
 	dict_doc['_id'] = dict_doc['pmcid']
 
-	dict_doc['publicationDateAlt'] = get_pub_date(root, 'd-M-yyyy')
-	dict_doc['publicationDate'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
-	dict_doc['publicationYear'] = get_pub_date(root, 'yyyy')
+	dict_doc['publication_date_alt'] = get_pub_date(root, 'd-M-yyyy')
+	dict_doc['publication_date'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
+	dict_doc['pubyear'] = get_pub_date(root, 'yyyy')
 	dict_doc['issue'] = get_text_from_xpath(root, '/article/front/article-meta/issue', True, False)
 	dict_doc['volume'] = get_text_from_xpath(root, '/article/front/article-meta/volume', True, False)
 	fp = get_text_from_xpath(root, '/article/front/article-meta/fpage', False, False)
 	lp = get_text_from_xpath(root, '/article/front/article-meta/lpage', False, False)
-	dict_doc['startPage'] = fp
-	dict_doc['endPage'] = lp
-	dict_doc['medlinePgn'] = build_medlinePgn(fp,lp)
+	dict_doc['start_page'] = fp
+	dict_doc['end_page'] = lp
+	dict_doc['medline_pgn'] = build_medlinePgn(fp,lp)
 	dict_doc['abstract'] = get_abstract(root)
 	dict_doc['keywords'] = get_keywords(root)
+
 	sections = []
 	block_id.append(1)
 
-	if dict_doc['fullTitle'] != '':
-		sections.append({'implicit':True, 'level':1, 'id':'1', 'label':'', 'title':'Title', 'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['fullTitle']}]})
+	if dict_doc['title'] != '':
+		sections.append({'implicit':True, 'level':1, 'id':'1', 'label':'', 'title':'Title', 'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['title']}]})
 		block_id[-1] = block_id[-1] + 1
 	if dict_doc['abstract'] != '':
 		sections.append({'implicit':True, 'level':1, 'id':'2', 'label':'', 'title':'Abstract', 'contents': [{'tag':'p', 'id':'2.1', 'text': dict_doc['abstract']}]})
@@ -624,6 +640,13 @@ def parse_PMC_XML_core(xmlstr, root):
 
 # ------------------------------------------
 
+def getPmcFtpAddress(xmlstr):
+	root = etree.fromstring(xmlstr)
+	lnk = root.find('/OA/records/record/link')
+	if lnk is not None:
+		return lnk.get('href')
+	else:
+		return None
 
 # - - - - - - - - - - - - - - - - -
 def main():
@@ -637,7 +660,7 @@ def main():
 	else:
 		input_file = args[0]
 
-	file_status_init()
+	file_status_reset()
 	file_status_set_name(input_file)
 	print('------ ' + str(datetime.now()) + ' ' + input_file)
 	xmlstr=get_file_content(input_file)
@@ -649,7 +672,7 @@ def main():
 
 	normal = True
 	if normal:
-		dict_doc = parse_PMC_XML_core(xmlstr,root)
+		dict_doc = parse_PMC_XML_core(xmlstr,root,input_file)
 		if len(dict_doc['sections'])<2: file_status_add_error("ERROR: no section after title")
 		if not file_status_ok(): file_status_print()
 		print(get_stats(input_file,root))
@@ -685,8 +708,9 @@ def test():
 # - - - - - - -
 # globals
 # - - - - - - -
+file_status = {'name':'', 'errors':[]}
 block_id=[]
-file_status = file_status_init()
+
 if __name__ == '__main__':
 	#test()
 	main()
