@@ -181,7 +181,7 @@ def build_medlinePgn(fp,lp):
 
 def get_affiliations(someroot):
 	result=[]
-	affs = someroot.xpath('/article/front/article-meta/contrib-group/aff')
+	affs = someroot.xpath('/article/front/article-meta//aff')
 	for aff in affs:
 		id=aff.get('id')
 		# extract label text and then remove node
@@ -199,6 +199,7 @@ def get_affiliations(someroot):
 		# otherwise build name from any text found in there
 		else:
 			name = get_clean_text(aff)
+
 		result.append({'id':id, 'label':label, 'name': clean_string(name)})
 	return result
 
@@ -704,7 +705,6 @@ def test():
 	et = etree.ElementTree(root)
 	with open('./pam.xml', 'wb') as f:
 		f.write(etree.tostring(et))
-
 
 # - - - - - - -
 # globals
