@@ -47,9 +47,10 @@ def getXmlFilenameFromLocalCache(pmcid):
     dir = 'tmp/' + pmcid + '/'
     if os.path.exists(dir):
         filenames = os.listdir(dir)
-        if len(filenames)==1:
-            print("XML file found in local cache for " + pmcid)
-            return dir + filenames[0]
+        for fname in filenames:
+            if fname[-4:] == 'nxml':
+                print("XML file found in local cache for " + pmcid)
+                return dir + fname
     print("No file found in local cache for " + pmcid)
     return None
 
@@ -58,7 +59,6 @@ def getNxmlFileFromArchive(archive):
     with tarfile.open(archive, "r") as tar:
         for filename in tar.getnames():
             if filename[-4:] == 'nxml':
-                print(filename)
                 tar.extract(filename, path='tmp')
                 return 'tmp/' + filename
     return None
