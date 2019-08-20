@@ -283,6 +283,8 @@ def remove_subtree_of_elements(someroot, tag_list):
 
 
 def handle_table_wrap(pmcid, tw):
+	xref_id = tw.get('id') or ''
+	xref_url = 'https://www.ncbi.nlm.nih.gov/pmc/articles/' + pmcid + '/table/' + xref_id
 	label=get_clean_text(tw.find('label'))
 	caption=get_clean_text(tw.find('caption'))
 	media_hrefs = [ get_xlink_href(el) for el in tw.xpath('media') ]
@@ -296,12 +298,10 @@ def handle_table_wrap(pmcid, tw):
 	if table_tree is not None:
 		table_xml = etree.tostring(table_tree)
 		columns, row_values = table_to_df(table_xml)
-	return {'tag': 'table', 'label': label,
-			'caption': caption,
-			'media':media_hrefs,
-			'graphics':graph_hrefs,
-			'table_columns': columns,
-			'table_values': row_values,
+	return {'tag': 'table', 'xref_id': xref_id, 'xref_url': xref_url,
+			'label': label, 'caption': caption,
+			'media':media_hrefs, 'graphics':graph_hrefs,
+			'table_columns': columns, 'table_values': row_values,
 			'xml':table_xml.decode("utf-8")}
 
 
@@ -361,14 +361,15 @@ def handle_supplementary_material_elements(someroot):
 		for tw in sm.iterchildren('table-wrap'):
 			sm.addprevious(tw)
 
-		# after moving <table-wrap> elements try build a figure obj with the remaining content if any
+		# After moving <table-wrap> elements try build a figure obj with the remaining content if any
+		# Note: we create a figure but if can be a table as well...
 		label=get_clean_text(sm.find('label'))
 		caption=get_clean_text(sm.find('caption'))
 		media=[ get_xlink_href(m) for m in sm.xpath('media') ]
 		graph=[ get_xlink_href(g) for g in sm.xpath('graphic') ]
 		if (label != '' or caption != '') and (len(media)>0 or len(graph)>0):
 			fig = etree.SubElement(sm.getparent(), 'fig')
-			fig.attrib['id']='implicit-figure'
+			fig.attrib['id']='' # there is a special handling of figure with no id
 			etree.SubElement(fig,'label').text=label
 			etree.SubElement(fig,'caption').text=caption
 			for m in media: etree.SubElement(fig,'media').attrib['href']=m
@@ -418,13 +419,16 @@ def handle_fig_group_elements(someroot):
 		fg.getparent().remove(fg)
 
 def handle_fig(pmcid, fig):
-	fig_id = fig.get('id') or ''
+	xref_id = fig.get('id') or ''
+	xref_url = 'https://www.ncbi.nlm.nih.gov/pmc/articles/' + pmcid + '/figure/' + xref_id
+	if xref_id == '': xref_url = ''
 	fig_label = get_clean_text(fig.find('label'))
 	fig_caption = get_clean_text(fig.find('caption'))
 	media_hrefs = [ get_xlink_href(el) for el in fig.xpath('media') ]
 	graph_hrefs = [ get_xlink_href(el) for el in fig.xpath('graphic') ]
-	#img_src = 'https://europepmc.org/articles/PMC' + pmcid + '/bin/' + href + '.jpg'
-	return {'tag':'fig', 'caption': fig_caption, 'fig_id': fig_id, 'label': fig_label, 'media': media_hrefs, 'graphics': graph_hrefs, 'pmcid':pmcid}
+	return {'tag':'fig', 'caption': fig_caption, 'xref_url': xref_url,
+			'xref_id': xref_id, 'label': fig_label, 'media': media_hrefs,
+			'graphics': graph_hrefs, 'pmcid':pmcid }
 
 # a paragraph <p> may contain <fig> and / or <table-wrap> elements.
 # if this is the case figs & tables are extracted from the paragraph, parsed with their own handler
