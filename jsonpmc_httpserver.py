@@ -8,28 +8,50 @@ import os
 
 def getPmcXml(pmcid):
 
+    # create localc cache dir if not yet exists
     os.makedirs('tmp', exist_ok=True)
 
-    ftpurl = getFtpArchiveUrl(pmcid)
-    if ftpurl is None:
-        msg = 'Could not get an ftp archive for pmcid: ' + pmcid
-        return {'status':400, 'reason':msg, 'data':None}
-    targzfile = saveFileFromFtp(ftpurl)
-    if targzfile is None:
-        msg = 'Could not get file from ftp url: ' + ftpurl
-        return {'status':400, 'reason':msg, 'data':None}
-    nxmlfile = getNxmlFileFromArchive(targzfile)
+    # try to get the name of the xml file in local cache
+    nxmlfile = getXmlFilenameFromLocalCache(pmcid)
+
+    # if xml file not found locally...
     if nxmlfile is None:
-        msg = 'Could not extract nxml file from archive: ' + targzfile
-        return {'status':400, 'reason':msg, 'data':None}
+
+        # get archive name from remote oa service
+        ftpurl = getFtpArchiveUrl(pmcid)
+        if ftpurl is None:
+            msg = 'Could not get an ftp archive for pmcid: ' + pmcid
+            return {'status':400, 'reason':msg, 'data':None}
+        # copy the ftp archive file (tar.gz) to local cache
+        targzfile = saveFileFromFtp(ftpurl)
+        if targzfile is None:
+            msg = 'Could not get file from ftp url: ' + ftpurl
+            return {'status':400, 'reason':msg, 'data':None}
+        # extract nxml file from archive and save it locally
+        nxmlfile = getNxmlFileFromArchive(targzfile)
+        if nxmlfile is None:
+            msg = 'Could not extract nxml file from archive: ' + targzfile
+            return {'status':400, 'reason':msg, 'data':None}
+
+    # return the content of the nxml file
     xmlstr=None
     with open(nxmlfile, 'r') as nf:
         xmlstr = nf.read()
     if xmlstr is None:
         msg = 'Could not read content from extracted file: ' + nxmlfile
         return {'status':400, 'reason':msg, 'data':None}
-
     return {'status':200, 'reason':'OK', 'data':xmlstr}
+
+
+def getXmlFilenameFromLocalCache(pmcid):
+    dir = 'tmp/' + pmcid + '/'
+    if os.path.exists(dir):
+        filenames = os.listdir(dir)
+        if len(filenames)==1:
+            print("XML file found in local cache for " + pmcid)
+            return dir + filenames[0]
+    print("No file found in local cache for " + pmcid)
+    return None
 
 
 def getNxmlFileFromArchive(archive):
@@ -79,6 +101,7 @@ class GP(BaseHTTPRequestHandler):
     def _set_headers(self,statusCode):
         self.send_response(statusCode)
         self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
     def do_HEAD(self):
