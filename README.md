@@ -1,7 +1,7 @@
 # JATS parsing
 The project contains python scripts parsing the Europe PMC interchange format JATS using the lxml library
 
-See https://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?attr=article-type
+See https://jats.nlm.nih.gov/archiving/tag-library
 
 See also https://lxml.de/parsing.html
 
