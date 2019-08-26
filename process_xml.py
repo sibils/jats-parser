@@ -164,8 +164,8 @@ def get_pub_date(someroot,format):
 	# the precedence order can be changed here
 	selector = '/article/front/article-meta/pub-date'
 	dt = get_pub_date_by_type(someroot, selector, 'epub', format)
-	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'ppub', format)
 	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'pmc-release', format)
+	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'ppub', format)
 	if dt is None: dt = get_pub_date_by_type(someroot, selector, None, format)
 	if dt is None:
 		file_status_add_error('ERROR, element not found: ' + selector)
@@ -651,6 +651,9 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 				sectionList = handle_body_section_flat(dict_doc['_id'], sec, 1, False, block_id)
 				dict_doc['sections'].extend(sectionList)
 				block_id[-1] = block_id[-1] + 1
+
+	# for compatibility reasons
+	dict_doc['pmcid']='PMC' + dict_doc['pmcid']
 
 	return dict_doc
 
