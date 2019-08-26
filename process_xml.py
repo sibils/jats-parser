@@ -253,6 +253,8 @@ def get_abstract(someroot):
 		content += ' '.join(xi.itertext()) + ' '
 	return clean_string(content)
 
+
+
 # helper function, for stats printing
 def indent(level):
 	spaces = ''
@@ -617,16 +619,23 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['abstract'] = get_abstract(root)
 	dict_doc['keywords'] = get_keywords(root)
 
-	sections = []
+	dict_doc['sections'] = []
 	block_id.append(1)
 
 	if dict_doc['title'] != '':
-		sections.append({'implicit':True, 'level':1, 'id':'1', 'label':'', 'title':'Title', 'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['title']}]})
+		dict_doc['sections'].append({
+			'implicit':True, 'level':1, 'id':'1', 'label':'', 'title':'Title',
+			'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['title']}]})
 		block_id[-1] = block_id[-1] + 1
+
 	if dict_doc['abstract'] != '':
-		sections.append({'implicit':True, 'level':1, 'id':'2', 'label':'', 'title':'Abstract', 'contents': [{'tag':'p', 'id':'2.1', 'text': dict_doc['abstract']}]})
+
+		abs_node = root.find('./front/article-meta/abstract')
+		abs_title = etree.SubElement(abs_node, "title")
+		abs_title.text = 'Abstract'
+		sectionList = handle_body_section_flat(dict_doc['_id'], abs_node, 1, False, block_id)
+		dict_doc['sections'].extend(sectionList)
 		block_id[-1] = block_id[-1] + 1
-	dict_doc['sections'] = sections
 
 	body=root.find('body')
 	if body is not None:
@@ -635,13 +644,13 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 		if weHaveContentOutOfSections:
 			implicitSec = body
 			sectionList = handle_body_section_flat(dict_doc['_id'], implicitSec, 1, True, block_id)
-			block_id[-1] = block_id[-1] + 1
 			dict_doc['sections'].extend(sectionList)
+			block_id[-1] = block_id[-1] + 1
 		else:
 			for sec in root.xpath('/article/body/sec'):
 				sectionList = handle_body_section_flat(dict_doc['_id'], sec, 1, False, block_id)
-				block_id[-1] = block_id[-1] + 1
 				dict_doc['sections'].extend(sectionList)
+				block_id[-1] = block_id[-1] + 1
 
 	return dict_doc
 
