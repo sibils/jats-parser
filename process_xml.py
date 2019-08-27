@@ -599,8 +599,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['journal'] = get_multiple_texts_from_xpath(root, '/article/front/journal-meta//journal-title', True)
 
 	# note: I did not see any multiple <article-title> elements but we retrieve each element of the hypothetical list just in case
-	dict_doc['title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
-
+	dict_doc['full_title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
 	dict_doc['pmid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmid"]', True, False)
 	dict_doc['doi'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="doi"]', True, False)
 	dict_doc['pmcid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, True)
@@ -622,10 +621,10 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['sections'] = []
 	block_id.append(1)
 
-	if dict_doc['title'] != '':
+	if dict_doc['full_title'] != '':
 		dict_doc['sections'].append({
 			'implicit':True, 'level':1, 'id':'1', 'label':'', 'title':'Title',
-			'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['title']}]})
+			'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['full_title']}]})
 		block_id[-1] = block_id[-1] + 1
 
 	if dict_doc['abstract'] != '':
