@@ -71,7 +71,7 @@ The parsing of the publication produces a json object. It is a dictionary with t
 * pmcid, pmid, doi : publication identifiers when available
 * journal, issue, volume, start_page, end_page, medline_pgn, medline_ta : journal infos
 * affiliations, authors
-* publication_date, publication_date_alt, pub_year
+* publication_date, publication_date_alt, publication_year
 * article_type
 * keywords : an array of keywords
 * full_title

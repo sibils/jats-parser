@@ -241,10 +241,11 @@ def get_initials(multiple_names):
 		if len(name.strip()) > 0: initials += name[0]
 	return initials
 
-def clean_string(s):
+def clean_string(s1):
 	# replaces new line, unbreakable space, TAB with SPACE and strip the final string
-	return s.replace('\n', ' ').replace(u'\u00a0', ' ').replace('\t', ' ').strip()
-
+	# also replaces multiple spaces with a single one
+    s2 = s1.replace('\n', ' ').replace(u'\u00a0', ' ').replace('\t', ' ').strip()
+    return ' '.join(s2.split())
 
 def get_abstract(someroot):
 	x = someroot.xpath('/article/front/article-meta/abstract')
@@ -605,9 +606,9 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['pmcid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, True)
 	dict_doc['_id'] = dict_doc['pmcid']
 
-	dict_doc['publication_date_alt'] = get_pub_date(root, 'd-M-yyyy')
-	dict_doc['publication_date'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
-	dict_doc['pubyear'] = get_pub_date(root, 'yyyy')
+	dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')
+	dict_doc['publication_date_alt'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
+	dict_doc['publication_year'] = get_pub_date(root, 'yyyy')
 	dict_doc['issue'] = get_text_from_xpath(root, '/article/front/article-meta/issue', True, False)
 	dict_doc['volume'] = get_text_from_xpath(root, '/article/front/article-meta/volume', True, False)
 	fp = get_text_from_xpath(root, '/article/front/article-meta/fpage', False, False)
