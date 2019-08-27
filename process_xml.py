@@ -654,6 +654,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 
 	# for compatibility reasons
 	dict_doc['pmcid']='PMC' + dict_doc['pmcid']
+	dict_doc['_id'] = dict_doc['pmcid']
 
 	return dict_doc
 
