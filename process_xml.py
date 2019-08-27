@@ -608,7 +608,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 
 	dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')
 	dict_doc['publication_date_alt'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
-	dict_doc['publication_year'] = get_pub_date(root, 'yyyy')
+	dict_doc['pubyear'] = get_pub_date(root, 'yyyy')
 	dict_doc['issue'] = get_text_from_xpath(root, '/article/front/article-meta/issue', True, False)
 	dict_doc['volume'] = get_text_from_xpath(root, '/article/front/article-meta/volume', True, False)
 	fp = get_text_from_xpath(root, '/article/front/article-meta/fpage', False, False)
