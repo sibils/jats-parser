@@ -10,7 +10,6 @@ def getPmcXml(pmcid):
 
     # create local cache dir if not yet exists
     tmpdir='tmp/PMC' + pmcid[0:2]
-    print('case1: ' +tmpdir)
     os.makedirs(tmpdir, exist_ok=True)
 
     # try to get the name of the xml file in local cache
@@ -47,13 +46,12 @@ def getPmcXml(pmcid):
 
 def getXmlFilenameFromLocalCache(pmcid):
     dir = 'tmp/PMC' + pmcid[0:2] + '/PMC' + pmcid + '/'
-    print('case2: ' + dir)
     if os.path.exists(dir):
         filenames = os.listdir(dir)
         for fname in filenames:
             if fname[-3:] == 'xml':
                 fullname='file:///Users/pam/Documents/work/heg/jats-parser/tmp/PMC' + pmcid[0:2] + '/PMC' + pmcid + '/' + fname
-                print("File found in ocal cache for " + pmcid + " : " +fullname)
+                print("File found in local cache for " + pmcid + " : " +fullname)
                 return dir + fname
     print("No file found in local cache for " + pmcid)
     return None
@@ -64,7 +62,6 @@ def getXmlFileFromArchive(archive,pmcid):
         for filename in tar.getnames():
             if filename[-4:] == 'nxml':
                 subdir='tmp/PMC' + pmcid[0:2]
-                print('case4: ' + subdir)
                 tar.extract(filename, path=subdir)
                 newname = filename[:-4] + 'xml'
                 os.rename(subdir + '/' + filename, subdir + '/' + newname)
@@ -101,7 +98,6 @@ def saveFileFromFtp(ftpurl):
     subdir=remotefile[0:5]
 
     localfile = 'tmp/' + subdir + '/' + remotefile
-    print('case5: ' + localfile)
     with FTP(domain, 'anonymous', 'pamichel@infomaniak.ch') as ftp:
         if remotedir != '' : ftp.cwd(remotedir)
         with open(localfile, 'wb') as f:
