@@ -8,8 +8,10 @@ import os
 
 def getPmcXml(pmcid):
 
-    # create localc cache dir if not yet exists
-    os.makedirs('tmp', exist_ok=True)
+    # create local cache dir if not yet exists
+    tmpdir='tmp/PMC' + pmcid[0:2]
+    print('case1: ' +tmpdir)
+    os.makedirs(tmpdir, exist_ok=True)
 
     # try to get the name of the xml file in local cache
     nxmlfile = getXmlFilenameFromLocalCache(pmcid)
@@ -28,7 +30,7 @@ def getPmcXml(pmcid):
             msg = 'Could not get file from ftp url: ' + ftpurl
             return {'status':400, 'reason':msg, 'data':None}
         # extract nxml file from archive and save it locally
-        nxmlfile = getNxmlFileFromArchive(targzfile)
+        nxmlfile = getXmlFileFromArchive(targzfile,pmcid)
         if nxmlfile is None:
             msg = 'Could not extract nxml file from archive: ' + targzfile
             return {'status':400, 'reason':msg, 'data':None}
@@ -44,23 +46,29 @@ def getPmcXml(pmcid):
 
 
 def getXmlFilenameFromLocalCache(pmcid):
-    dir = 'tmp/' + pmcid + '/'
+    dir = 'tmp/PMC' + pmcid[0:2] + '/PMC' + pmcid + '/'
+    print('case2: ' + dir)
     if os.path.exists(dir):
         filenames = os.listdir(dir)
         for fname in filenames:
-            if fname[-4:] == 'nxml':
-                print("XML file found in local cache for " + pmcid)
+            if fname[-3:] == 'xml':
+                fullname='file:///Users/pam/Documents/work/heg/jats-parser/tmp/PMC' + pmcid[0:2] + '/PMC' + pmcid + '/' + fname
+                print("File found in ocal cache for " + pmcid + " : " +fullname)
                 return dir + fname
     print("No file found in local cache for " + pmcid)
     return None
 
 
-def getNxmlFileFromArchive(archive):
+def getXmlFileFromArchive(archive,pmcid):
     with tarfile.open(archive, "r") as tar:
         for filename in tar.getnames():
             if filename[-4:] == 'nxml':
-                tar.extract(filename, path='tmp')
-                return 'tmp/' + filename
+                subdir='tmp/PMC' + pmcid[0:2]
+                print('case4: ' + subdir)
+                tar.extract(filename, path=subdir)
+                newname = filename[:-4] + 'xml'
+                os.rename(subdir + '/' + filename, subdir + '/' + newname)
+                return subdir + '/' + newname
     return None
 
 def getFtpArchiveUrl(pmcid):
@@ -90,7 +98,10 @@ def saveFileFromFtp(ftpurl):
     domain = url_els[2]
     remotedir = '/'.join(url_els[3:-1])
     remotefile = url_els[-1]
-    localfile = 'tmp/' + remotefile
+    subdir=remotefile[0:5]
+
+    localfile = 'tmp/' + subdir + '/' + remotefile
+    print('case5: ' + localfile)
     with FTP(domain, 'anonymous', 'pamichel@infomaniak.ch') as ftp:
         if remotedir != '' : ftp.cwd(remotedir)
         with open(localfile, 'wb') as f:
