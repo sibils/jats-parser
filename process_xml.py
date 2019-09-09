@@ -159,12 +159,19 @@ def get_pub_date_by_type(someroot,selector,pubtype,format):
 	else:
 		return None
 
+# easiest way to retrieve publication date: take first in the list
+def get_first_pub_date(someroot,format):
+	selector = '/article/front/article-meta/pub-date'
+	return get_pub_date_by_type(someroot, selector, None, format)
+
+# alternative way to retrieve publication date: use precedence by pub-type§
 def get_pub_date(someroot,format):
-	# possible pubtype: epub, pmc-release, ppub, otherwise first whatever its type
+	# possible pubtype: collection, pmc-release, epub, ppub, otherwise first whatever its type
 	# the precedence order can be changed here
 	selector = '/article/front/article-meta/pub-date'
-	dt = get_pub_date_by_type(someroot, selector, 'epub', format)
+	dt = get_pub_date_by_type(someroot, selector, 'collection', format)
 	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'pmc-release', format)
+	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'epub', format)
 	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'ppub', format)
 	if dt is None: dt = get_pub_date_by_type(someroot, selector, None, format)
 	if dt is None:
@@ -606,9 +613,16 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['pmcid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, True)
 	dict_doc['_id'] = dict_doc['pmcid']
 
-	dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')
-	dict_doc['publication_date_alt'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
-	dict_doc['pubyear'] = get_pub_date(root, 'yyyy')
+	# non-aligned with Julien
+	# dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')
+	# dict_doc['publication_date_alt'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
+	# dict_doc['pubyear'] = get_pub_date(root, 'yyyy')
+
+	# best aligned with Julien
+	dict_doc['publication_date'] = get_first_pub_date(root, 'd-M-yyyy')
+	dict_doc['publication_date_alt'] = get_first_pub_date(root, 'default format') # 'yyyy MMM d'
+	dict_doc['pubyear'] = get_first_pub_date(root, 'yyyy')
+
 	dict_doc['issue'] = get_text_from_xpath(root, '/article/front/article-meta/issue', True, False)
 	dict_doc['volume'] = get_text_from_xpath(root, '/article/front/article-meta/volume', True, False)
 	fp = get_text_from_xpath(root, '/article/front/article-meta/fpage', False, False)
