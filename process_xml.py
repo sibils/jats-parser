@@ -368,8 +368,8 @@ def handle_supplementary_material_elements(someroot):
 	sm_list = someroot.xpath('//supplementary-material')
 	if sm_list is None: return
 	for sm in sm_list:
-		for tw in sm.iterchildren('table-wrap'):
-			sm.addprevious(tw)
+		for el in sm.iterchildren('table-wrap','p','fig'):
+			sm.addprevious(el)
 
 		# After moving <table-wrap> elements try build a figure obj with the remaining content if any
 		# Note: we create a figure but if can be a table as well...
@@ -408,6 +408,18 @@ def handle_table_wrap_group_elements(someroot):
 			# moves tw as the previous sibling of table-wrap-group
 			g.addprevious(tw)
 		# removes fig-group which is now unnecesssary
+		g.getparent().remove(g)
+
+
+# modifies the original XML by
+# 1. moving <el_tag> elements next to their embedding <el_tag>-group
+# 2. removing <el_tag>-group from elements from XML
+def remove_embedding_group_elements(someroot, el_tag):
+	g_list = someroot.xpath('//' + el_tag + '-group')
+	if g_list is None: return
+	for g in g_list:
+		for el in g.xpath(el_tag):
+			g.addprevious(el)
 		g.getparent().remove(g)
 
 # modifies the original XML by
@@ -460,12 +472,12 @@ def handle_paragraph(pmcid,el):
 	contentList.insert(0,content)
 	return contentList
 
-# recursive function used to parse the article body.
+# recursive function used to parse the article body (or floats-group or back node too).
 # the body tree is traversed depth first:
 # on encountering a section <sec> element, the function calls itself
 # on encountering <p>, <fig> and <table-wrap> elements, dedicated handlers are called
 # on encountering another element, a default handler is used
-def handle_body_section_flat(pmcid, sec, level, implicit, block_id):
+def handle_section_flat(pmcid, sec, level, implicit, block_id):
 
 	sectionList = []
 	id = ''.join(sec.xpath('@id'))
@@ -474,57 +486,75 @@ def handle_body_section_flat(pmcid, sec, level, implicit, block_id):
 	mainSection = {'implicit':implicit, 'level': level, 'id': build_id(block_id),
 		'title': clean_string(coalesce(title,'')),
 		'label': clean_string(coalesce(label,'')),
+		'tag': sec.tag,
 		'contents':[]}
 	# we add main section to the list before any other sub sections
 	sectionList.append(mainSection)
 	# print(indent(level) + 'level: ' + str(level) + ' - name: ' + mainSection['name'])
 	block_id.append(0)
+	terminalContentShouldBeWrapped=False
+
 	for el in sec:
 
-		# recursive call for any embedded section
-		if el.tag == 'sec':
-			block_id[-1] = block_id[-1] + 1
-			sectionList.extend(handle_body_section_flat(pmcid, el, level + 1, False, block_id))
-
 		# ignore elements handled elsewhere or that are unnecessary
-		elif el.tag == 'title':
-			continue
-		elif el.tag == 'label':
-			continue
-		elif isinstance(el,etree._Comment):
-			continue
+		if isinstance(el, etree._Comment): continue
+		if el.tag == 'title': continue
+		if el.tag == 'label': continue
 
-		# returns paragraph content plus any embedded figures or tables as sibling contents
-		elif el.tag == 'p':
-			contentList = handle_paragraph(pmcid, el)
-			for content in contentList:
-				block_id[-1] = block_id[-1] + 1
-				content['id'] = build_id(block_id)
-				mainSection['contents'].append(content)
-
-		# handle figures that are child of <body> or <sec>
-		elif el.tag == 'fig':
-			content = handle_fig(pmcid, el)
+		# recursive call for any embedded section <sec> and/or appendices <app>
+		if el.tag == 'sec' or el.tag == 'app':
 			block_id[-1] = block_id[-1] + 1
-			content['id'] = build_id(block_id)
-			mainSection['contents'].append(content)
+			terminalContentShouldBeWrapped=True
+			sectionList.extend(handle_section_flat(pmcid, el, level + 1, False, block_id))
+			continue
 
-		# handle tables that are child of <body> or <sec>
-		elif el.tag == 'table-wrap':
-			content = handle_table_wrap(pmcid,el)
-			block_id[-1] = block_id[-1] + 1
-			content['id'] = build_id(block_id)
-			mainSection['contents'].append(content)
-
+		contentsToBeAdded=[]
+		# handle paragraphs: will return paragraph content plus any embedded figures or tables as sibling contents
+		if el.tag == 'p':
+			contentsToBeAdded = handle_paragraph(pmcid, el)
+		if el.tag == 'fig':
+			contentsToBeAdded = [ handle_fig(pmcid, el) ]
+		if el.tag == 'table-wrap':
+			contentsToBeAdded = [ handle_table_wrap(pmcid, el) ]
 		# default handler: just keep tag and get all text
 		else:
-			content = {'tag': el.tag, 'text': clean_string(' '.join(el.itertext()))}
-			block_id[-1] = block_id[-1] + 1
-			content['id'] = build_id(block_id)
-			mainSection['contents'].append(content)
+			contentsToBeAdded = [ {'tag': el.tag, 'text': clean_string(' '.join(el.itertext()))} ]
+
+		addContentsOrWrappedContents(sectionList, mainSection, contentsToBeAdded, level, terminalContentShouldBeWrapped)
 
 	block_id.pop()
 	return sectionList
+
+# We want the order of contents to be preserved during parsing
+# When we meet a section having a mix of content types including a sub section the order may be lost if we don't wrap some contents
+# XML Example:
+# <sec id="main_sec">
+#   <p id="p1">...</p>
+#   <sec id="sub_sec"><p id="p2">...</p></sec>
+#   <p id="p3">...</p>
+# </sec>
+# If we don't wrap p2 in a fake section, then the content orde§r would become
+# main_sec: [p1, p3]
+# sub_sec : [p2]
+# By using the method below we will generated
+# main_sec: [p1]
+# sub_sec : [p2]
+# wrap_sec: [p3]
+def addContentsOrWrappedContents(sectionList, currentSection, contentsToBeAdded, level, shouldBeWrapped):
+	targetContents = currentSection['contents']
+	if shouldBeWrapped:
+		block_id[-1] = block_id[-1] + 1
+		wid = build_id(block_id)
+		subSection = {'implicit':True, 'level':level+1, 'id':wid, 'title':'', 'label':'' ,'tag':'wrap', 'contents':[]}
+		sectionList.append(subSection)
+		targetContents=subSection['contents']
+		block_id.append(0)
+	for content in contentsToBeAdded:
+		block_id[-1] = block_id[-1] + 1
+		content['id'] = build_id(block_id)
+		targetContents.append(content)
+	if shouldBeWrapped:
+		block_id.pop()
 
 
 def build_id(a):
@@ -586,9 +616,10 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	handle_table_wrap_group_elements(root)
 	handle_fig_group_elements(root)
 	handle_boxed_text_elements(root)
+	remove_embedding_group_elements(root,'fn')  # foot-notes
+	remove_embedding_group_elements(root,'app') # appendices
 	# End preprocessing
-
-
+	
 	# (re)init output variable
 	dict_doc = {}
 
@@ -633,11 +664,21 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['abstract'] = get_abstract(root)
 	dict_doc['keywords'] = get_keywords(root)
 
-	dict_doc['sections'] = []
+	dict_doc['figures_in_body']=len(root.xpath('/article/body//fig'))
+	dict_doc['figures_in_back']=len(root.xpath('/article/back//fig'))
+	dict_doc['figures_in_float']=len(root.xpath('/article/floats-group//fig'))
+	dict_doc['tables_in_body']=len(root.xpath('/article/body//table'))
+	dict_doc['tables_in_back']=len(root.xpath('/article/back//table'))
+	dict_doc['tables_in_float']=len(root.xpath('/article/floats-group//table'))
+	dict_doc['paragraphs_in_body']=len(root.xpath('/article/body//p'))
+	dict_doc['paragraphs_in_back']=len(root.xpath('/article/back//p'))
+	dict_doc['paragraphs_in_float']=len(root.xpath('/article/floats-group//p'))
+
+	dict_doc['body_sections'] = []
 	block_id.append(1)
 
 	if dict_doc['title'] != '':
-		dict_doc['sections'].append({
+		dict_doc['body_sections'].append({
 			'implicit':True, 'level':1, 'id':'1', 'label':'', 'title':'Title',
 			'contents': [{'tag':'p', 'id':'1.1', 'text': dict_doc['title']}]})
 		block_id[-1] = block_id[-1] + 1
@@ -647,24 +688,14 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 		abs_node = root.find('./front/article-meta/abstract')
 		abs_title = etree.SubElement(abs_node, "title")
 		abs_title.text = 'Abstract'
-		sectionList = handle_body_section_flat(dict_doc['_id'], abs_node, 1, False, block_id)
-		dict_doc['sections'].extend(sectionList)
+		sectionList = handle_section_flat(dict_doc['_id'], abs_node, 1, False, block_id)
+		dict_doc['body_sections'].extend(sectionList)
 		block_id[-1] = block_id[-1] + 1
 
-	body=root.find('body')
-	if body is not None:
-		non_sec_body_children = body.iterchildren(['p', 'fig', 'table-wrap'])
-		weHaveContentOutOfSections = sum(1 for el in non_sec_body_children) > 0
-		if weHaveContentOutOfSections:
-			implicitSec = body
-			sectionList = handle_body_section_flat(dict_doc['_id'], implicitSec, 1, True, block_id)
-			dict_doc['sections'].extend(sectionList)
-			block_id[-1] = block_id[-1] + 1
-		else:
-			for sec in root.xpath('/article/body/sec'):
-				sectionList = handle_body_section_flat(dict_doc['_id'], sec, 1, False, block_id)
-				dict_doc['sections'].extend(sectionList)
-				block_id[-1] = block_id[-1] + 1
+	dict_doc['body_sections'].extend(get_sections(dict_doc['pmcid'], root.find('body')))
+
+	dict_doc['float_sections']=get_sections(dict_doc['pmcid'], root.find('floats-group'))
+	dict_doc['back_sections']=get_sections(dict_doc['pmcid'], root.find('back'))
 
 	# for compatibility reasons
 	dict_doc['pmcid']='PMC' + dict_doc['pmcid']
@@ -672,8 +703,19 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 
 	return dict_doc
 
+# ------------------------------------------
+
+def get_sections(pmcid, node):
+	if node is None: return []
+	sections = handle_section_flat(pmcid, node, 1, True, block_id)
+	block_id[-1] = block_id[-1] + 1
+	return sections
+
 
 # ------------------------------------------
+
+
+
 
 def getPmcFtpUrl(xmlstr):
 	root = etree.fromstring(xmlstr)
@@ -706,7 +748,7 @@ def main():
 	normal = True
 	if normal:
 		dict_doc = parse_PMC_XML_core(xmlstr,root,input_file)
-		if len(dict_doc['sections'])<2: file_status_add_error("ERROR: no section after title")
+		if len(dict_doc['body_sections'])<2: file_status_add_error("ERROR: no section after title")
 		if not file_status_ok(): file_status_print()
 		print(get_stats(input_file,root))
 		print(get_body_structure(input_file,root))
@@ -726,7 +768,7 @@ def main():
 # - - - - - - - - - - - - - - - - - - -
 # ignore this, for test purpose only
 # - - - - - - - - - - - - - - - - - - -
-def test():
+def test2():
 	parser = OptionParser()
 	root = etree.XML('<root><some>stuff before</some><fig-group><caption><p>fg caption</p></caption><fig><caption><p>fig 1 caption</p></caption></fig><fig id="totofig"><caption><p>fig 2 caption</p>something else</caption></fig></fig-group>1-hi there<child><a href="toto">2-toto href</a></child>3-something normal<b>4-something in bold</b>some tail</root>')
 	et = etree.ElementTree(root)
@@ -737,6 +779,19 @@ def test():
 	with open('./pam.xml', 'wb') as f:
 		f.write(etree.tostring(et))
 
+def test():
+	parser = OptionParser()
+	xmlstr='<root><p>p1</p><sec><title>s1</title><p>p2</p></sec><p>p3</p><p>p4</p><sec><title>s2</title><p>p5</p><p>p6</p></sec></root>'
+	xmlstr='<root><sec><title>s1</title><p>p2</p></sec><sec><title>s2</title><p>p5</p><p>p6</p></sec></root>'
+	xmlstr='<root><p>p1</p><p>p2</p><sec><title>s2</title><p>p5</p><p>p6</p></sec><p>petit dernier</p></root>'
+	xmlstr='<root><p>p1</p><p>p2</p><p>petit dernier</p></root>'
+	root = etree.fromstring(xmlstr)
+	block_id.append(0)
+	stuff=get_sections('111', root)
+	print(json.dumps(stuff, sort_keys=True, indent=2))
+	#parse_PMC_XML()
+
+
 # - - - - - - -
 # globals
 # - - - - - - -
@@ -744,5 +799,5 @@ file_status = {'name':'', 'errors':[]}
 block_id=[]
 
 if __name__ == '__main__':
-	#test()
-	main()
+	test()
+	#main()
