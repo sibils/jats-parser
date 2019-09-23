@@ -139,7 +139,21 @@ class GP(BaseHTTPRequestHandler):
 
         error_msg='ERROR, invalid URL: ' + self.path
 
-        if self.path[0:11]=='/parse/pmc/':
+        if self.path[0:12]=='/getxml/pmc/':
+            parts=self.path[12:].split('?')
+            pmcid = parts[0]
+            msg='handle parsing of pmc file: ' + pmcid
+            print(msg)
+            output=getPmcXml(pmcid)
+            if output['status']==200:
+                xmlstr=output['data']
+                response = self.buildSuccessResponseObject(self.path, xmlstr)
+                self.sendResponse(response, 200)
+                return
+            else:
+                error_msg = str(output['status']) + ' - ' + output['reason']
+
+        elif self.path[0:11]=='/parse/pmc/':
             parts=self.path[11:].split('?')
             pmcid = parts[0]
             msg='handle parsing of pmc file: ' + pmcid
