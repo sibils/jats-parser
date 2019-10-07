@@ -105,9 +105,10 @@ def saveFileFromFtp(ftpurl):
     return localfile
 
 class GP(BaseHTTPRequestHandler):
-    def _set_headers(self,statusCode):
+    def _set_headers(self,statusCode, content_type):
         self.send_response(statusCode)
-        self.send_header('Content-type', 'application/json')
+        #self.send_header('Content-type', 'application/json')
+        self.send_header('Content-type', content_type)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
@@ -130,10 +131,14 @@ class GP(BaseHTTPRequestHandler):
         response['data']=data
         return response
 
-    def sendResponse(self, obj, statusCode):
+    def sendJsonResponse(self, obj, statusCode):
         str = json.dumps(obj, sort_keys=True, indent=2)
-        self._set_headers(statusCode)
+        self._set_headers(statusCode, 'application/json')
         self.wfile.write(bytes(str,'utf-8'))
+
+    def sendXmlResponse(self, somexml, statusCode):
+        self._set_headers(statusCode, 'application/xml; charset=utf-8')
+        self.wfile.write(bytes(somexml,'utf-8'))
 
     def do_GET(self):
 
@@ -147,8 +152,7 @@ class GP(BaseHTTPRequestHandler):
             output=getPmcXml(pmcid)
             if output['status']==200:
                 xmlstr=output['data']
-                response = self.buildSuccessResponseObject(self.path, xmlstr)
-                self.sendResponse(response, 200)
+                self.sendXmlResponse(xmlstr, 200)
                 return
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
@@ -163,7 +167,7 @@ class GP(BaseHTTPRequestHandler):
                 xmlstr=output['data']
                 obj = parse_PMC_XML(xmlstr)
                 response = self.buildSuccessResponseObject(self.path, obj)
-                self.sendResponse(response, 200)
+                self.sendJsonResponse(response, 200)
                 return
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
@@ -174,12 +178,12 @@ class GP(BaseHTTPRequestHandler):
             msg = 'getting annotations of pmc file: ' + pmcid
             print(msg)
             obj = self.buildSuccessResponseObject(self.path, msg)
-            self.sendResponse(obj, 200)
+            self.sendJsonResponse(obj, 200)
             return
 
         print(error_msg)
         obj = self.buildErrorResponseObject(self.path, error_msg)
-        self.sendResponse(obj,400)
+        self.sendJsonResponse(obj,400)
 
 
 def run(server_class=HTTPServer, handler_class=GP, port=8088):
