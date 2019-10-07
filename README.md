@@ -76,16 +76,24 @@ The parsing of the publication produces a json object. It is a dictionary with t
 * keywords : an array of keywords
 * full_title
 * abstract
-* sections : an array of elements with the publication content, the publication title and the abstract are the first two sections in the array (if they exist)
+* body_sections : an array of elements with the publication content, the publication title and the abstract are the first two sections in the array (if they exist)
+* back_sections : sections related to the back content of the document (appendices, supplementary material, ...)
+* float_sections : sections which are included in the publication but not in flow ot the body text (i.e. boxed-text)
 
 ### Section structure
+
+The objects to be found in the body, back and float sections can be aither sections, appendices, or boxed-text.
 
 **id**
 
 A string identifying the section generated during the parsing process.
-Sections in the input XML can embed each other. But in the generated json they are all siblings, flattened in a sequence (the _sections_ array).
+Sections found in the XML can embed each other. But in the generated json they are all siblings, flattened in a sequence (in the _body_section_ array for example).
 The hierarchical structure of the section and of any of its content is reflected in its id.
 For instance, a section with id _1.3.2_ comes just after section with id _1.3.1_ and both are subparts of section with id _1.3_ in the original XML.
+
+**tag**
+
+Usually the value is _sec_ but since we also handle appendices _app_ and boxed text _boxed-text_ the same way, the value of this tag may vary.
 
 **level**
 
@@ -114,11 +122,11 @@ Often empty.
 A list of textual elements that are part of the section.
 Like sections, the content elements also have an _id_ reflecting their hierachical position in the XML tree.
 The _tag_ is the name of the XML element containing the textual element.
-The most common tags are paragraphs _p_ , figures _fig_ and tables _table_ .
-The field _caption_ contains the text for _fig_ and _table_ elements.
+The most common tags are paragraphs _p_ , list _list_item_ , figures _fig_ and tables _table_ .
+The field _caption_ contains the text for _fig_ _boxed_text_ and _table_ elements.
 The field _text_ contains the text for paragraphs _p_ and other elements.
 
-Other tags (not _p_ nor _fig_ nor _table_) may appear but no particular effort was made to handle their textual content specifically.
+Other tags (not _p_ nor _fig_ nor _table_ nor _list-item_) may appear but no particular effort was made to handle their textual content specifically.
 
 ### Handling figures
 
@@ -163,3 +171,30 @@ J_Entrep_Educ/PMC5985942.nxml , Qual_Saf_Health_Care/PMC2602740.nxml
 
 alpha - α is seen as "\u03b1" in shell but as α in browser.
 The _unidecode_ method used pubmed_oa_parser.py could also be used to turn greek letters and other special ones into their ascii closest equivalent.
+
+### Info and changes published on 2019, Oct 8th
+
+**pub_date elements**
+
+_pub-date_ elements are searched in this order: date-type = pmc-release, then epub, ppub, collection, and finally any kind.
+We return a full date (month is 1, day is 1 if missing)
+If we had to set a default day or month, _publication_date_status_ = 'incomplete'
+Example:
+		publication_date: "05-4-2011",
+		publication_date_alt: "2011 Apr 05",
+		publication_date_status: "ok",
+		pubyear: "2011",
+
+**box-text elements**
+Missing paragraph in boxed-text
+Check PMC3887505
+Now boxed text are handled like sections and inserted in the text flow
+
+**table-wrap-foot elements**
+table wrap footer can be multiple, we now handle that too
+Check 5810844
+
+**figures embedded in a list element**
+Figures embedded in a list (itself in a paragraph in a section) are not parsed.
+Check 5797209, 5729785
+NOT FIXED

@@ -122,62 +122,62 @@ def get_text_from_xpath(someroot, somepath, withWarningOnMultipleValues, withErr
 		file_status_add_error("ERROR, no text for element: " + somepath)
 	return result
 
+
 def get_pub_date_by_type(someroot,selector,pubtype,format):
-	mmm=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-	# possible pubtype: epub, pmc-release, ppub, otherwise first whatever its type
-	if not pubtype is None:
-		selector += '[@pub-type="' + pubtype + '"]'
-	day=''
-	month=''
-	year=''
+
+	if not pubtype is None: selector += '[@pub-type="' + pubtype + '"]'
 	dates = someroot.xpath(selector);
-	if len(dates)>0:
-		dt = dates[0]
-		years = dt.xpath('year')
-		if len(years)>0:
-			year = years[0].text
-			months = dt.xpath('month')
-			if len(months)>0:
-				mm=months[0].text
-				if mm.isdigit():
-					if int(mm)<=12:
-						month=mmm[int(mm)-1]
-				days = dt.xpath('day')
-				if len(days)>0:
-					day=days[0].text
-	#print('y m d:' + year + '/' + month + '/' + day)
-	if len(year)>0 and len(month)>0 and len(day)>0:
-		if format=='yyyy': return year
-		if format=='d-M-yyyy': return day + '-' + mm + '-' + year
-		return year + ' ' + month + ' ' + day
-	if len(year)>0 and len(month)>0:
-		if format=='yyyy': return year
-		if format=='d-M-yyyy': return mm + '-' + year
-		return year + ' ' + month
-	elif len(year)>0:
-		return year
+	if len(dates)==0: return {'date': None, 'status':'not found'}
+	dt = dates[0]
+
+	status = 'ok'
+	ynode = dt.find('year')
+	year = ynode.text if ynode is not None and ynode.text is not None else ''
+	if len(year)==0: return {'date': None, 'status': 'incomplete'}
+	mnode = dt.find('month')
+	mm = '01'
+	if mnode is not None and mnode.text is not None:
+		mm = mnode.text
 	else:
-		return None
+		status = 'incomplete'
+	mmm_names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+	mmm = ''
+	if mm.isdigit() and int(mm)>0 and int(mm)<=12:
+		mmm = mmm_names[int(mm)-1]
+	else:
+		status = 'unparseable'
+	dnode = dt.find('day')
+	day = '01'
+	if dnode is not None and dnode.text is not None:
+		day = dnode.text
+	else:
+		status = 'incomplete'
+
+	formatted_date = year + ' ' + mmm + ' ' + day # default format
+	if format=='yyyy': formatted_date = year
+	if format=='d-M-yyyy': formatted_date = day + '-' + mm + '-' + year
+	return {'date': formatted_date, 'status': status}
+
 
 # easiest way to retrieve publication date: take first in the list
 def get_first_pub_date(someroot,format):
 	selector = '/article/front/article-meta/pub-date'
 	return get_pub_date_by_type(someroot, selector, None, format)
 
-# alternative way to retrieve publication date: use precedence by pub-type§
+# alternative way to retrieve publication date: use precedence by pub-type
+# precedence order: pmc-release, epub, ppub.
+# we assume pmc-release and epub are complete dates (with month and day)
+# we then try ppub and add month = 1 and day = 1 it they are tmissing
+# algo decided in accordance with Julien
 def get_pub_date(someroot,format):
-	# possible pubtype: collection, pmc-release, epub, ppub, otherwise first whatever its type
-	# the precedence order can be changed here
 	selector = '/article/front/article-meta/pub-date'
-	dt = get_pub_date_by_type(someroot, selector, 'collection', format)
-	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'pmc-release', format)
-	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'epub', format)
-	if dt is None: dt = get_pub_date_by_type(someroot, selector, 'ppub', format)
-	if dt is None: dt = get_pub_date_by_type(someroot, selector, None, format)
-	if dt is None:
-		file_status_add_error('ERROR, element not found: ' + selector)
-	else:
-		return dt
+	dt = get_pub_date_by_type(someroot, selector, 'pmc-release', format)
+	if dt['status'] is not 'ok': dt = get_pub_date_by_type(someroot, selector, 'epub', format)
+	if dt['status'] is not 'ok': dt = get_pub_date_by_type(someroot, selector, 'ppub', format)
+	if dt['status'] is not 'ok': dt = get_pub_date_by_type(someroot, selector, 'collection', format)
+	if dt['status'] is not 'ok': dt = get_pub_date_by_type(someroot, selector, None, format)
+	if dt['status'] is not 'ok': file_status_add_error('ERROR, element not found: ' + selector)
+	return dt
 
 def build_medlinePgn(fp,lp):
 	if fp!=None and len(fp)>0 and lp!=None and len(lp)>0: return fp + '-' + lp
@@ -251,8 +251,10 @@ def get_initials(multiple_names):
 def clean_string(s1):
 	# replaces new line, unbreakable space, TAB with SPACE and strip the final string
 	# also replaces multiple spaces with a single one
-    s2 = s1.replace('\n', ' ').replace(u'\u00a0', ' ').replace('\t', ' ').strip()
-    return ' '.join(s2.split())
+	if s1 is None: return None
+	s2 = s1.replace('\n', ' ').replace(u'\u00a0', ' ').replace('\t', ' ').strip()
+	return ' '.join(s2.split())
+
 
 def get_abstract(someroot):
 	x = someroot.xpath('/article/front/article-meta/abstract')
@@ -297,6 +299,7 @@ def handle_table_wrap(pmcid, tw):
 	xref_url = 'https://www.ncbi.nlm.nih.gov/pmc/articles/' + pmcid + '/table/' + xref_id
 	label=get_clean_text(tw.find('label'))
 	caption=get_clean_text(tw.find('caption'))
+	footer=get_clean_text(tw.xpath('table-wrap-foot'))
 	media_hrefs = [ get_xlink_href(el) for el in tw.xpath('media') ]
 	graph_hrefs = [ get_xlink_href(el) for el in tw.xpath('graphic') ]
 	# table content
@@ -309,7 +312,7 @@ def handle_table_wrap(pmcid, tw):
 		table_xml = etree.tostring(table_tree)
 		columns, row_values = table_to_df(table_xml)
 	return {'tag': 'table', 'xref_id': xref_id, 'xref_url': xref_url,
-			'label': label, 'caption': caption,
+			'label': label, 'caption': caption, 'footer':footer,
 			'media':media_hrefs, 'graphics':graph_hrefs,
 			'table_columns': columns, 'table_values': row_values,
 			'xml':table_xml.decode("utf-8")}
@@ -339,7 +342,13 @@ def table_to_df(table_text):
 
 def get_clean_text(el):
 	if el is None: return ''
-	return clean_string(' '.join(el.itertext()))
+	if type(el) == list:
+		# sub_str_list = []
+		# for sub_el in el: sub_str_list.append(' '.join(sub_el.itertext()))
+		# return clean_string(' '.join(sub_str_list))
+		return clean_string(' '.join([' '.join(sub_el.itertext()) for sub_el in el]))
+	else:
+		return clean_string(' '.join(el.itertext()))
 
 def modify_insert_text_in_sub_element(ins_texts, subel_tag, el):
 	texts=[]
@@ -365,25 +374,28 @@ def get_xlink_href(el):
 # 2. removing <supplementary_material> elements from XML
 # Note: we ignore implicit embedded figure (there may be a figure label, caption, etc...)
 def handle_supplementary_material_elements(someroot):
+	etree.strip_tags(someroot,'supplementary-material')
+
+def handle_supplementary_material_elements_ori(someroot):
 	sm_list = someroot.xpath('//supplementary-material')
 	if sm_list is None: return
 	for sm in sm_list:
 		for el in sm.iterchildren('table-wrap','p','fig'):
 			sm.addprevious(el)
 
-		# After moving <table-wrap> elements try build a figure obj with the remaining content if any
-		# Note: we create a figure but if can be a table as well...
-		label=get_clean_text(sm.find('label'))
-		caption=get_clean_text(sm.find('caption'))
-		media=[ get_xlink_href(m) for m in sm.xpath('media') ]
-		graph=[ get_xlink_href(g) for g in sm.xpath('graphic') ]
-		if (label != '' or caption != '') and (len(media)>0 or len(graph)>0):
-			fig = etree.SubElement(sm.getparent(), 'fig')
-			fig.attrib['id']='' # there is a special handling of figure with no id
-			etree.SubElement(fig,'label').text=label
-			etree.SubElement(fig,'caption').text=caption
-			for m in media: etree.SubElement(fig,'media').attrib['href']=m
-			for g in graph: etree.SubElement(fig,'graphic').attrib['href']=g
+		# # After moving <table-wrap> elements try build a figure obj with the remaining content if any
+		# # Note: we create a figure but if might be a table as well we can't guess...
+		# label=get_clean_text(sm.find('label'))
+		# caption=get_clean_text(sm.find('caption'))
+		# media=[ get_xlink_href(m) for m in sm.xpath('media') ]
+		# graph=[ get_xlink_href(g) for g in sm.xpath('graphic') ]
+		# if (label != '' or caption != '') and (len(media)>0 or len(graph)>0):
+		# 	fig = etree.SubElement(sm.getparent(), 'fig')
+		# 	fig.attrib['id']='' # there is a special handling of figure with no id
+		# 	etree.SubElement(fig,'label').text=label
+		# 	etree.SubElement(fig,'caption').text=caption
+		# 	for m in media: etree.SubElement(fig,'media').attrib['href']=m
+		# 	for g in graph: etree.SubElement(fig,'graphic').attrib['href']=g
 
 		# removes supplementary_material which is now unnecesssary
 		sm.getparent().remove(sm)
@@ -452,10 +464,42 @@ def handle_fig(pmcid, fig):
 			'xref_id': xref_id, 'label': fig_label, 'media': media_hrefs,
 			'graphics': graph_hrefs, 'pmcid':pmcid }
 
-# a paragraph <p> may contain <fig> and / or <table-wrap> elements.
-# if this is the case figs & tables are extracted from the paragraph, parsed with their own handler
-# and appended as additional contents in the content list returned
+
+def handle_list(list):
+	contentList=[]
+	for el in list.iterchildren(['list-item']):
+		contentList.append({'tag': 'list-item', 'text': clean_string(' '.join(el.itertext()))})
+	tail = clean_string(list.tail)
+	if tail is not None: contentList.append({'tag': 'p', 'text': tail})
+	return contentList
+
+# a paragraph <p> may contain <fig> and / or <table-wrap>  and / or <list> elements.
+# if this is the case figs, tables and lists are parsed with their own handler
+# and appended in order in the content list returned
 def handle_paragraph(pmcid,el):
+	simplify_node(el, ['fig','table-wrap','list'])
+	contentList=[]
+	ptext=clean_string(el.text)
+	if ptext is not None and ptext != '': contentList.append({'tag':'p', 'text': ptext})
+	#for sub_el in el.iterchildren(['fig','table-wrap','list']):
+	# we should only have fig, table-wrap, list sub-elements after simplifying above
+	for sub_el in el.iterchildren():
+		if sub_el.tag == 'fig':
+			# parse the inner fig and add result to content list
+			contentList.append(handle_fig(pmcid,sub_el))
+		elif sub_el.tag == 'table-wrap':
+			# parse the inner table and add result to content list
+			contentList.append(handle_table_wrap(pmcid,sub_el))
+		elif sub_el.tag == 'list':
+			contentList.extend(handle_list(sub_el))
+		else:
+			contentList.append({'tag':sub_el.tag, 'text': get_clean_text(sub_el)})
+	ptail=clean_string(el.tail)
+	if ptail is not None and ptail != '': contentList.append({'tag':'p', 'text': ptail})
+	return contentList
+
+
+def handle_paragraph_old(pmcid,el):
 	contentList=[]
 	for sub_el in el.iterchildren(['fig','table-wrap']):
 		if sub_el.tag == 'fig':
@@ -472,20 +516,23 @@ def handle_paragraph(pmcid,el):
 	contentList.insert(0,content)
 	return contentList
 
+
 # recursive function used to parse the article body (or floats-group or back node too).
 # the body tree is traversed depth first:
-# on encountering a section <sec> element, the function calls itself
-# on encountering <p>, <fig> and <table-wrap> elements, dedicated handlers are called
+# on encountering a section <sec> or <app> or <boxed-text> element, the function calls itself
+# on encountering <p>, <fig>, <list> and <table-wrap> elements, dedicated handlers are called
 # on encountering another element, a default handler is used
 def handle_section_flat(pmcid, sec, level, implicit, block_id):
 
 	sectionList = []
 	id = ''.join(sec.xpath('@id'))
-	title = ''.join(sec.xpath("title/text()"))
-	label = ''.join(sec.xpath("label/text()"))
+	title = get_clean_text(sec.find('title'))
+	caption = get_clean_text(sec.find('caption'))
+	label = get_clean_text(sec.find('label'))
 	mainSection = {'implicit':implicit, 'level': level, 'id': build_id(block_id),
-		'title': clean_string(coalesce(title,'')),
-		'label': clean_string(coalesce(label,'')),
+		'title': title,
+		'label': label,
+		'caption': caption,
 		'tag': sec.tag,
 		'contents':[]}
 	# we add main section to the list before any other sub sections
@@ -500,9 +547,10 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 		if isinstance(el, etree._Comment): continue
 		if el.tag == 'title': continue
 		if el.tag == 'label': continue
+		if el.tag == 'caption': continue
 
-		# recursive call for any embedded section <sec> and/or appendices <app>
-		if el.tag == 'sec' or el.tag == 'app':
+		# recursive call for any embedded section <sec>, <boxed-text> and/or <app> (appendices)
+		if el.tag == 'sec' or el.tag == 'app' or el.tag == 'boxed-text':
 			block_id[-1] = block_id[-1] + 1
 			terminalContentShouldBeWrapped=True
 			sectionList.extend(handle_section_flat(pmcid, el, level + 1, False, block_id))
@@ -512,13 +560,17 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 		# handle paragraphs: will return paragraph content plus any embedded figures or tables as sibling contents
 		if el.tag == 'p':
 			contentsToBeAdded = handle_paragraph(pmcid, el)
-		if el.tag == 'fig':
+		elif el.tag == 'fig':
 			contentsToBeAdded = [ handle_fig(pmcid, el) ]
-		if el.tag == 'table-wrap':
+		elif el.tag == 'table-wrap':
 			contentsToBeAdded = [ handle_table_wrap(pmcid, el) ]
+		elif el.tag == 'list':
+			contentsToBeAdded = handle_list(el)
 		# default handler: just keep tag and get all text
 		else:
-			contentsToBeAdded = [ {'tag': el.tag, 'text': clean_string(' '.join(el.itertext()))} ]
+			sometext = clean_string(' '.join(el.itertext()))
+			if sometext is not None and sometext != '':
+				contentsToBeAdded = [ {'tag': el.tag, 'text': sometext} ]
 
 		addContentsOrWrappedContents(sectionList, mainSection, contentsToBeAdded, level, terminalContentShouldBeWrapped)
 
@@ -541,6 +593,7 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 # sub_sec : [p2]
 # wrap_sec: [p3]
 def addContentsOrWrappedContents(sectionList, currentSection, contentsToBeAdded, level, shouldBeWrapped):
+	if contentsToBeAdded==[]: return
 	targetContents = currentSection['contents']
 	if shouldBeWrapped:
 		block_id[-1] = block_id[-1] + 1
@@ -563,11 +616,8 @@ def build_id(a):
 	for num in block_id: id += str(num) + '.'
 	return id[0:-1]
 
-def print_section(s):
-	print (indent(s['level']) + input_file + ':' + str(s['level']) + ' - ' + s['name'])
-	for content in s['contents']:
-		shorttext = content['text'][0:40] + '...' + content['text'][-40:]
-		print( indent(s['level']+1) + content['tag'] + ' - ' + shorttext )
+
+
 
 # ------------------------------------------
 
@@ -590,8 +640,22 @@ def file_status_print():
 	for r in file_status['errors']: msg += r + '\t'
 	print(msg)
 
+# - - - - - - - - - - - - - - - - - - - - - - - -
+# used by jsonpmc_httpserver.py
+# - - - - - - - - - - - - - - - - - - - - - - - -
 def parse_PMC_XML(xmlstr):
 	return parse_PMC_XML_core(xmlstr,None, None)
+
+# - - - - - - - - - - - - - - - - - - - - - - - -
+# used by jsonpmc_httpserver.py
+# - - - - - - - - - - - - - - - - - - - - - - - -
+def getPmcFtpUrl(xmlstr):
+	root = etree.fromstring(xmlstr)
+	lnk = root.xpath('/OA/records/record/link')
+	if lnk is not None and len(lnk) == 1: return lnk[0].get('href')
+	return None
+
+# - - - - - - - - - - - - - - - - - - - - - - - -
 
 def parse_PMC_XML_core(xmlstr, root, input_file):
 	if root is None:
@@ -606,28 +670,39 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 
 	# (re)init global variable block_id used for building section / block ids
 	block_id.clear()
+	# (re)init output variable
+	dict_doc = {}
 
 	# Preprocessing tasks: simplify / clean up of the original xml
 	# To be kept here before any parsing aimed at retrieving data
+	for xs in root.xpath('//xref/sup'): xs.getparent().remove(xs)
+	for sx in root.xpath('//sup/xref'): sx.getparent().remove(sx)
+	etree.strip_tags(root,'sup')
+
 	etree.strip_tags(root,'italic')
+	etree.strip_tags(root,'bold')
+	etree.strip_tags(root,'sub')
+	etree.strip_tags(root,'ext-link')
+
+	# rename this erroneous element
+	for el in root.xpath('/article/floats-wrap'): el.tag='floats-group'
+
 	etree.strip_elements(root, 'inline-formula','disp-formula', with_tail=False)
 	#remove_subtree_of_elements(root,['inline-formula','disp-formula'])
 	handle_supplementary_material_elements(root)
 	handle_table_wrap_group_elements(root)
 	handle_fig_group_elements(root)
-	handle_boxed_text_elements(root)
-	remove_embedding_group_elements(root,'fn')  # foot-notes
-	remove_embedding_group_elements(root,'app') # appendices
+	remove_embedding_group_elements(root,'fn')  # removes  fn-group wrapper (foot-notes)
+	remove_embedding_group_elements(root,'app') # removes app-group wrapper (appendices)
 	# End preprocessing
-	
-	# (re)init output variable
-	dict_doc = {}
+
 
 	# Now retrieve data from refactored XML
 	dict_doc['affiliations'] = get_affiliations(root)
 	dict_doc['authors'] = get_authors(root)
 
 	# note: we use xref to retrieve author affiliations above this line
+
 	etree.strip_tags(root,'xref')
 
 	dict_doc['article_type'] = root.xpath('/article')[0].get('article-type')
@@ -638,21 +713,18 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['journal'] = get_multiple_texts_from_xpath(root, '/article/front/journal-meta//journal-title', True)
 
 	# note: I did not see any multiple <article-title> elements but we retrieve each element of the hypothetical list just in case
-	dict_doc['title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
+	#dict_doc['title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
+	dict_doc['title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group', True)
 	dict_doc['pmid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmid"]', True, False)
 	dict_doc['doi'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="doi"]', True, False)
 	dict_doc['pmcid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, True)
 	dict_doc['_id'] = dict_doc['pmcid']
 
-	# non-aligned with Julien
-	# dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')
-	# dict_doc['publication_date_alt'] = get_pub_date(root, 'default format') # 'yyyy MMM d'
-	# dict_doc['pubyear'] = get_pub_date(root, 'yyyy')
-
-	# best aligned with Julien
-	dict_doc['publication_date'] = get_first_pub_date(root, 'd-M-yyyy')
-	dict_doc['publication_date_alt'] = get_first_pub_date(root, 'default format') # 'yyyy MMM d'
-	dict_doc['pubyear'] = get_first_pub_date(root, 'yyyy')
+	# ok with Julien, see precedence rules in def get_pub_date()
+	dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')['date']
+	dict_doc['publication_date_alt'] = get_pub_date(root, 'default format')['date'] # 'yyyy MMM d'
+	dict_doc['pubyear'] = get_pub_date(root, 'yyyy')['date']
+	dict_doc['publication_date_status']=get_pub_date(root, 'yyyy')['status']
 
 	dict_doc['issue'] = get_text_from_xpath(root, '/article/front/article-meta/issue', True, False)
 	dict_doc['volume'] = get_text_from_xpath(root, '/article/front/article-meta/volume', True, False)
@@ -661,19 +733,11 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['start_page'] = fp
 	dict_doc['end_page'] = lp
 	dict_doc['medline_pgn'] = build_medlinePgn(fp,lp)
-	dict_doc['abstract'] = get_abstract(root)
+	#dict_doc['abstract'] = get_abstract(root) -- should be obsolete now
+	dict_doc['abstract'] = get_clean_text(root.find('front/article-meta/abstract'))
 	dict_doc['keywords'] = get_keywords(root)
 
-	dict_doc['figures_in_body']=len(root.xpath('/article/body//fig'))
-	dict_doc['figures_in_back']=len(root.xpath('/article/back//fig'))
-	dict_doc['figures_in_float']=len(root.xpath('/article/floats-group//fig'))
-	dict_doc['tables_in_body']=len(root.xpath('/article/body//table'))
-	dict_doc['tables_in_back']=len(root.xpath('/article/back//table'))
-	dict_doc['tables_in_float']=len(root.xpath('/article/floats-group//table'))
-	dict_doc['paragraphs_in_body']=len(root.xpath('/article/body//p'))
-	dict_doc['paragraphs_in_back']=len(root.xpath('/article/back//p'))
-	dict_doc['paragraphs_in_float']=len(root.xpath('/article/floats-group//p'))
-
+	# filling body, back and floats sections
 	dict_doc['body_sections'] = []
 	block_id.append(1)
 
@@ -684,7 +748,6 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 		block_id[-1] = block_id[-1] + 1
 
 	if dict_doc['abstract'] != '':
-
 		abs_node = root.find('./front/article-meta/abstract')
 		abs_title = etree.SubElement(abs_node, "title")
 		abs_title.text = 'Abstract'
@@ -693,9 +756,19 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 		block_id[-1] = block_id[-1] + 1
 
 	dict_doc['body_sections'].extend(get_sections(dict_doc['pmcid'], root.find('body')))
-
 	dict_doc['float_sections']=get_sections(dict_doc['pmcid'], root.find('floats-group'))
 	dict_doc['back_sections']=get_sections(dict_doc['pmcid'], root.find('back'))
+
+	# for stats and debugging, can be commented
+	dict_doc['figures_in_body']=len(root.xpath('/article/body//fig'))
+	dict_doc['figures_in_back']=len(root.xpath('/article/back//fig'))
+	dict_doc['figures_in_float']=len(root.xpath('/article/floats-group//fig'))
+	dict_doc['tables_in_body']=len(root.xpath('/article/body//table'))
+	dict_doc['tables_in_back']=len(root.xpath('/article/back//table'))
+	dict_doc['tables_in_float']=len(root.xpath('/article/floats-group//table'))
+	dict_doc['paragraphs_in_body']=len(root.xpath('/article/body//p'))
+	dict_doc['paragraphs_in_back']=len(root.xpath('/article/back//p'))
+	dict_doc['paragraphs_in_float']=len(root.xpath('/article/floats-group//p'))
 
 	# for compatibility reasons
 	dict_doc['pmcid']='PMC' + dict_doc['pmcid']
@@ -703,25 +776,30 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 
 	return dict_doc
 
-# ------------------------------------------
-
 def get_sections(pmcid, node):
 	if node is None: return []
 	sections = handle_section_flat(pmcid, node, 1, True, block_id)
 	block_id[-1] = block_id[-1] + 1
 	return sections
 
+# Recursively visits sub-elements of node.
+# Sub-elements having a tag in kept_tags (i.e. fig, table, list) are left unchanged as well as their own sub-elements
+# Other sub-elements are removed but their text / tail are attached to the appropriate sibling or embedding element.
+def simplify_node(el, kept_tags, starting=True):
+	if starting:
+		for subel in el.iterchildren():
+			simplify_node(subel, kept_tags, False)
+	elif el.tag not in kept_tags: 	# we stringify this el
+		trg_node = el.getprevious() if el.getprevious() is not None else el.getparent()
+		trg_attr = 'tail' if el.getprevious() is not None else 'text'
+		if el.text is not None: setattr(trg_node, trg_attr, (getattr(trg_node, trg_attr) or '') + el.text)
+		for subel in el.iterchildren():
+			el.addnext(subel)
+			simplify_node(subel, kept_tags, False)
+		if el.tail is not None: setattr(trg_node, trg_attr, (getattr(trg_node ,trg_attr) or '') + el.tail)
+		el.getparent().remove(el)
 
-# ------------------------------------------
 
-
-
-
-def getPmcFtpUrl(xmlstr):
-	root = etree.fromstring(xmlstr)
-	lnk = root.xpath('/OA/records/record/link')
-	if lnk is not None and len(lnk) == 1: return lnk[0].get('href')
-	return None
 
 # - - - - - - - - - - - - - - - - -
 def main():
@@ -765,9 +843,42 @@ def main():
 		out_file.close()
 
 
-# - - - - - - - - - - - - - - - - - - -
-# ignore this, for test purpose only
-# - - - - - - - - - - - - - - - - - - -
+
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Tests (please ignore)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+def test1():
+	xmlstr="""
+<root><p id="sec1">
+The ecstasy of discovering a new hit from screening can lead to a highly productive research effort to discover new bioactive compounds. However, in too many cases this ecstasy is followed by the agony of realizing that the compounds are not active against the desired target. Many of these false hits are Pan Assay INterference compoundS (PAINS)
+<sup>
+<xref ref-type="bibr" rid="ref1">1</xref>
+</sup>
+or colloidal aggregators.
+<sup>
+<xref ref-type="bibr" rid="ref2">2</xref>
+</sup>
+Whether the screen is conducted in silico or in the laboratory and whether screening libraries, natural products, or drugs are used, all discovery efforts that rely on some form of screening to identify bioactivity are susceptible to this phenomenon. Studies that omit critical controls against experimental artifacts caused by PAINS may waste years of research effort as useless compounds are progressed.
+<sup>
+<xref ref-type="bibr" rid="ref3">3</xref>
+−
+<xref ref-type="bibr" rid="ref8">8</xref>
+</sup>
+The American Chemical Society (ACS) is eager to alert the scientific community to this problem and to recommend protocols that will eliminate the publication of research articles based on compounds with artificial activity. This editorial aims to summarize relevant concepts and to set the framework by which relevant ACS journals will address this issue going forward.
+</p>
+</root>
+"""
+	root = etree.fromstring(xmlstr)
+	#etree.strip_tags(root,'xref')
+	etree.strip_elements(root, 'sup', with_tail=False)
+	#stuff=handle_paragrap('1111',root.find('p'))
+	print(etree.tostring(root, pretty_print = True))
+	#stuff=handle_xxx(root.find('p'))
+	#print(json.dumps(stuff, sort_keys=True, indent=2))
+
 def test2():
 	parser = OptionParser()
 	root = etree.XML('<root><some>stuff before</some><fig-group><caption><p>fg caption</p></caption><fig><caption><p>fig 1 caption</p></caption></fig><fig id="totofig"><caption><p>fig 2 caption</p>something else</caption></fig></fig-group>1-hi there<child><a href="toto">2-toto href</a></child>3-something normal<b>4-something in bold</b>some tail</root>')
@@ -779,7 +890,7 @@ def test2():
 	with open('./pam.xml', 'wb') as f:
 		f.write(etree.tostring(et))
 
-def test():
+def test3():
 	parser = OptionParser()
 	xmlstr='<root><p>p1</p><sec><title>s1</title><p>p2</p></sec><p>p3</p><p>p4</p><sec><title>s2</title><p>p5</p><p>p6</p></sec></root>'
 	xmlstr='<root><sec><title>s1</title><p>p2</p></sec><sec><title>s2</title><p>p5</p><p>p6</p></sec></root>'
@@ -791,10 +902,122 @@ def test():
 	print(json.dumps(stuff, sort_keys=True, indent=2))
 	#parse_PMC_XML()
 
+def test4():
+	xmlstr="""
+<root>
+	<p>test before list 1
+		<list list-type="simple" id="l1">
+			<list-item><p>item 1.1</p></list-item>
+			<list-item><p>item 1.2</p></list-item>
+		</list>text after list 1 or before list 2
+		<list list-type="simple" id="l2">
+			<list-item><p>item 2.1</p></list-item>
+			<list-item><p>item 2.2</p></list-item>
+		</list></p>text after para
+</root>
+"""
+	root = etree.fromstring(xmlstr)
+	etree.strip_tags(root,'xref')
+	etree.strip_elements(root, 'xref', with_tail=True)
+	p = root.find('p')
+	result = []
+	result.append(clean_string(p.text))
+	for l in p:
+		for li in l:
+			result.append(get_clean_text(li))
+		result.append(clean_string(l.tail))
+	result.append(clean_string(p.tail))
+	print(result)
+	print
+	n=root.find(('p/list'))
+	n.getparent().remove(n)
+	print(etree.tostring(root, pretty_print=True))
+	#print('p.text:' + p.text)
+	#print('p.tail:' + p.tail)
+	#stuff=handle_paragraph('1111',p)
+	#print(json.dumps(stuff, sort_keys=True, indent=2))
 
-# - - - - - - -
+
+def test5():
+	xmlstr="""<root><p>c1<tag1>c2</tag1>c3<tag2>c4<tag21>c5</tag21>c6</tag2>c7<tag3>c8</tag3>c9<tag4>c10</tag4>c11</p></root>"""
+	root = etree.fromstring(xmlstr)
+	#tags_to_keep=set(['tag3'])
+	node = root.find('p')
+	#tags_to_strip=set()
+	print(etree.tostring(root, pretty_print = True))
+	kept_tags = sys.argv[1].split(',') if len(sys.argv)>1 else []
+	print('kept tags: ' + str(kept_tags))
+	simplify_node(node, kept_tags)
+	print(etree.tostring(root, pretty_print = True))
+	#stuff=handle_paragraph('1111',root.find('p'))
+	#print(json.dumps(stuff, sort_keys=True, indent=2))
+
+def test6():
+	xmlstr="""<root>
+	<pub-date pub-type="ppub">
+		<day>24</day>
+		<month>17</month>
+		<year>2019</year>
+		</pub-date>
+</root>"""
+	root = etree.fromstring(xmlstr)
+	x = get_pub_date_by_type(root,'.//pub-date',None, 'd-M-yyyy')
+	print(str(x['date']) + ' - ' + x['status'])
+	x = get_pub_date_by_type(root,'.//pub-date',None, 'yyyy')
+	print(str(x['date']) + ' - ' + x['status'])
+	x = get_pub_date_by_type(root,'.//pub-date',None, None)
+	print(str(x['date']) + ' - ' + x['status'])
+
+
+# <mml:math id="M1" overflow="scroll">
+# 	<mml:mi mathvariant="script">O</mml:mi>
+# 	<mml:mo>(</mml:mo>
+# 	<mml:mi>n</mml:mi>
+# 	<mml:mo>log</mml:mo>
+# 	<mml:mi>n</mml:mi>
+# 	<mml:mo>)</mml:mo>
+# </mml:math>
+
+# OK
+# <mml:math id="M1" overflow="scroll">
+# 	<mml:mi mathvariant="script">O</mml:mi>
+# 	<mml:mo>(</mml:mo>
+# 	<mml:mi>n</mml:mi>
+# 	<mml:mo>log</mml:mo>
+# 	<mml:mi>n</mml:mi>
+# 	<mml:mo>)</mml:mo>
+# </mml:math>
+
+def test():
+	xmlstr="""<root xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML"><p>
+	Crochemore’s repetitions algorithm, also referred to as Crochemore’s partitioning algorithm, was introduced in 1981, and was the first optimal
+	<inline-formula>
+	<mml:math id="M1" overflow="scroll">
+		<mml:mi mathvariant="script">O</mml:mi>
+		<mml:mo>(</mml:mo>
+		<mml:mi>n</mml:mi>
+		<mml:mo>log</mml:mo>
+		<mml:mi>n</mml:mi>
+		<mml:mo>)</mml:mo>
+	</mml:math>
+	</inline-formula>
+	-time algorithm to compute all repetitions in a string of length
+	<italic>n</italic>
+	. </p></root>"""
+	root = etree.fromstring(xmlstr)
+	thing = root.xpath('p')
+	print('type:')
+	print(type(thing))
+	x = get_clean_text(thing)
+	print(x)
+
+
+
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # globals
-# - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 file_status = {'name':'', 'errors':[]}
 block_id=[]
 
