@@ -288,6 +288,13 @@ def handle_boxed_text_elements(someroot):
 	for bt in bt_list: bt.getparent().remove(bt)
 	file_status_add_error('WARNING: removed some <boxed-text> element(s)')
 
+
+def remove_alternative_title_if_redundant(someroot):
+	ttl = someroot.find('./front/article-meta/title-group/article-title')
+	alt = someroot.find('./front/article-meta/title-group/alt-title')
+	if ttl is not  None and alt is not None: alt.getparent().remove(alt)
+
+
 # we remove all elements and their subtree having tag in tag_list
 def remove_subtree_of_elements(someroot, tag_list):
 	el_list = someroot.iter(tag_list)
@@ -694,6 +701,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	handle_fig_group_elements(root)
 	remove_embedding_group_elements(root,'fn')  # removes  fn-group wrapper (foot-notes)
 	remove_embedding_group_elements(root,'app') # removes app-group wrapper (appendices)
+	remove_alternative_title_if_redundant(root)
 	# End preprocessing
 
 
@@ -711,6 +719,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['medline_ta'] = get_text_from_xpath(root, '/article/front/journal-meta/journal-id', False, True)
 
 	dict_doc['journal'] = get_multiple_texts_from_xpath(root, '/article/front/journal-meta//journal-title', True)
+
 
 	# note: I did not see any multiple <article-title> elements but we retrieve each element of the hypothetical list just in case
 	#dict_doc['title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group/article-title', True)
