@@ -1,10 +1,11 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import json
-import http.client
-from ftplib import FTP
-from process_xml import parse_PMC_XML,getPmcFtpUrl
-import tarfile
 import os
+import json
+import tarfile
+from ftplib import FTP
+import http.client
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from process_xml import parse_PMC_XML,getPmcFtpUrl
+from pseudo_annot import get_pseudo_annotations
 
 def getPmcXml(pmcid):
 
@@ -82,6 +83,20 @@ def getFtpArchiveUrl(pmcid):
     if output["status"] == 200:
         ftpurl = getPmcFtpUrl(output["data"])
     return ftpurl
+
+def add_pseudo_annot(obj):
+    annotations=list()
+    obj['annotations']=annotations
+    annotated_contents=0
+    for s in obj['body_sections']:
+        for c in s['contents']:
+            if c['tag'] == 'p':
+                a_list = get_pseudo_annotations(c['text'], c['id'])
+                annotations.extend(a_list)
+                annotated_contents = annotated_contents + 1
+                if annotated_contents >= 10:
+                    return
+
 
 def saveFileFromFtp(ftpurl):
     #
@@ -166,6 +181,7 @@ class GP(BaseHTTPRequestHandler):
             if output['status']==200:
                 xmlstr=output['data']
                 obj = parse_PMC_XML(xmlstr)
+                if use_pseudo_annot: add_pseudo_annot(obj)
                 response = self.buildSuccessResponseObject(self.path, obj)
                 self.sendJsonResponse(response, 200)
                 return
@@ -192,4 +208,8 @@ def run(server_class=HTTPServer, handler_class=GP, port=8088):
     print('Server running at localhost:8088...')
     httpd.serve_forever()
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Main
+# - - - - - - - - - - - - - - - - - - - - - - - - - -
+use_pseudo_annot=True
 run()
