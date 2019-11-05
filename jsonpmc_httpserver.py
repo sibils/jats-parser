@@ -14,9 +14,7 @@ def getSibilsPubli(pmcid):
     response = connection.getresponse()
     output={}
     output["status"]=response.status
-    #print("status:" + str(output["status"]))
     output["reason"]=response.reason
-    #print("reason:" + str(output["reason"]))
     data = response.read().decode("utf-8")
     #print("data:" + data[0:100] + " ... " + data[-100:len(data)])
     # some reformatting...
@@ -224,7 +222,9 @@ class GP(BaseHTTPRequestHandler):
             print(msg)
             output = getSibilsPubli(pmcid)
             if output['status']==200:
-                self.sendJsonResponse(output, 200)
+                obj=output['data']
+                response = self.buildSuccessResponseObject(self.path, obj)
+                self.sendJsonResponse(response, 200)
                 return
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
