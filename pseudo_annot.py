@@ -47,7 +47,7 @@ def build_annot(w, w_offset, psg, offset, id):
     annot['preferred_term']=w
     annot['passage']=psg
     annot['content_id']=id
-    annot['concept_offset']=offset+w_offset
+    annot['concept_offset']=w_offset
     annot['concept_length']=len(w)
     annot['passage_offset']=offset
     annot['passage_length']=len(psg)
