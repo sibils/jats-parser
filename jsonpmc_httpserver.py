@@ -7,6 +7,30 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from process_xml import parse_PMC_XML,getPmcFtpUrl
 from pseudo_annot import get_pseudo_annotations
 
+def getSibilsPubli(pmcid):
+    connection = http.client.HTTPConnection("candy.hesge.ch")
+    url = '/SIBiLS/PMC/fetch_PAM.jsp?ids=' + pmcid + '&with_annotations'
+    connection.request("GET", url)
+    response = connection.getresponse()
+    output={}
+    output["status"]=response.status
+    #print("status:" + str(output["status"]))
+    output["reason"]=response.reason
+    #print("reason:" + str(output["reason"]))
+    data = response.read().decode("utf-8")
+    #print("data:" + data[0:100] + " ... " + data[-100:len(data)])
+    # some reformatting...
+    obj = json.loads(data)
+    if len(obj)==1:
+        obj = obj[0]
+        if obj.get('annotations') is None and obj.get('annotation') is not None:
+            obj['annotations'] = obj.pop('annotation')
+    else:
+        obj = null
+    output["data"]= obj
+    connection.close()
+    return output
+
 def getPmcXml(pmcid):
 
     # create local cache dir if not yet exists
@@ -146,6 +170,10 @@ class GP(BaseHTTPRequestHandler):
         response['data']=data
         return response
 
+    def sendStringAsJsonResponse(self, str, statusCode):
+        self._set_headers(statusCode, 'application/json')
+        self.wfile.write(bytes(str,'utf-8'))
+
     def sendJsonResponse(self, obj, statusCode):
         str = json.dumps(obj, sort_keys=True, indent=2)
         self._set_headers(statusCode, 'application/json')
@@ -184,6 +212,19 @@ class GP(BaseHTTPRequestHandler):
                 if use_pseudo_annot: add_pseudo_annot(obj)
                 response = self.buildSuccessResponseObject(self.path, obj)
                 self.sendJsonResponse(response, 200)
+                return
+            else:
+                error_msg = str(output['status']) + ' - ' + output['reason']
+
+        elif self.path[0:12]=='/sibils/pmc/':
+            parts=self.path[12:].split('?')
+            pmcid = parts[0]
+            if pmcid[0:3]!="PMC": pmcid= "PMC" + pmcid
+            msg = 'getting sibils data for pmcid: ' + pmcid
+            print(msg)
+            output = getSibilsPubli(pmcid)
+            if output['status']==200:
+                self.sendJsonResponse(output, 200)
                 return
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
