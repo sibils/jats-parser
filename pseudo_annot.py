@@ -2,11 +2,11 @@ import random
 
 def get_pseudo_annotations(sometext, id):
     passages = split_text(sometext);
-    print('nb.psg: ' + str(len(passages)))
+    #print('nb.psg: ' + str(len(passages)))
     annotations = list()
     offset=0
     for p in passages:
-        print('> psg: ' + p)
+        #print('> psg: ' + p)
         annotations.extend(get_annotations(p, offset, id))
         offset = offset + len(p) + 2
     return annotations
@@ -19,13 +19,13 @@ def get_annotations(psg, offset, id):
     words = psg.split(' ')
     word_cnt = len(words)
     if word_cnt < 3: return list()
-    print('nb.words: ' + str(word_cnt))
+    #print('nb.words: ' + str(word_cnt))
 
     max_annot = int(word_cnt / 3)
     if max_annot > 3: max_annot = 3
     sample = random.sample( range(0, word_cnt-1) , max_annot)
     sample.sort()
-    print(sample)
+    #print(sample)
     w_offset=0
     w_idx=0
     for w in words:
