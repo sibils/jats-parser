@@ -109,15 +109,20 @@ def getFtpArchiveUrl(pmcid):
 def add_pseudo_annot(obj):
     annotations=list()
     obj['annotations']=annotations
-    annotated_contents=0
+    annotated_para=0
+    annotated_capt=0
     for s in obj['body_sections']:
         for c in s['contents']:
             if c['tag'] == 'p':
+                if annotated_para > 10: continue
                 a_list = get_pseudo_annotations(c['text'], c['id'])
                 annotations.extend(a_list)
-                annotated_contents = annotated_contents + 1
-                if annotated_contents >= 10:
-                    return
+                annotated_para = annotated_para + 1
+            if c['tag'] == 'fig' or c['tag'] == 'table':
+                if annotated_capt > 10: continue
+                a_list = get_pseudo_annotations(c['caption'], c['id'])
+                annotations.extend(a_list)
+                annotated_capt = annotated_capt + 1
 
 
 def saveFileFromFtp(ftpurl):
