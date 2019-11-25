@@ -651,6 +651,9 @@ def file_status_print():
 # used by jsonpmc_httpserver.py
 # - - - - - - - - - - - - - - - - - - - - - - - -
 def parse_PMC_XML(xmlstr):
+	if xmlstr.startswith("""<?xml version="1.0" encoding="UTF-8"?>""") :
+		print("WARNING: removed encoding declaration header from xml file")
+		xmlstr = xmlstr[38:]
 	return parse_PMC_XML_core(xmlstr,None, None)
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -659,7 +662,12 @@ def parse_PMC_XML(xmlstr):
 def getPmcFtpUrl(xmlstr):
 	root = etree.fromstring(xmlstr)
 	lnk = root.xpath('/OA/records/record/link')
-	if lnk is not None and len(lnk) == 1: return lnk[0].get('href')
+	if lnk is not None:
+		if len(lnk) == 1: return lnk[0].get('href')
+		if len(lnk) >  1:
+			print("WARNING: multiple archives available on ftp, choosing format tgz")
+			for itm in lnk:
+				if itm.get('format')=='tgz': return itm.get('href')
 	return None
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1031,5 +1039,5 @@ file_status = {'name':'', 'errors':[]}
 block_id=[]
 
 if __name__ == '__main__':
-	test()
-	#main()
+	#test()
+	main()
