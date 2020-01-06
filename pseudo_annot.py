@@ -38,7 +38,7 @@ def get_annotations(psg, offset, id):
 
 def build_annot(w, w_offset, psg, offset, id):
     annot=dict()
-    annot['type']='TYP:MyTyo'
+    annot['type']='TYP:MyType'
     annot['concept_source']='SRC:MySrc'
     annot['version']='28-10-2019'
     annot['concept_id']='ID:myId'
