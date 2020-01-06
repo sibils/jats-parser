@@ -11,6 +11,7 @@ def getSibilsPubli(pmcid):
     connection = http.client.HTTPConnection("candy.hesge.ch")
     url = '/SIBiLS/PMC/fetch_deprecated.jsp?ids=' + pmcid + '&with_annotations'
     #url = '/SIBiLS/PMC/fetch_PAM.jsp?ids=' + pmcid + '&with_annotations'
+    #url = '/SIBiLS/PMC/fetch.jsp?ids=' + pmcid + '&with_annotations'
     connection.request("GET", url)
     response = connection.getresponse()
     output={}

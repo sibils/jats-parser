@@ -138,6 +138,7 @@ def get_pub_date_by_type(someroot,selector,pubtype,format):
 	mm = '01'
 	if mnode is not None and mnode.text is not None:
 		mm = mnode.text
+		if len(mm)==1: mm="0" + mm
 	else:
 		status = 'incomplete'
 	mmm_names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -150,6 +151,7 @@ def get_pub_date_by_type(someroot,selector,pubtype,format):
 	day = '01'
 	if dnode is not None and dnode.text is not None:
 		day = dnode.text
+		if len(day)==1: day = "0" + day
 	else:
 		status = 'incomplete'
 
