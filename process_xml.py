@@ -7,6 +7,7 @@ import codecs
 import os
 import glob
 import json
+import re
 from optparse import OptionParser
 from datetime import datetime
 from lxml import etree
@@ -16,14 +17,29 @@ from unidecode import unidecode
 
 def get_file_content(name):
 	f = open(name,'r')
-	# we remove this header which is redundant and puzzles the lxml parser
-	if f.readline()== '<?xml version="1.0" encoding="UTF-8"?>\n':
-		print('got header about UTF-8 encoding, will skip it')
-	else:
-		f.seek(0)
-	f_text=f.read()
+	#first_line = f.readline()
+	#forbidden_header =  '<?xml version="1.0" encoding="UTF-8"?>'
+	#if first_line.startswith(forbidden_header):
+	#	first_line = first_line[len(forbidden_header):]
+	#	print('got header about UTF-8 encoding, will skip it')
+	#f_text = first_line + f.read()
+	f_text = f.read()
 	f.close()
 	return f_text
+
+def cleanup_input_xml(xmlstr):
+	# we remove this header which is redundant and puzzles the lxml parser
+	# not needed (implicitly done below)
+	#xmlstr = xmlstr.replace('<?xml version="1.0" encoding="UTF-8"?>', '', 1)
+	# we remove everything before first appearance of <article...>
+	pos = xmlstr.index("<article")
+	xmlstr = xmlstr[pos:]
+	# we remove everything after last appearance of </article>
+	pos = xmlstr.rindex("</article>") + 10
+	xmlstr = xmlstr[0:pos]
+	# we remove any default namespace in document
+	xmlstr = re.sub('xmlns="\S+"', '', xmlstr)
+	return xmlstr
 
 # helper function, used for stats printing
 def get_cardinality(n):
@@ -653,9 +669,9 @@ def file_status_print():
 # used by jsonpmc_httpserver.py
 # - - - - - - - - - - - - - - - - - - - - - - - -
 def parse_PMC_XML(xmlstr):
-	if xmlstr.startswith("""<?xml version="1.0" encoding="UTF-8"?>""") :
-		print("WARNING: removed encoding declaration header from xml file")
-		xmlstr = xmlstr[38:]
+	#if xmlstr.startswith("""<?xml version="1.0" encoding="UTF-8"?>""") :
+	#	print("WARNING: removed encoding declaration header from xml file")
+	#	xmlstr = xmlstr[38:]
 	return parse_PMC_XML_core(xmlstr,None, None)
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -675,11 +691,29 @@ def getPmcFtpUrl(xmlstr):
 # - - - - - - - - - - - - - - - - - - - - - - - -
 
 def parse_PMC_XML_core(xmlstr, root, input_file):
+
+	xmlstr = cleanup_input_xml(xmlstr)
+
 	if root is None:
 		root = etree.fromstring(xmlstr)
 
 	if input_file is None:
 		input_file = '(unknown file name)'
+
+
+	node = root.find('.//article')
+	print("article: " + str(node))
+
+	node = root.find('.//GetRecord')
+	print("GetRecord: " + str(node))
+
+	node = root.find('./OAI-PMH')
+	print("OAI-PMH: " + str(node))
+
+	node = root.find('.')
+	print("root tag    : " + str(node.tag))
+	print("root prefix : " + str(node.prefix))
+
 
 	# (re)init stats variable
 	file_status_reset()
@@ -736,8 +770,15 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group', True)
 	dict_doc['pmid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmid"]', True, False)
 	dict_doc['doi'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="doi"]', True, False)
-	dict_doc['pmcid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, True)
-	dict_doc['_id'] = dict_doc['pmcid']
+
+	# we might find at least one of these:
+	pmc1 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc-uid"]', True, False)
+	pmc2 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, False)
+	pmc = pmc1
+	if pmc == '': pmc = pmc2
+	if pmc == '':  file_status_add_error("ERROR, no value for article-id pmc-uid nor pmc")
+	dict_doc['pmcid'] = pmc
+	dict_doc['_id'] = pmc
 
 	# ok with Julien, see precedence rules in def get_pub_date()
 	dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')['date']
@@ -836,31 +877,35 @@ def main():
 	file_status_set_name(input_file)
 	print('------ ' + str(datetime.now()) + ' ' + input_file)
 	xmlstr=get_file_content(input_file)
+	xmlstr=cleanup_input_xml(xmlstr)
+	# print("========")
+	# print(xmlstr[0:600])
+	# print("...")
+	# print(xmlstr[-600:])
+	# print("========")
 	root = etree.fromstring(xmlstr)
 
 	lines = get_fig_parents(input_file,root)
 	lines.extend(get_tw_parents(input_file,root))
 	for l in lines: print(l)
 
-	normal = True
-	if normal:
-		dict_doc = parse_PMC_XML_core(xmlstr,root,input_file)
-		if len(dict_doc['body_sections'])<2: file_status_add_error("ERROR: no section after title")
-		if not file_status_ok(): file_status_print()
-		print(get_stats(input_file,root))
-		print(get_body_structure(input_file,root))
-		output_file='outfile'
-		subdir='out'
-		if 'pmcid' in dict_doc.keys():
-			subdir = subdir + '/' + dict_doc['pmcid'][0:2]
-			output_file = 'pmc'+ dict_doc['pmcid']
-		if not os.path.exists(subdir):
-			os.makedirs(subdir)
-		output_file += '.json'
-		out_file = codecs.open(subdir + '/' + output_file,'w','utf-8')
-		out_file.write(json.dumps(dict_doc, sort_keys=True, indent=2))
-		out_file.close()
-
+	dict_doc = parse_PMC_XML_core(xmlstr,root,input_file)
+	if len(dict_doc['body_sections'])<2: file_status_add_error("ERROR: no section after title")
+	if not file_status_ok(): file_status_print()
+	print(get_stats(input_file,root))
+	print(get_body_structure(input_file,root))
+	output_file='outfile'
+	subdir='out'
+	if 'pmcid' in dict_doc.keys():
+		subdir = subdir + '/' + dict_doc['pmcid'][0:2]
+		output_file = 'pmc'+ dict_doc['pmcid']
+	if not os.path.exists(subdir):
+		os.makedirs(subdir)
+	output_file += '.json'
+	out_file = codecs.open(subdir + '/' + output_file,'w','utf-8')
+	out_file.write(json.dumps(dict_doc, sort_keys=True, indent=2))
+	out_file.close()
+	print("output file is " + subdir + '/' + output_file)
 
 
 

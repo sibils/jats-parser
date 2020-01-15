@@ -1,0 +1,1094 @@
+<?xml version="1.0" encoding="UTF-8"?><OAI-PMH
+	xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"><responseDate>2020-01-15T09:49:17Z</responseDate><request verb="GetRecord" identifier="oai:pubmedcentral.nih.gov:156895" metadataPrefix="pmc">https:/www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi</request><GetRecord><record><header><identifier>oai:pubmedcentral.nih.gov:156895</identifier><datestamp>2003-06-10</datestamp><setSpec>bmccb</setSpec><setSpec>pmc-open</setSpec></header><metadata><article xmlns="https://dtd.nlm.nih.gov/ns/archiving/2.3/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="https://dtd.nlm.nih.gov/ns/archiving/2.3/ https://dtd.nlm.nih.gov/archiving/2.3/xsd/archivearticle.xsd" article-type="research-article">
+  <front>
+    <journal-meta>
+      <journal-id journal-id-type="nlm-ta">BMC Cell Biol</journal-id>
+      <journal-title>BMC Cell Biology</journal-title>
+      <issn pub-type="epub">1471-2121</issn>
+      <publisher>
+        <publisher-name>BioMed Central</publisher-name>
+        <publisher-loc>London</publisher-loc>
+      </publisher>
+    </journal-meta>
+    <article-meta>
+      <article-id pub-id-type="accession">PMC156895</article-id>
+      <article-id pub-id-type="pmcid">PMC156895</article-id>
+      <article-id pub-id-type="pmc-uid">156895</article-id>
+      <article-id pub-id-type="pmid">12729465</article-id>
+      <article-id pub-id-type="publisher-id">1471-2121-4-4</article-id>
+      <article-id pub-id-type="pmid">12729465</article-id>
+      <article-id pub-id-type="doi">10.1186/1471-2121-4-4</article-id>
+      <article-categories>
+        <subj-group subj-group-type="heading">
+          <subject>Research Article</subject>
+        </subj-group>
+      </article-categories>
+      <title-group>
+        <article-title>Wnt/Wingless signaling through β-catenin requires the function of both LRP/Arrow and frizzled classes of receptors</article-title>
+      </title-group>
+      <contrib-group>
+        <contrib id="A1" corresp="yes" contrib-type="author">
+          <name>
+            <surname>Schweizer</surname>
+            <given-names>Liang</given-names>
+          </name>
+          <xref ref-type="aff" rid="I1">1</xref>
+          <email>schweizl@mskcc.org</email>
+        </contrib>
+        <contrib id="A2" contrib-type="author">
+          <name>
+            <surname>Varmus</surname>
+            <given-names>Harold</given-names>
+          </name>
+          <xref ref-type="aff" rid="I1">1</xref>
+          <email>varmus@mskcc.org</email>
+        </contrib>
+      </contrib-group>
+      <aff id="I1"><label>1</label>Cell Biology Program, Sloan-Kettering Institute for Cancer Research, 1275 York Avenue, New York, NY 10021, USA</aff>
+      <pub-date pub-type="collection">
+        <year>2003</year>
+      </pub-date>
+      <pub-date pub-type="epub">
+        <day>2</day>
+        <month>5</month>
+        <year>2003</year>
+      </pub-date>
+      <volume>4</volume>
+      <fpage>4</fpage>
+      <lpage>4</lpage>
+      <ext-link ext-link-type="uri" xlink:href="http://www.biomedcentral.com/1471-2121/4/4"/>
+      <history>
+        <date date-type="received">
+          <day>24</day>
+          <month>2</month>
+          <year>2003</year>
+        </date>
+        <date date-type="accepted">
+          <day>2</day>
+          <month>5</month>
+          <year>2003</year>
+        </date>
+      </history>
+      <permissions>
+        <copyright-statement>Copyright © 2003 Schweizer and Varmus; licensee BioMed Central Ltd. This is an Open Access article: verbatim copying and redistribution of this article are permitted in all media for any purpose, provided this notice is preserved along with the article's original URL.</copyright-statement>
+        <copyright-year>2003</copyright-year>
+        <copyright-holder>Schweizer and Varmus; licensee BioMed Central Ltd. This is an Open Access article: verbatim copying and redistribution of this article are permitted in all media for any purpose, provided this notice is preserved along with the article's original URL.</copyright-holder>
+      </permissions>
+      <abstract>
+        <sec>
+          <title>Background</title>
+          <p>Wnt/Wingless (Wg) signals are transduced by seven-transmembrane Frizzleds (Fzs) and the single-transmembrane LDL-receptor-related proteins 5 or 6 (LRP5/6) or Arrow. The aminotermini of LRP and Fz were reported to associate only in the presence of Wnt, implying that Wnt ligands form a trimeric complex with two different receptors. However, it was recently reported that LRPs activate the Wnt/β-catenin pathway by binding to Axin in a Dishevelled – independent manner, while Fzs transduce Wnt signals through Dishevelled to stabilize β-catenin. Thus, it is possible that Wnt proteins form separate complexes with Fzs and LRPs, transducing Wnt signals separately, but converging downstream in the Wnt/β-catenin pathway. The question then arises whether both receptors are absolutely required to transduce Wnt signals.</p>
+        </sec>
+        <sec>
+          <title>Results</title>
+          <p>We have established a sensitive luciferase reporter assay in <italic>Drosophila </italic>S2 cells to determine the level of Wg – stimulated signaling. We demonstrate here that Wg can synergize with DFz2 and function cooperatively with LRP to activate the β-catenin/Armadillo signaling pathway. Double-strand RNA interference that disrupts the synthesis of either receptor type dramatically impairs Wg signaling activity. Importantly, the pronounced synergistic effect of adding Wg and DFz2 is dependent on Arrow and Dishevelled. The synergy requires the cysteine-rich extracellular domain of DFz2, but not its carboxyterminus. Finally, mammalian LRP6 and its activated forms, which lack most of the extracellular domain of the protein, can activate the Wg signaling pathway and cooperate with Wg and DFz2 in S2 cells. We also show that the aminoterminus of LRP/Arr is required for the synergy between Wg and DFz2.</p>
+        </sec>
+        <sec>
+          <title>Conclusion</title>
+          <p>Our study indicates that Wg signal transduction in S2 cells depends on the function of both LRPs and DFz2, and the results are consistent with the proposal that Wnt/Wg signals through the aminoterminal domains of its dual receptors, activating target genes through Dishevelled.</p>
+        </sec>
+      </abstract>
+    </article-meta>
+  </front>
+  <body>
+    <sec>
+      <title>Background</title>
+      <p>The secreted glycoproteins in the Wnt/Wingless (Wg) family serve diverse functions in developmental processes, ranging from cell fate specification and cell proliferation to cell migration and cell polarity [<xref ref-type="bibr" rid="B1">1</xref>,<xref ref-type="bibr" rid="B2">2</xref>], and deregulation of the Wnt signaling pathway can lead to cancer [<xref ref-type="bibr" rid="B3">3</xref>,<xref ref-type="bibr" rid="B4">4</xref>]. In a simplified model of the canonical Wnt/β-catenin signaling pathway, the binding of Wnts to their receptors activates a downstream component, Dishevelled (Dsh). Dsh in turn inhibits glycogen synthase kinase (GSK)-3β in the β-catenin destruction complex, which mainly consists of Axin, GSK-3β, adenomatous polyposis coli (APC) and β-catenin. Consequently, the level of cytoplasmic β-catenin rises, and stabilized β-catenin, together with the transcriptional factor LEF/TCF, regulates the transcription of Wnt target genes.</p>
+      <p>The mechanism by which the Wnt signal is transduced through its transmembrane receptors is not clear. Wnt proteins have been shown to bind to Frizzleds (Fzs), which are seven-transmembrane receptors [<xref ref-type="bibr" rid="B5">5</xref>,<xref ref-type="bibr" rid="B6">6</xref>]. The binding of Wnts occurs within an aminoterminal cysteine-rich-domain (CRD) of Fzs. At least 11 vertebrate and 4 <italic>Drosophila </italic>Fz genes <ext-link ext-link-type="uri" xlink:href="http://www.stanford.edu/~rnusse/wntwindow.html"/> have been identified. However, their functions and ligand specificities remain to be understood. Recently, it was reported that two single-transmembrane proteins of the LDL-receptor-related proteins (LRP) family, LRP5 and LRP6, are also involved in receiving the Wnt signal [<xref ref-type="bibr" rid="B7">7</xref>-<xref ref-type="bibr" rid="B9">9</xref>]. <italic>Drosophila </italic>Arrow (Arr), which is homologous to murine and human LRP5 and LRP6, was shown to be essential for Wg signaling. Genetic data from flies and mice indicate that Arr and LRP6 play a positive role in Wnt signaling [<xref ref-type="bibr" rid="B7">7</xref>,<xref ref-type="bibr" rid="B9">9</xref>]. A genetic epistasis experiment placed Arr between Wg and Dsh [<xref ref-type="bibr" rid="B9">9</xref>], acting in parallel or downstream of DFz. In addition, LRP6 has been reported to bind Wnt-1 and to associate with Fz in a Wnt-dependent manner [<xref ref-type="bibr" rid="B8">8</xref>]. Taken together, these results support a co-receptor model: upon exposure to Wnts, LRP5 or LRP6 forms a complex with Wnt and Fzs, transducing the Wnt signal downstream to stabilize cytoplasmic β-catenin. Consistent with this, it has been demonstrated that Dickkopf-1 inhibits Wnt/β-catenin signaling by binding to LRP5 or LRP6 to prevent Wnt-receptor complex formation [<xref ref-type="bibr" rid="B10">10</xref>-<xref ref-type="bibr" rid="B12">12</xref>].</p>
+      <p>Alternatively, however, it is possible that Wnt/Wg can signal through LRP/Arr in the absence of Fzs. In agreement with this possibility, an intracellular domain of LRP5 was reported to interact directly with Axin [<xref ref-type="bibr" rid="B13">13</xref>], and Wnt signaling appears to stimulate the recruitment of Axin to LRP5 at the membrane, where Axin is degraded. Furthermore, it was reported that LRP signaling can be activated in a Dsh – independent fashion [<xref ref-type="bibr" rid="B14">14</xref>]. These data suggest that Wnt/Wg could signal through LRP directly to the β-catenin destruction complex in a Fz- and Dsh-independent fashion.</p>
+      <p>To evaluate whether Fzs are required for the transduction of Wnt/Wg signaling in the presence of LRPs, we have established a sensitive method to measure Wg signaling activities using a LEF-luciferase reporter in <italic>Drosophila </italic>S2 cells. We show that DFz2 and LRP/Arr cooperate with Wg to activate the signaling pathway. Using a double-strand RNA interference (dsRNAi) technique designed to eliminate specific proteins [<xref ref-type="bibr" rid="B15">15</xref>,<xref ref-type="bibr" rid="B16">16</xref>], such as Arr, DFz2 and Dsh, we have developed strong evidence that Wg requires both types of receptors to transduce a signal efficiently through Dsh to stabilize β-catenin.</p>
+    </sec>
+    <sec>
+      <title>Results</title>
+      <sec>
+        <title>Wg and its receptors Arr and DFz2 can activate LEF-dependent transcription</title>
+        <p>We wished to ask whether Wnt/Wg can signal through LRP/Arrow in the absence of Fz. Since 4 Fz genes have been identified in <italic>Drosophila</italic>, compared to 11 Fz genes in vertebrates, we decided to use <italic>Drosophila </italic>S2 cells for these experiments. In earlier reports, Northern blot hybridization and RT-PCR failed to detect DFz1, DFz2, and DFz3 in S2 cells [<xref ref-type="bibr" rid="B6">6</xref>,<xref ref-type="bibr" rid="B17">17</xref>,<xref ref-type="bibr" rid="B18">18</xref>]. Using a one-step RT-PCR assay to measure the expression levels of all 4 DFzs and Arr in the same S2 cells used by Yanagawa <italic>et al</italic>. (Figure <xref ref-type="fig" rid="F1">1A</xref>), we detected DFz2, DFz3, and Arr mRNAs, but not DFz1 and DFz4 mRNAs after 40 cycles of amplification. In contrast, in mbn-2 cells all 4 DFzs mRNAs were detected by this procedure. No PCR products were found when reverse transcriptase was omitted from the reactions, eliminating the possibility that the results were due to contamination with genomic DNA. All of the PCR products were gel-purified and sequenced to confirm that they contain the expected Fz sequences (data not shown). Thus S2 cells express mRNAs for Arr, DFz2 and DFz3, but mRNAs for DFz1 and DFz4 are either absent or below levels required for detection with our RT-PCR assay.</p>
+        <fig position="float" id="F1">
+          <label>Figure 1</label>
+          <caption>
+            <p><bold>The expression of Wg dual receptors and their activities in S2 cells. </bold>One-step RT-PCR was performed to study the expression of Arr and DFz2 in mbn-2 cells and S2 cells (A). 0.1 μg RNA from each cell line served as the template, and primers for Arr and DFz1, 2, 3 and 4 (see Methods) were used for the RT-PCR reactions. (B) S2 cells were transfected with the indicated plasmids and the plasmids as described in Methods. Fold-activation values were measured relative to the levels of luciferase activity in cells transfected with empty vectors and normalized by <italic>Renilla </italic>luciferase activities. These values are plotted as a log function. Averages of the fold-activation are indicated above each column. All experiments were done in triplicate; error bars represent standard deviations.</p>
+          </caption>
+          <graphic xlink:href="1471-2121-4-4-1"/>
+        </fig>
+        <p>Previous studies have measured the abundance of Armadillo (Arm), a <italic>Drosophila </italic>homologue of β-catenin, to assess Wg signaling in S2 cells. We adapted a LEF-luciferase reporter system [<xref ref-type="bibr" rid="B19">19</xref>] to monitor β-catenin-mediated Wg signaling in S2 cells, a more quantitative and convenient assay. The luciferase reporter plasmid, which has multiple LEF-1 binding sites, was cotransfected into S2 cells with the coding sequence for mouse LEF-1 in the <italic>Drosophila </italic>expression vector pPacPL. <italic>Renilla </italic>luciferase was included as a transfection control. The activation of Wnt signaling by various effectors in pPacPL was then determined by measurement of relative luciferase activity (Figure <xref ref-type="fig" rid="F1">1B</xref>).</p>
+        <p>Transient transfection of a Wg expression plasmid activated LEF-dependent transcription 34-fold; this result was not changed by co-transfection with an Arr plasmid (which also had no effect in the absence of Wg), implying either that Arr levels were not limiting or that Arr was not required for Wg effects. In contrast, co-transfection with a DFz2 plasmid augmented Wg signaling more than 1000-fold above control levels and about 30-fold above levels observed with Wg alone, suggesting that DFz2 was required for efficient Wg signaling and, although detectable in S2 cells, was present in limiting amounts. The DFz2 plasmid had a small but significant effect without addition of Wg, but the addition of Arr plasmid had little or no effect on DFz2 activity in the presence or absence of Wg plasmid (Figure <xref ref-type="fig" rid="F1">1B</xref>).</p>
+      </sec>
+      <sec>
+        <title>Wg signaling is impaired with the loss of function of DFz2 or Arr</title>
+        <p>Results in the preceding section indicate that DFz2 has an important role in transducing a Wg signal in S2 cells, but do not reveal whether Arr also has a role in concert with, or independent of, Fz-mediated signaling. To explore these issues, we used dsRNAi to reduce the levels of Arr and DFz2 RNAs in S2 cells in which Wg signaling was stimulated, since others have shown that the expression of endogenous genes in these cells can be eliminated or reduced by direct application of T7-transcribed dsRNAs [<xref ref-type="bibr" rid="B15">15</xref>,<xref ref-type="bibr" rid="B16">16</xref>]. Using this approach (Figure <xref ref-type="fig" rid="F2">2</xref>), we found that the previously observed, approximately 30-fold stimulation of luciferase activity by the Wg expression plasmid was reduced by 70% or more when S2 cells were co-transfected with inhibitory RNAs for Arr, DFz2, or both (Figure <xref ref-type="fig" rid="F2">2A</xref>), implying that endogenous levels of both types of receptor are required for an efficient response to Wg. The extensive inhibition with either RNA species favors the idea that Wg signaling requires coordinated rather than independent actions of endogenous Arr and DFz2 receptors. However, the failure to eliminate signaling entirely with inhibitory RNAs against both receptors cannot be readily interpreted, since it is unlikely that receptor production was eliminated in every cell in the cultures.</p>
+        <fig position="float" id="F2">
+          <label>Figure 2</label>
+          <caption>
+            <p><bold>Wg signaling activity is impaired with the loss of either Arr or DFz2 function by dsRNA interference. </bold>S2 cells were treated with the following dsRNAs: Aco as a control (A-C), Arr (A-C), DFz2 (A, C), and Dsh (B). The next day, cells were transfected with the following expression plasmids: Wg (A), Wg and DFz2 (B) and β-catenin<sup>S37A </sup>(C) together with the reporters. The level of fold activation was set to 100% for cells treated with control dsRNAi, and the actual value is indicated above the figures. The responses of the transfected S2 cells treated with different dsRNAs are based on the percentage of fold activation compared with the control. All experiments were done in triplicate; error bars represent standard deviations.</p>
+          </caption>
+          <graphic xlink:href="1471-2121-4-4-2"/>
+        </fig>
+        <p>Importantly, the synergistic effect of co-transfected Wg and DFz2 plasmids, approximately 1000-fold, was also dramatically reduced by addition of inhibitory RNA against Arr (Figure <xref ref-type="fig" rid="F2">2B</xref>), implying that endogenous Arr is required for the stimulatory effect of exogenous DFz2 on Wg signaling. This result also suggests that DFz2 and Arr work cooperatively to transduce a Wg signal. As additional controls in these experiments, we showed that inhibitory RNA against Dsh, a cytoplasmic phosphoprotein believed to mediate Wg signaling via Fz receptors, blocks about 60% of signaling produced by co-transfection with Wg and DFz2 plasmids. Moreover, we found that S2 cells treated with dsRNAi against both Arr and Dsh further impaired the Wg and DFz2 signaling activity up to 95% (Figure <xref ref-type="fig" rid="F2">2B</xref>). As expected, inhibitory RNAs against Arr and DFz2 have no effect on luciferase synthesis promoted by a degradation-resistant mutant of β-catenin (Figure <xref ref-type="fig" rid="F2">2C</xref>).</p>
+      </sec>
+      <sec>
+        <title>The synergy between Wg and DFz2 requires the CRD domain of DFz2, but not the carboxyterminus</title>
+        <p>DFz2, like other members of the Fz protein family, contains a cysteine-rich domain (CRD) near the aminoterminus, followed by a seven-transmembrane (7-TM) domain and a cytoplasmic carboxyterminal tail. DFz2 reportedly binds to Wg through its CRD domain [<xref ref-type="bibr" rid="B6">6</xref>], but it is not known which proteins interact with the carboxyterminus or with cytoplasmic loops in the 7-TM region of DFz2 to transduce the signal to the cytoplasmic signaling component Dsh. However, a short conserved cytoplasmic motif in the carboxylterminal region of Fzs, including DFz2, was reported to be important for the activation of Wnt/β-catenin signaling in mammalian cells, based on mutational analysis [<xref ref-type="bibr" rid="B20">20</xref>].</p>
+        <p>To determine which domains in DFz2 are important for its synergistic activity with Wg in the S2 cell assay, we deleted the regions encoding the CRD domain (DFz2ΔCRD) or the cytoplasmic tail (DFz2ΔC) in pPacPL (Figure <xref ref-type="fig" rid="F3">3A</xref>) and tested the deletion constructs shown in panel A in the luciferase assay described earlier (Figure <xref ref-type="fig" rid="F3">3B</xref>). In this experiment, a Wg plasmid activated the luciferase reporter only 12-fold above the vector control; wild-type DFz2 plasmid alone stimulated luciferase levels 7-fold, but neither deletion mutant of DFz2 had any effect, consistent with an earlier report that DFz2 with a truncated carboxyterminus fails to induce the expression of <italic>Xnr/Siamois </italic>[<xref ref-type="bibr" rid="B21">21</xref>]. However, DFz2ΔC stimulated signaling over 700-fold when delivered in concert with Wg, a synergistic effect nearly as strong as observed with wild type DFz2 (nearly 1700-fold in this experiment). In contrast, DFz2ΔCRD showed no synergistic effect, a result that can most likely be explained by a loss of Wg binding capacity. The result with DFz2ΔC, however, implies that the Wg signal can be transduced through DFz2 in a carboxyterminus-independent manner, either through the 7-TM domain or through the interaction with Arr that was implied by the previous experiments. In addition, the synergistic effect of Wg and DFz2ΔC was blocked by Dsh dsRNAi (data not shown), implying that Dsh is required to transduce the signal from Wg through DFz2ΔC to β-catenin. Therefore, the interaction between DFz2 and Dsh does not depend solely on the carboxyterminus of DFz2.</p>
+        <fig position="float" id="F3">
+          <label>Figure 3</label>
+          <caption>
+            <p><bold>The synergy between Wg and DFz2 requires the CRD domain, but not the carboxyterminus of DFz2. </bold>(A) Diagram of the full-length DFz2 and its truncation constructs with deleted CRD domain or carboxyterminus. (B) S2 cells were transfected with indicated expression plasmids. Fold activation values were measured relative to the levels of luciferase activity in cells transfected with empty vectors and normalized by <italic>Renilla </italic>luciferase activities. These values are plotted as a log function. Averages of the fold activation are indicated above each column. All experiments were done in triplicate; error bars represent standard deviations.</p>
+          </caption>
+          <graphic xlink:href="1471-2121-4-4-3"/>
+        </fig>
+      </sec>
+      <sec>
+        <title>LRP6 and an aminoterminal mutant of LRP6 can stimulate the Wg signaling pathway, but the ability of LRP6 to replace the requirement for Arrow in the synergy between Wg and DFz2 requires the aminoterminus of LRP6</title>
+        <p>LRPs have been shown to bind to Wnt/Wg through the first and second EGF repeats of their extracellular domain [<xref ref-type="bibr" rid="B11">11</xref>]. Our unpublished work in mammalian cells and results from others [<xref ref-type="bibr" rid="B11">11</xref>,<xref ref-type="bibr" rid="B13">13</xref>] demonstrate that the expression of LRP6 or an aminoterminal truncation mutant (LRP6ΔN), which should no longer bind to Wnt, can activate the Wnt signaling pathway.</p>
+        <p>To investigate whether these constructs can also function in S2 cells and whether their activities can synergize with Wg, we transferred LRP6 and LRP6ΔN into the <italic>Drosophila </italic>expression vector pPacPL (Figure <xref ref-type="fig" rid="F4">4A</xref>) and tested them alone and with various combinations of Wg and DFz2 in S2 cells (Figure <xref ref-type="fig" rid="F4">4B</xref>). Results with Wg and DFz2 alone or together were similar to those observed in other experiments (e.g. Figure <xref ref-type="fig" rid="F1">1</xref>), but both wild-type and mutant LRP6, unlike the LRP homolog Arr, activated signaling about 10- to 15-fold alone, 2- to 4-fold when co-transfected with Wg, and 4- to10-fold when co-transfected with DFz2.</p>
+        <fig position="float" id="F4">
+          <label>Figure 4</label>
+          <caption>
+            <p><bold>LRP6 and LRP6ΔN stimulate the signaling pathway. </bold>(A) Diagram of the full-length LRP6 and its truncated construct LRP6ΔN with deleted aminoterminus. SP represents the signal peptide and TM denotes the transmembrane domain. (B) S2 cells were transfected with the indicated expression plasmids. Fold activation values were measured relative to the levels of luciferase activity in cells transfected with empty vectors and normalized by <italic>Renilla </italic>luciferase activities. These values are plotted as a log function. All experiments were done in triplicate; error bars represent the standard deviations.</p>
+          </caption>
+          <graphic xlink:href="1471-2121-4-4-4"/>
+        </fig>
+        <p>Since we have been unable to measure Arr or LRP proteins directly in transfected cells, we cannot distinguish between more efficient expression or greater inherent activity of the LRPs as an explanation of the different effects of LRPs and Arr. Signaling via LRP6ΔN, however, while dependent on Arm as expected, is not dependent on Dsh or DFz2, as judged by the use of dsRNAi (Figure <xref ref-type="fig" rid="F5">5A</xref>). Similar results were observed for full-length LRP6 (Figure <xref ref-type="fig" rid="F5">5B</xref>). These results are consistent with claims that LRPs can signal through an interaction of the carboxyterminus with Axin [<xref ref-type="bibr" rid="B13">13</xref>].</p>
+        <fig position="float" id="F5">
+          <label>Figure 5</label>
+          <caption>
+            <p><bold>LRPΔN activate the pathway independent of DFz2 and Dsh and N-terminus of LRP is required for the synergistic activity of Wg and DFz2. </bold>S2 cells were treated with the following dsRNAs: control Aco (A-C), DFz2 (A, B), Dsh (A, B), Arm (A, B) and Arr (C). The next day cells were transfected with indicated expression plasmids. Fold activation values were measured relative to the levels of luciferase activity in cells transfected with empty vectors and normalized by <italic>Renilla </italic>luciferase activities. The level of fold activation was set to 100% for cells treated with Aco dsRNA and the actual values are indicated above the figures (A, B). All experiments were done in triplicate; error bars represent standard deviations.</p>
+          </caption>
+          <graphic xlink:href="1471-2121-4-4-5"/>
+        </fig>
+        <p>To ask whether LRP6 can replace the requirement for endogenous Arr in the synergy between Wg and DFz2, as observed earlier in Figure <xref ref-type="fig" rid="F2">2B</xref>, we again used Arr-specific dsRNAi to try to block the strong activation of signaling by Wg plus DFz2, in the presence and absence of the LRP6 constructs (Figure <xref ref-type="fig" rid="F5">5C</xref>). Again, Arr dsRNAi markedly inhibited signaling by Wg and DFz2, but no inhibition was observed in the presence of the LRP6 plasmid, implying the LRP6 could substitute for Arr in these synergistic events. In contrast, LRP6ΔN cannot effectively substitute for Arr, presumably reflecting a need for an interaction of the LRP family member with Wg to achieve synergy. Some residual activity in this experiment may reflect the inherent Wg signaling activity of wild type and mutant LRPs observed in Figure <xref ref-type="fig" rid="F4">4B</xref>.</p>
+      </sec>
+    </sec>
+    <sec>
+      <title>Discussion</title>
+      <p>In this report, we describe a convenient cell culture-based assay for assessing the contributions made by candidate components of Wnt signaling pathways to the activation of the β-catenin-mediated branch. We have attempted to alter the concentrations of components by transient transfection with plasmids encoding wild type and mutant proteins and/or with dsRNAi that can block production of proteins from endogenous or exogenous genes. Pathway activity was then assessed by measurement of luciferase expressed from a co-transfected plasmid containing firefly luciferase-coding sequence under the control of LEF binding elements.</p>
+      <p>The assay makes use of <italic>Drosophila </italic>S2 cells in which two of the four fly Frizzled proteins are undetectable by a sensitive PCR assay. Two others (DFz2 and 3) are detectable (Figure <xref ref-type="fig" rid="F1">1A</xref>), but DFz2 is in limiting quantities, since signaling by Wg, the Drosophila ortholog of mammalian Wnt-1, can be dramatically stimulated by co-transfection with a DFz2 expression plasmid (Figure <xref ref-type="fig" rid="F1">1B</xref>). This effect requires the aminoterminus of DFz2, implying a requirement for binding Wg to the Fz CRD, but not the carboxyterminus, suggesting that the signal may be, in part, transmitted through an interaction of Wg-Frizzled complex with another protein.</p>
+      <p>Arrow, the fly homolog of the LRPs, which are thought to be Wnt co-receptors in mammalian cells, is an obvious candidate for such an interactive protein. Experiments with Arr dsRNAi clearly establish a requirement for endogenous Arr to generate the synergistic response to exogenous Wg plus DFz2 in S2 cells (Figure <xref ref-type="fig" rid="F2">2</xref>). We have also found that mammalian LRP6 can replace the need for Arr in this context (Figure <xref ref-type="fig" rid="F4">4</xref>) and that the aminoterminus of LRP6 must be maintained for most or all of the effect. Therefore it is most likely that Wg, DFz2 and LRP/Arr form a trimeric ligand-receptor complex to activate the signaling pathway. However, it was recently reported that no direct interactions between Arrow and Wg were detected [<xref ref-type="bibr" rid="B22">22</xref>]. It is possible that LRP aminoterminus is required for interacting with another extracellular protein rather than Wnt and Fz.</p>
+      <p>It is known that Dsh is a key component in transducing a Wg signal [<xref ref-type="bibr" rid="B23">23</xref>-<xref ref-type="bibr" rid="B25">25</xref>]. However, the mechanism by which Dsh transmits a signal to the β-catenin destruction complex is not clear. Fzs can recruit Dsh to the plasma membrane [<xref ref-type="bibr" rid="B21">21</xref>,<xref ref-type="bibr" rid="B26">26</xref>], but it is not known whether this recruitment is essential in signaling. While the functions of Fz and Dsh remain to be clarified, it is possible that upon Wnt signaling, Fzs recruit Dsh to the membrane and Dsh brings Axin to the carboxyterminus of LRPs. If the carboxyterminus of LRP6 can interact with Axin independently of DFz2 and Dsh, it might reduce the cytoplasmic level of Axin and help stabilize β-catenin. The observation that LRP5ΔN activates the Wnt/Wg signaling pathway in a Dsh-independent manner [<xref ref-type="bibr" rid="B14">14</xref>], and our data with overexpressed LRP6ΔN and LRP6, further support this proposal.</p>
+      <p>The LEF-dependent luciferase assay in S2 cells is versatile, dynamic, rapid and can provide important clues about interactions important for Wnt signaling. The use of dsRNAi helps to refine the nature of such interactions and their effects on downstream events in the signaling circuitry. Because we have not, however, measured the concentrations of the relevant signaling components or studied interactions of these components with more sophisticated tools, the conclusions we draw are provisional and require additional support. However, they are consistent with the prevailing model in which Wg forms a trimeric complex with Arr and DFz2 that transduces a signal through Dsh to activate LEF/TCF-responsive promoters.</p>
+    </sec>
+    <sec>
+      <title>Conclusions</title>
+      <p>We conclude that Wnt/Wg signaling requires functional interactions of both LRP/Arr and Fz classes of receptors, and the cytoplasmic component Dsh. The extracellular regions of both receptors are crucial for receiving the Wg signal, while the carboxyterminus of DFz2 is not absolutely required for reception of the Wnt/Wg signal.</p>
+    </sec>
+    <sec sec-type="methods">
+      <title>Methods</title>
+      <sec>
+        <title>Cell culture, transfection and luciferase assay</title>
+        <p>S2 cells were cultured at room temperature in <italic>Drosophila </italic>Schneider medium supplemented with 10% heat-inactivated fetal bovine serum. The following plasmids were used in each experiment: 0.1 μg LEF-luciferase reporter [<xref ref-type="bibr" rid="B19">19</xref>], 0.2 μg mouse LEF-1 and 0.1 μg <italic>Renilla </italic>luciferase. <italic>Renilla </italic>luciferase was included in each transfection to control the efficiency of transfection. All <italic>Drosophila </italic>expression constructs were cloned in the vector pPacPL [<xref ref-type="bibr" rid="B27">27</xref>,<xref ref-type="bibr" rid="B28">28</xref>]. Cells grown in 6-well plates were transfected with 0.5 μg of indicated plasmid together with the reporter plasmids using Cellfectin reagent (Invitrogen Life Technologies). The final amount of DNA was adjusted to an equal level using pPacPL vector DNA. Approximately 48 hours after transfection, cells were lysed in a lysis buffer (Promega) by shaking at room temperature for 30 minutes. The luciferase activities of the lysates were then analyzed by a luminometer (EG&amp;G Berthold, lumat LB9507) to measure the dual luciferase activities of LEF-luciferase reporter and <italic>Renilla </italic>luciferase using the Promega Dual-Luciferase reporter assay system. All the experiments were performed at least three times, and each time in triplicates.</p>
+      </sec>
+      <sec>
+        <title>RT-PCR</title>
+        <p>RNA from S2 cells and mbn-2 cells was prepared using Qiagen RNA miniprep columns and was treated with RQ1 RNase-Free DNase (Promega). 0.1 μg RNA from each cell line was used as a template for one-step RT-PCR (One-step RT-PCR kit from Invitrogen). The following primers were used in the reactions: <underline>DFz1</underline>: 5' primer, 5'-ATGTGGCGTCAAATCCTG-3'; 3' primer, 5'-TGGACATCATCTGCAGGC-3'. <underline>DFz2</underline>: 5' primer, 5'-AGACACAATCGACTGAAGG-3'; 3' primer, 5'-AGTGAGGTTCATGTACCAG-3' (These two primer pairs are based on [<xref ref-type="bibr" rid="B18">18</xref>]). <underline>DFz3</underline>: 5' primer, 5'-ACAGTGAAGAGTAGTGGTCG-3'; 3' primer, 5'-CCACCTCCTGTGGAATCTGC-3', <underline>DFz4</underline>: 5' primer, 5'-TACATTCGCTAAGGCTAC-3'; 3' primer, 5'-GACCTTCCATACACATCG-3' and <underline>Arr</underline>: 5' primer, 5'-GAAGATGTGACAACGAAAGC-3'; 3' primer, 5'-CATGCTCTGACAGAGTTCG-3'.</p>
+      </sec>
+      <sec>
+        <title>RNAi in S2 cells</title>
+        <p>The method was adapted from the procedure published by the Dixon lab [<xref ref-type="bibr" rid="B15">15</xref>,<xref ref-type="bibr" rid="B16">16</xref>]. PCR reactions were performed using primers containing the T7 polymerase binding site. We used dsRNA against a gene unrelated to the Wg signaling pathway, i.e. Aconitase (Aco), as a negative control. The primers used are:</p>
+        <p><underline>Aco</underline>: 5' primer, 5'-GGATTAATACGACTCACTATAGGGAGACTCTGTCCAAGTTCGACTCG-3'; 3' primer, 5'-GGATTAATACGACTCACTATAGGGAGAGATAGAGTCAACACCCTTGC-3'; <underline>DFz2</underline>: 5' primer, 5'-GGATTAATACGACTCACTATAGGGAGAGATCACCATACCAATGTGTCG-3'; 3' primer, 5'-GGATTAATACGACTCACTATAGGGAGAGTATGCCGCAGTTTGGAACG-3'; <underline>Arr</underline>: 5' primer, 5'-GGATTAATACGACTCACTATAGGGAGACAGATCGATGTGATCGTTAGG-3'; 3' primer, 5'-GGATTAATACGACTCACTATAGGGAGACCATGCTCTGACAGAGTTCG-3'; <underline>Dsh</underline>: 5' primer, 5'-GGATTAATACGACTCACTATAGGGAGACCATCACCAGAAGATGATGG-3'; 3' primer, 5'-GGATTAATACGACTCACTATAGGGAGACCTTAACGATCTCCTCGAGG-3'; <underline>Arm</underline>: 5' primer, 5'-GGATTAATACGACTCACTATAGGGAGACAGCTAAGCCAGACACGTTC-3'; 3' primer, 5'-GGATTAATACGACTCACTATAGGGAGAGCTTTCCTGGTTGCCGTAGG-3'.</p>
+        <p>A megascript T7 transcription kit (Ambion) was used to generate both sense and antisense strand RNA. The RNA was annealed to form double strand RNA. 15 μg of each dsRNA was then added to S2 cells in 6-well plates containing 10<sup>6 </sup>cells per well. 8 to 16 hours after dsRNAi treatment, cells were transfected with different constructs and reporters. 48 hours after transfection, cells were lysed and luciferase activity was measured as above.</p>
+      </sec>
+    </sec>
+    <sec>
+      <title>Authors' contributions</title>
+      <p>LS designed and performed the experiments. HV supervised the work. Both authors read and approved the final manuscript.</p>
+    </sec>
+  </body>
+  <back>
+    <ack>
+      <sec>
+        <title>Acknowledgements</title>
+        <p>We would like to thank Shin-ichi Yanagawa for providing S2 cells, Dianqing Wu for LEF and LEF-luciferase reporters, Fred Hess for LRP6 (MTA through Merck), Steve Dinardo for Arrow cDNA, Po Chen for providing multiple reagents, including pPacPL, and for useful advice on working with S2 cells. Katie Brunner kindly provided mbn-2 cells. We thank people in the Varmus lab, especially Feng Cong, Mario Chamarro and Sandra Orsulic, for many stimulating discussions regarding this paper. We thank William Pao for a critical reading of the manuscript.</p>
+      </sec>
+    </ack>
+    <ref-list>
+      <ref id="B1">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Cadigan</surname>
+              <given-names>KM</given-names>
+            </name>
+            <name>
+              <surname>Nusse</surname>
+              <given-names>R</given-names>
+            </name>
+          </person-group>
+          <article-title>Wnt signaling: a common theme in animal development</article-title>
+          <source>Genes &amp; Development</source>
+          <year>1997</year>
+          <volume>11</volume>
+          <fpage>3286</fpage>
+          <lpage>305</lpage>
+          <pub-id pub-id-type="pmid">9407023</pub-id>
+        </citation>
+      </ref>
+      <ref id="B2">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Wodarz</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Nusse</surname>
+              <given-names>R</given-names>
+            </name>
+          </person-group>
+          <article-title>Mechanisms of Wnt signaling in development</article-title>
+          <source>Annual Review of Cell &amp; Developmental Biology</source>
+          <year>1998</year>
+          <volume>14</volume>
+          <fpage>59</fpage>
+          <lpage>88</lpage>
+          <pub-id pub-id-type="pmid">9891778</pub-id>
+          <pub-id pub-id-type="doi">10.1146/annurev.cellbio.14.1.59</pub-id>
+        </citation>
+      </ref>
+      <ref id="B3">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Nusse</surname>
+              <given-names>R</given-names>
+            </name>
+            <name>
+              <surname>Varmus</surname>
+              <given-names>HE</given-names>
+            </name>
+          </person-group>
+          <article-title>Wnt genes</article-title>
+          <source>Cell</source>
+          <year>1992</year>
+          <volume>69</volume>
+          <fpage>1073</fpage>
+          <lpage>87</lpage>
+          <pub-id pub-id-type="pmid">1617723</pub-id>
+        </citation>
+      </ref>
+      <ref id="B4">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Polakis</surname>
+              <given-names>P</given-names>
+            </name>
+          </person-group>
+          <article-title>Wnt signaling and cancer</article-title>
+          <source>Genes Dev</source>
+          <year>2000</year>
+          <volume>14</volume>
+          <fpage>1837</fpage>
+          <lpage>51</lpage>
+          <pub-id pub-id-type="pmid">10921899</pub-id>
+        </citation>
+      </ref>
+      <ref id="B5">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Yang-Snyder</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Miller</surname>
+              <given-names>JR</given-names>
+            </name>
+            <name>
+              <surname>Brown</surname>
+              <given-names>JD</given-names>
+            </name>
+            <name>
+              <surname>Lai</surname>
+              <given-names>CJ</given-names>
+            </name>
+            <name>
+              <surname>Moon</surname>
+              <given-names>RT</given-names>
+            </name>
+          </person-group>
+          <article-title>A frizzled homolog functions in a vertebrate Wnt signaling pathway</article-title>
+          <source>Curr Biol</source>
+          <year>1996</year>
+          <volume>6</volume>
+          <fpage>1302</fpage>
+          <lpage>6</lpage>
+          <pub-id pub-id-type="pmid">8939578</pub-id>
+        </citation>
+      </ref>
+      <ref id="B6">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Bhanot</surname>
+              <given-names>P</given-names>
+            </name>
+            <name>
+              <surname>Brink</surname>
+              <given-names>M</given-names>
+            </name>
+            <name>
+              <surname>Samos</surname>
+              <given-names>CH</given-names>
+            </name>
+            <name>
+              <surname>Hsieh</surname>
+              <given-names>JC</given-names>
+            </name>
+            <name>
+              <surname>Wang</surname>
+              <given-names>Y</given-names>
+            </name>
+            <name>
+              <surname>Macke</surname>
+              <given-names>JP</given-names>
+            </name>
+            <name>
+              <surname>Andrew</surname>
+              <given-names>D</given-names>
+            </name>
+            <name>
+              <surname>Nathans</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Nusse</surname>
+              <given-names>R</given-names>
+            </name>
+          </person-group>
+          <article-title>A new member of the frizzled family from Drosophila functions as a Wingless receptor</article-title>
+          <source>Nature</source>
+          <year>1996</year>
+          <volume>382</volume>
+          <fpage>225</fpage>
+          <lpage>30</lpage>
+          <pub-id pub-id-type="pmid">8717036</pub-id>
+          <pub-id pub-id-type="doi">10.1038/382225a0</pub-id>
+        </citation>
+      </ref>
+      <ref id="B7">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Pinson</surname>
+              <given-names>KI</given-names>
+            </name>
+            <name>
+              <surname>Brennan</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Monkley</surname>
+              <given-names>S</given-names>
+            </name>
+            <name>
+              <surname>Avery</surname>
+              <given-names>BJ</given-names>
+            </name>
+            <name>
+              <surname>Skarnes</surname>
+              <given-names>WC</given-names>
+            </name>
+          </person-group>
+          <article-title>An LDL-receptor-related protein mediates Wnt signaling in mice</article-title>
+          <source>Nature</source>
+          <year>2000</year>
+          <volume>407</volume>
+          <fpage>535</fpage>
+          <lpage>8</lpage>
+          <pub-id pub-id-type="pmid">11029008</pub-id>
+          <pub-id pub-id-type="doi">10.1038/35035124</pub-id>
+        </citation>
+      </ref>
+      <ref id="B8">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Tamai</surname>
+              <given-names>K</given-names>
+            </name>
+            <name>
+              <surname>Semenov</surname>
+              <given-names>M</given-names>
+            </name>
+            <name>
+              <surname>Kato</surname>
+              <given-names>Y</given-names>
+            </name>
+            <name>
+              <surname>Spokony</surname>
+              <given-names>R</given-names>
+            </name>
+            <name>
+              <surname>Liu</surname>
+              <given-names>C</given-names>
+            </name>
+            <name>
+              <surname>Katsuyama</surname>
+              <given-names>Y</given-names>
+            </name>
+            <name>
+              <surname>Hess</surname>
+              <given-names>F</given-names>
+            </name>
+            <name>
+              <surname>Saint-Jeannet</surname>
+              <given-names>JP</given-names>
+            </name>
+            <name>
+              <surname>He</surname>
+              <given-names>X</given-names>
+            </name>
+          </person-group>
+          <article-title>LDL-receptor-related proteins in Wnt signal transduction</article-title>
+          <source>Nature</source>
+          <year>2000</year>
+          <volume>407</volume>
+          <fpage>530</fpage>
+          <lpage>5</lpage>
+          <pub-id pub-id-type="pmid">11029007</pub-id>
+          <pub-id pub-id-type="doi">10.1038/35035117</pub-id>
+        </citation>
+      </ref>
+      <ref id="B9">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Wehrli</surname>
+              <given-names>M</given-names>
+            </name>
+            <name>
+              <surname>Dougan</surname>
+              <given-names>ST</given-names>
+            </name>
+            <name>
+              <surname>Caldwell</surname>
+              <given-names>K</given-names>
+            </name>
+            <name>
+              <surname>O'Keefe</surname>
+              <given-names>L</given-names>
+            </name>
+            <name>
+              <surname>Schwartz</surname>
+              <given-names>S</given-names>
+            </name>
+            <name>
+              <surname>Vaizel-Ohayon</surname>
+              <given-names>D</given-names>
+            </name>
+            <name>
+              <surname>Schejter</surname>
+              <given-names>E</given-names>
+            </name>
+            <name>
+              <surname>Tomlinson</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>DiNardo</surname>
+              <given-names>S</given-names>
+            </name>
+          </person-group>
+          <article-title>arrow encodes an LDL-receptor-related protein essential for Wingless signaling</article-title>
+          <source>Nature</source>
+          <year>2000</year>
+          <volume>407</volume>
+          <fpage>527</fpage>
+          <lpage>30</lpage>
+          <pub-id pub-id-type="pmid">11029006</pub-id>
+          <pub-id pub-id-type="doi">10.1038/35035110</pub-id>
+        </citation>
+      </ref>
+      <ref id="B10">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Bafico</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Liu</surname>
+              <given-names>G</given-names>
+            </name>
+            <name>
+              <surname>Yaniv</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Gazit</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Aaronson</surname>
+              <given-names>SA</given-names>
+            </name>
+          </person-group>
+          <article-title>Novel mechanism of Wnt signaling inhibition mediated by Dickkopf-1 interaction with LRP6/Arrow</article-title>
+          <source>Nat Cell Biol</source>
+          <year>2001</year>
+          <volume>3</volume>
+          <fpage>683</fpage>
+          <lpage>6</lpage>
+          <pub-id pub-id-type="pmid">11433302</pub-id>
+          <pub-id pub-id-type="doi">10.1038/35083081</pub-id>
+        </citation>
+      </ref>
+      <ref id="B11">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Mao</surname>
+              <given-names>B</given-names>
+            </name>
+            <name>
+              <surname>Wu</surname>
+              <given-names>W</given-names>
+            </name>
+            <name>
+              <surname>Li</surname>
+              <given-names>Y</given-names>
+            </name>
+            <name>
+              <surname>Hoppe</surname>
+              <given-names>D</given-names>
+            </name>
+            <name>
+              <surname>Stannek</surname>
+              <given-names>P</given-names>
+            </name>
+            <name>
+              <surname>Glinka</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Niehrs</surname>
+              <given-names>C</given-names>
+            </name>
+          </person-group>
+          <article-title>LDL-receptor-related protein 6 is a receptor for Dickkopf proteins</article-title>
+          <source>Nature</source>
+          <year>2001</year>
+          <volume>411</volume>
+          <fpage>321</fpage>
+          <lpage>5</lpage>
+          <pub-id pub-id-type="pmid">11357136</pub-id>
+          <pub-id pub-id-type="doi">10.1038/35077108</pub-id>
+        </citation>
+      </ref>
+      <ref id="B12">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Semenov</surname>
+              <given-names>MV</given-names>
+            </name>
+            <name>
+              <surname>Tamai</surname>
+              <given-names>K</given-names>
+            </name>
+            <name>
+              <surname>Brott</surname>
+              <given-names>BK</given-names>
+            </name>
+            <name>
+              <surname>Kuhl</surname>
+              <given-names>M</given-names>
+            </name>
+            <name>
+              <surname>Sokol</surname>
+              <given-names>S</given-names>
+            </name>
+            <name>
+              <surname>He</surname>
+              <given-names>X</given-names>
+            </name>
+          </person-group>
+          <article-title>Head inducer Dickkopf-1 is a ligand for Wnt coreceptor LRP6</article-title>
+          <source>Curr Biol</source>
+          <year>2001</year>
+          <volume>11</volume>
+          <fpage>951</fpage>
+          <lpage>61</lpage>
+          <pub-id pub-id-type="pmid">11448771</pub-id>
+          <pub-id pub-id-type="doi">10.1016/S0960-9822(01)00290-1</pub-id>
+        </citation>
+      </ref>
+      <ref id="B13">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Mao</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Wang</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Liu</surname>
+              <given-names>B</given-names>
+            </name>
+            <name>
+              <surname>Pan</surname>
+              <given-names>W</given-names>
+            </name>
+            <name>
+              <surname>Farr</surname>
+              <given-names>GH</given-names>
+              <suffix>3rd</suffix>
+            </name>
+            <name>
+              <surname>Flynn</surname>
+              <given-names>C</given-names>
+            </name>
+            <name>
+              <surname>Yuan</surname>
+              <given-names>H</given-names>
+            </name>
+            <name>
+              <surname>Takada</surname>
+              <given-names>S</given-names>
+            </name>
+            <name>
+              <surname>Kimelman</surname>
+              <given-names>D</given-names>
+            </name>
+            <name>
+              <surname>Li</surname>
+              <given-names>L</given-names>
+            </name>
+            <etal/>
+          </person-group>
+          <article-title>Low-density lipoprotein receptor-related protein-5 binds to Axin and regulates the canonical Wnt signaling pathway</article-title>
+          <source>Mol Cell</source>
+          <year>2001</year>
+          <volume>7</volume>
+          <fpage>801</fpage>
+          <lpage>9</lpage>
+          <pub-id pub-id-type="pmid">11336703</pub-id>
+          <pub-id pub-id-type="doi">10.1016/S1097-2765(01)00224-6</pub-id>
+        </citation>
+      </ref>
+      <ref id="B14">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Li</surname>
+              <given-names>L</given-names>
+            </name>
+            <name>
+              <surname>Mao</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Sun</surname>
+              <given-names>L</given-names>
+            </name>
+            <name>
+              <surname>Liu</surname>
+              <given-names>W</given-names>
+            </name>
+            <name>
+              <surname>Wu</surname>
+              <given-names>D</given-names>
+            </name>
+          </person-group>
+          <article-title>Second cysteine-rich domain of Dickkopf-2 activates canonical Wnt signaling pathway via LRP-6 independently of dishevelled</article-title>
+          <source>J Biol Chem</source>
+          <year>2002</year>
+          <volume>277</volume>
+          <fpage>5977</fpage>
+          <lpage>81</lpage>
+          <pub-id pub-id-type="pmid">11742004</pub-id>
+          <pub-id pub-id-type="doi">10.1074/jbc.M111131200</pub-id>
+        </citation>
+      </ref>
+      <ref id="B15">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Caplen</surname>
+              <given-names>NJ</given-names>
+            </name>
+            <name>
+              <surname>Fleenor</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Fire</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Morgan</surname>
+              <given-names>RA</given-names>
+            </name>
+          </person-group>
+          <article-title>dsRNA-mediated gene silencing in cultured Drosophila cells: a tissue culture model for the analysis of RNA interference</article-title>
+          <source>Gene</source>
+          <year>2000</year>
+          <volume>252</volume>
+          <fpage>95</fpage>
+          <lpage>105</lpage>
+          <pub-id pub-id-type="pmid">10903441</pub-id>
+          <pub-id pub-id-type="doi">10.1016/S0378-1119(00)00224-9</pub-id>
+        </citation>
+      </ref>
+      <ref id="B16">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Worby</surname>
+              <given-names>CA</given-names>
+            </name>
+            <name>
+              <surname>Simonson-Leff</surname>
+              <given-names>N</given-names>
+            </name>
+            <name>
+              <surname>Dixon</surname>
+              <given-names>JE</given-names>
+            </name>
+          </person-group>
+          <article-title>RNA interference of gene expression (RNAi) in cultured Drosophila cells</article-title>
+          <source>Sci STKE</source>
+          <year>2001</year>
+          <volume>2001</volume>
+          <fpage>L1</fpage>
+        </citation>
+      </ref>
+      <ref id="B17">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Sato</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Kojima</surname>
+              <given-names>T</given-names>
+            </name>
+            <name>
+              <surname>Ui-Tei</surname>
+              <given-names>K</given-names>
+            </name>
+            <name>
+              <surname>Miyata</surname>
+              <given-names>Y</given-names>
+            </name>
+            <name>
+              <surname>Saigo</surname>
+              <given-names>K</given-names>
+            </name>
+          </person-group>
+          <article-title>Dfrizzled-3, a new Drosophila Wnt receptor, acting as an attenuator of Wingless signaling in wingless hypomorphic mutants</article-title>
+          <source>Development</source>
+          <year>1999</year>
+          <volume>126</volume>
+          <fpage>4421</fpage>
+          <lpage>30</lpage>
+          <pub-id pub-id-type="pmid">10498678</pub-id>
+        </citation>
+      </ref>
+      <ref id="B18">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Yanagawa</surname>
+              <given-names>S</given-names>
+            </name>
+            <name>
+              <surname>Lee</surname>
+              <given-names>JS</given-names>
+            </name>
+            <name>
+              <surname>Ishimoto</surname>
+              <given-names>A</given-names>
+            </name>
+          </person-group>
+          <article-title>Identification and characterization of a novel line of Drosophila Schneider S2 cells that respond to wingless signaling</article-title>
+          <source>J Biol Chem</source>
+          <year>1998</year>
+          <volume>273</volume>
+          <fpage>32353</fpage>
+          <lpage>9</lpage>
+          <pub-id pub-id-type="pmid">9822716</pub-id>
+          <pub-id pub-id-type="doi">10.1074/jbc.273.48.32353</pub-id>
+        </citation>
+      </ref>
+      <ref id="B19">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Hsu</surname>
+              <given-names>SC</given-names>
+            </name>
+            <name>
+              <surname>Galceran</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Grosschedl</surname>
+              <given-names>R</given-names>
+            </name>
+          </person-group>
+          <article-title>Modulation of transcriptional regulation by LEF-1 in response to Wnt-1 signaling and association with beta-catenin</article-title>
+          <source>Mol Cell Biol</source>
+          <year>1998</year>
+          <volume>18</volume>
+          <fpage>4807</fpage>
+          <lpage>18</lpage>
+          <pub-id pub-id-type="pmid">9671490</pub-id>
+        </citation>
+      </ref>
+      <ref id="B20">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Umbhauer</surname>
+              <given-names>M</given-names>
+            </name>
+            <name>
+              <surname>Djiane</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Goisset</surname>
+              <given-names>C</given-names>
+            </name>
+            <name>
+              <surname>Penzo-Mendez</surname>
+              <given-names>A</given-names>
+            </name>
+            <name>
+              <surname>Riou</surname>
+              <given-names>JF</given-names>
+            </name>
+            <name>
+              <surname>Boucaut</surname>
+              <given-names>JC</given-names>
+            </name>
+            <name>
+              <surname>Shi</surname>
+              <given-names>DL</given-names>
+            </name>
+          </person-group>
+          <article-title>The C-terminal cytoplasmic Lys-thr-X-X-X-Trp motif in frizzled receptors mediates Wnt/beta-catenin signaling</article-title>
+          <source>Embo J</source>
+          <year>2000</year>
+          <volume>19</volume>
+          <fpage>4944</fpage>
+          <lpage>54</lpage>
+          <pub-id pub-id-type="pmid">10990458</pub-id>
+          <pub-id pub-id-type="doi">10.1093/emboj/19.18.4944</pub-id>
+        </citation>
+      </ref>
+      <ref id="B21">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Boutros</surname>
+              <given-names>M</given-names>
+            </name>
+            <name>
+              <surname>Mihaly</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Bouwmeester</surname>
+              <given-names>T</given-names>
+            </name>
+            <name>
+              <surname>Mlodzik</surname>
+              <given-names>M</given-names>
+            </name>
+          </person-group>
+          <article-title>Signaling specificity by Frizzled receptors in Drosophila</article-title>
+          <source>Science</source>
+          <year>2000</year>
+          <volume>288</volume>
+          <fpage>1825</fpage>
+          <lpage>8</lpage>
+          <pub-id pub-id-type="pmid">10846164</pub-id>
+          <pub-id pub-id-type="doi">10.1126/science.288.5472.1825</pub-id>
+        </citation>
+      </ref>
+      <ref id="B22">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Wu</surname>
+              <given-names>CH</given-names>
+            </name>
+            <name>
+              <surname>Nusse</surname>
+              <given-names>R</given-names>
+            </name>
+          </person-group>
+          <article-title>Ligand receptore interactions in the WNT signaling pathway in Drosophila</article-title>
+          <source>J Biol Chem</source>
+          <year>2002</year>
+          <volume>29</volume>
+          <fpage>29</fpage>
+        </citation>
+      </ref>
+      <ref id="B23">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Siegfried</surname>
+              <given-names>E</given-names>
+            </name>
+            <name>
+              <surname>Wilder</surname>
+              <given-names>EL</given-names>
+            </name>
+            <name>
+              <surname>Perrimon</surname>
+              <given-names>N</given-names>
+            </name>
+          </person-group>
+          <article-title>Components of wingless signaling in Drosophila</article-title>
+          <source>Nature</source>
+          <year>1994</year>
+          <volume>367</volume>
+          <fpage>76</fpage>
+          <lpage>80</lpage>
+          <pub-id pub-id-type="pmid">8107779</pub-id>
+          <pub-id pub-id-type="doi">10.1038/367076a0</pub-id>
+        </citation>
+      </ref>
+      <ref id="B24">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Noordermeer</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Klingensmith</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Perrimon</surname>
+              <given-names>N</given-names>
+            </name>
+            <name>
+              <surname>Nusse</surname>
+              <given-names>R</given-names>
+            </name>
+          </person-group>
+          <article-title>dishevelled and armadillo act in the wingless signaling pathway in Drosophila</article-title>
+          <source>Nature</source>
+          <year>1994</year>
+          <volume>367</volume>
+          <fpage>80</fpage>
+          <lpage>3</lpage>
+          <pub-id pub-id-type="pmid">7906389</pub-id>
+          <pub-id pub-id-type="doi">10.1038/367080a0</pub-id>
+        </citation>
+      </ref>
+      <ref id="B25">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Klingensmith</surname>
+              <given-names>J</given-names>
+            </name>
+            <name>
+              <surname>Nusse</surname>
+              <given-names>R</given-names>
+            </name>
+            <name>
+              <surname>Perrimon</surname>
+              <given-names>N</given-names>
+            </name>
+          </person-group>
+          <article-title>The Drosophila segment polarity gene dishevelled encodes a novel protein required for response to the wingless signal</article-title>
+          <source>Genes Dev</source>
+          <year>1994</year>
+          <volume>8</volume>
+          <fpage>118</fpage>
+          <lpage>30</lpage>
+          <pub-id pub-id-type="pmid">8288125</pub-id>
+        </citation>
+      </ref>
+      <ref id="B26">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Rothbacher</surname>
+              <given-names>U</given-names>
+            </name>
+            <name>
+              <surname>Laurent</surname>
+              <given-names>MN</given-names>
+            </name>
+            <name>
+              <surname>Deardorff</surname>
+              <given-names>MA</given-names>
+            </name>
+            <name>
+              <surname>Klein</surname>
+              <given-names>PS</given-names>
+            </name>
+            <name>
+              <surname>Cho</surname>
+              <given-names>KW</given-names>
+            </name>
+            <name>
+              <surname>Fraser</surname>
+              <given-names>SE</given-names>
+            </name>
+          </person-group>
+          <article-title>Dishevelled phosphorylation, subcellular localization and multimerization regulate its role in early embryogenesis</article-title>
+          <source>Embo J</source>
+          <year>2000</year>
+          <volume>19</volume>
+          <fpage>1010</fpage>
+          <lpage>22</lpage>
+          <pub-id pub-id-type="pmid">10698942</pub-id>
+          <pub-id pub-id-type="doi">10.1093/emboj/19.5.1010</pub-id>
+        </citation>
+      </ref>
+      <ref id="B27">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Koelle</surname>
+              <given-names>M</given-names>
+            </name>
+            <name>
+              <surname>Hogness</surname>
+              <given-names>D</given-names>
+            </name>
+          </person-group>
+          <article-title>Technical Notes: Plasmid vectors for expressing proteins in tissue culture cells or studying enhancer function</article-title>
+          <source>DIN</source>
+          <year>1992</year>
+          <volume>8</volume>
+        </citation>
+      </ref>
+      <ref id="B28">
+        <citation citation-type="journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Koelle</surname>
+              <given-names>M</given-names>
+            </name>
+            <name>
+              <surname>Hogness</surname>
+              <given-names>D</given-names>
+            </name>
+          </person-group>
+          <article-title>Technical Notes: Plasmid vectors for expressing proteins in tissue culture cells or studying enhancer function</article-title>
+          <source>DIS</source>
+          <year>1993</year>
+          <volume>72</volume>
+          <fpage>197</fpage>
+        </citation>
+      </ref>
+    </ref-list>
+  </back>
+</article>
+
+</metadata></record></GetRecord></OAI-PMH>
