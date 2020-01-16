@@ -700,21 +700,6 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	if input_file is None:
 		input_file = '(unknown file name)'
 
-
-	node = root.find('.//article')
-	print("article: " + str(node))
-
-	node = root.find('.//GetRecord')
-	print("GetRecord: " + str(node))
-
-	node = root.find('./OAI-PMH')
-	print("OAI-PMH: " + str(node))
-
-	node = root.find('.')
-	print("root tag    : " + str(node.tag))
-	print("root prefix : " + str(node.prefix))
-
-
 	# (re)init stats variable
 	file_status_reset()
 	file_status_set_name(input_file)
