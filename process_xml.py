@@ -570,6 +570,8 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 
 		# ignore elements handled elsewhere or that are unnecessary
 		if isinstance(el, etree._Comment): continue
+		if isinstance(el, etree._XSLTProcessingInstruction): continue
+		if isinstance(el, etree._ProcessingInstruction): continue
 		if el.tag == 'title': continue
 		if el.tag == 'label': continue
 		if el.tag == 'caption': continue
@@ -593,6 +595,8 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 			contentsToBeAdded = handle_list(el)
 		# default handler: just keep tag and get all text
 		else:
+			print("el     : " + str(el))
+			print("el tag : " + str(el.tag));
 			sometext = clean_string(' '.join(el.itertext()))
 			if sometext is not None and sometext != '':
 				contentsToBeAdded = [ {'tag': el.tag, 'text': sometext} ]
@@ -863,11 +867,11 @@ def main():
 	print('------ ' + str(datetime.now()) + ' ' + input_file)
 	xmlstr=get_file_content(input_file)
 	xmlstr=cleanup_input_xml(xmlstr)
-	# print("========")
-	# print(xmlstr[0:600])
-	# print("...")
-	# print(xmlstr[-600:])
-	# print("========")
+	print("========")
+	print(xmlstr[0:600])
+	print("...")
+	print(xmlstr[-600:])
+	print("========")
 	root = etree.fromstring(xmlstr)
 
 	lines = get_fig_parents(input_file,root)
