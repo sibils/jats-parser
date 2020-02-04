@@ -31,14 +31,22 @@ def cleanup_input_xml(xmlstr):
 	# we remove this header which is redundant and puzzles the lxml parser
 	# not needed (implicitly done below)
 	#xmlstr = xmlstr.replace('<?xml version="1.0" encoding="UTF-8"?>', '', 1)
+
 	# we remove everything before first appearance of <article...>
 	pos = xmlstr.index("<article")
 	xmlstr = xmlstr[pos:]
+
 	# we remove everything after last appearance of </article>
 	pos = xmlstr.rindex("</article>") + 10
 	xmlstr = xmlstr[0:pos]
+
 	# we remove any default namespace in document
-	xmlstr = re.sub('xmlns="\S+"', '', xmlstr)
+	# xmlstr = re.sub('xmlns="\S+"', '', xmlstr)
+	xmlstr = re.sub('xmlns="\S*?"', '', xmlstr)
+
+	# we add an extra space after end of comment tag '-->'
+	xmlstr = xmlstr.replace("-->","--> ")
+
 	return xmlstr
 
 # helper function, used for stats printing
@@ -595,8 +603,8 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 			contentsToBeAdded = handle_list(el)
 		# default handler: just keep tag and get all text
 		else:
-			print("el     : " + str(el))
-			print("el tag : " + str(el.tag));
+			#print("el     : " + str(el))
+			#print("el tag : " + str(el.tag));
 			sometext = clean_string(' '.join(el.itertext()))
 			if sometext is not None and sometext != '':
 				contentsToBeAdded = [ {'tag': el.tag, 'text': sometext} ]
@@ -673,9 +681,6 @@ def file_status_print():
 # used by jsonpmc_httpserver.py
 # - - - - - - - - - - - - - - - - - - - - - - - -
 def parse_PMC_XML(xmlstr):
-	#if xmlstr.startswith("""<?xml version="1.0" encoding="UTF-8"?>""") :
-	#	print("WARNING: removed encoding declaration header from xml file")
-	#	xmlstr = xmlstr[38:]
 	return parse_PMC_XML_core(xmlstr,None, None)
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
