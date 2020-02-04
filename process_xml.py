@@ -157,11 +157,13 @@ def get_pub_date_by_type(someroot,selector,pubtype,format):
 	status = 'ok'
 	ynode = dt.find('year')
 	year = ynode.text if ynode is not None and ynode.text is not None else ''
+	year = year.strip()
 	if len(year)==0: return {'date': None, 'status': 'incomplete'}
 	mnode = dt.find('month')
 	mm = '01'
 	if mnode is not None and mnode.text is not None:
 		mm = mnode.text
+		mm = mm.strip()
 		if len(mm)==1: mm="0" + mm
 	else:
 		status = 'incomplete'
@@ -175,6 +177,7 @@ def get_pub_date_by_type(someroot,selector,pubtype,format):
 	day = '01'
 	if dnode is not None and dnode.text is not None:
 		day = dnode.text
+		day = day.strip()
 		if len(day)==1: day = "0" + day
 	else:
 		status = 'incomplete'
