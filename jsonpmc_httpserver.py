@@ -5,7 +5,7 @@ from ftplib import FTP
 import http.client
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from process_xml import parse_PMC_XML,getPmcFtpUrl
-from pseudo_annot import get_pseudo_annotations
+from pseudo_annot import get_pseudo_annotations_for_text,get_pseudo_annotations_for_cell
 
 def getSibilsPubli(pmcid):
     connection = http.client.HTTPConnection("candy.hesge.ch")
@@ -113,16 +113,23 @@ def add_pseudo_annot(obj):
     obj['annotations']=annotations
     annotated_para=0
     annotated_capt=0
+    annotated_cell=0
     for s in obj['body_sections']:
         for c in s['contents']:
             if c['tag'] == 'p':
                 if annotated_para > 10: continue
-                a_list = get_pseudo_annotations(c['text'], c['id'])
+                a_list = get_pseudo_annotations_for_text(c, 'text') # c['text'], c['id'])
                 annotations.extend(a_list)
                 annotated_para = annotated_para + 1
             if c['tag'] == 'fig' or c['tag'] == 'table':
                 if annotated_capt > 10: continue
-                a_list = get_pseudo_annotations(c['caption'], c['id'])
+                a_list = get_pseudo_annotations_for_text(c, 'caption') # c['caption'], c['id'])
+                annotations.extend(a_list)
+                annotated_capt = annotated_capt + 1
+            if c['tag'] == 'table':
+                if annotated_cell > 10: continue
+                a_list = get_pseudo_annotations_for_cell(c, 5) # c['table_values'], c['id'], 10-annotated_cell)
+                annotated_cell = annotated_cell + len(a_list)
                 annotations.extend(a_list)
                 annotated_capt = annotated_capt + 1
 
