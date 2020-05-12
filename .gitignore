@@ -1,5 +1,6 @@
 __pycache__/
 tmp/
+compare_bioc_sibils/
 data2/
 mv-datafiles.sh
 mylog
