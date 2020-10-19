@@ -7,23 +7,20 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from process_xml import parse_PMC_XML,getPmcFtpUrl
 from pseudo_annot import get_pseudo_annotations_for_text,get_pseudo_annotations_for_cell
 
-def getSibilsPubli(pmcid):
+def getSibilsPubli(pmcid, withCovoc):
     connection = http.client.HTTPConnection("candy.hesge.ch")
-    #url = '/SIBiLS/PMC/fetch_deprecated.jsp?ids=' + pmcid + '&with_annotations'
     url = '/SIBiLS/PMC/fetch_PAM.jsp?ids=' + pmcid
-    #+ '&with_annotations'
-    #url = '/SIBiLS/PMC/fetch.jsp?ids=' + pmcid + '&with_annotations'
+    if withCovoc: url += '&covoc'
     connection.request("GET", url)
     response = connection.getresponse()
     output={}
     output["status"]=response.status
     output["reason"]=response.reason
     data = response.read().decode("utf-8")
-    #print("data:" + data[0:100] + " ... " + data[-100:len(data)])
-    # some reformatting...
     obj = json.loads(data)
     if len(obj)==1:
         obj = obj[0]
+        #some reformatting
         if obj.get('annotations') is None and obj.get('annotation') is not None:
             obj['annotations'] = obj.pop('annotation')
     else:
@@ -231,11 +228,12 @@ class GP(BaseHTTPRequestHandler):
 
         elif self.path[0:12]=='/sibils/pmc/':
             parts=self.path[12:].split('?')
+            withCovoc = ('covoc' in self.path)
             pmcid = parts[0]
             if pmcid[0:3]!="PMC": pmcid= "PMC" + pmcid
             msg = 'getting sibils data for pmcid: ' + pmcid
             print(msg)
-            output = getSibilsPubli(pmcid)
+            output = getSibilsPubli(pmcid, withCovoc)
             if output['status']==200:
                 obj=output['data']
                 response = self.buildSuccessResponseObject(self.path, obj)
