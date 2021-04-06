@@ -751,10 +751,13 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['authors'] = get_authors(root)
 
 	# note: we use xref to retrieve author affiliations above this line
-
 	etree.strip_tags(root,'xref')
 
 	dict_doc['article_type'] = root.xpath('/article')[0].get('article-type')
+
+	# namespace xml = {http://www.w3.org/XML/1998/namespace}
+	dict_doc['language'] = root.xpath('/article')[0].get('{http://www.w3.org/XML/1998/namespace}lang')
+	if dict_doc['language'] == None : dict_doc['language'] = ''
 
 	# note: we can get multiple journal-id elements with different journal-id-type attributes
 	dict_doc['medline_ta'] = get_text_from_xpath(root, '/article/front/journal-meta/journal-id', False, True)
@@ -767,15 +770,20 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['title'] = get_multiple_texts_from_xpath(root, '/article/front/article-meta/title-group', True)
 	dict_doc['pmid'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmid"]', True, False)
 	dict_doc['doi'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="doi"]', True, False)
+	# the archive and manuscript types are used for preprints
+	dict_doc['archive_id'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="archive"]', True, False)
+	dict_doc['manuscript_id'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="manuscript"]', True, False)
 
 	# we might find at least one of these:
 	pmc1 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc-uid"]', True, False)
 	pmc2 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, False)
 	pmc = pmc1
 	if pmc == '': pmc = pmc2
-	if pmc == '':  file_status_add_error("ERROR, no value for article-id pmc-uid nor pmc")
+	if pmc == '' and dict_doc['archive_id'] == '':  file_status_add_error("ERROR, no value for article id in types pmc-uid, pmc, or archive")
 	dict_doc['pmcid'] = pmc
 	dict_doc['_id'] = pmc
+	# if we have no pmc id then use the archive id (for preprints)
+	if pmc == '' and dict_doc['archive_id'] != '': dict_doc['_id'] = dict_doc['archive_id']
 
 	# ok with Julien, see precedence rules in def get_pub_date()
 	dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')['date']
@@ -830,6 +838,10 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	# for compatibility reasons
 	dict_doc['pmcid']='PMC' + dict_doc['pmcid']
 	dict_doc['_id'] = dict_doc['pmcid']
+	# in case of a preprint we only have an archive id, we store it as the _id
+	if dict_doc['pmcid'] == 'PMC'  and dict_doc['archive_id'] != '': dict_doc['_id'] = dict_doc['archive_id']
+	# if we have no pmcid, store an empty string for it
+	if dict_doc['pmcid'] == 'PMC': dict_doc['pmcid'] = ''
 
 	return dict_doc
 
