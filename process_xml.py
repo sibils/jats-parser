@@ -756,8 +756,9 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['article_type'] = root.xpath('/article')[0].get('article-type')
 
 	# namespace xml = {http://www.w3.org/XML/1998/namespace}
-	dict_doc['language'] = root.xpath('/article')[0].get('{http://www.w3.org/XML/1998/namespace}lang')
-	if dict_doc['language'] == None : dict_doc['language'] = ''
+	lng = root.xpath('/article')[0].get('{http://www.w3.org/XML/1998/namespace}lang')
+	if lng == None : lng = ''
+	dict_doc['language'] = lng[0:2]
 
 	# note: we can get multiple journal-id elements with different journal-id-type attributes
 	dict_doc['medline_ta'] = get_text_from_xpath(root, '/article/front/journal-meta/journal-id', False, True)
