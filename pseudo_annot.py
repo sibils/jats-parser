@@ -37,12 +37,14 @@ def get_pseudo_annotations_for_cell(cnt, max):
         for col in row:
             words.extend([str(w) for w in col.split(' ')])
     annotations = list()
-    somewords = random.sample(words, random.randint(1,max))
-    for w in somewords:
-        psg = "fake passage"  # ignored
-        offset = 3523523535   # ignored
-        annot = build_annot(w, w, psg, offset, id, 'Table', 'Content')
-        annotations.append(annot)
+    if len(words)>0:
+        mymax = min(len(words), max)
+        somewords = random.sample(words, random.randint(1,mymax))
+        for w in somewords:
+            psg = "fake passage"  # ignored
+            offset = 3523523535   # ignored
+            annot = build_annot(w, w, psg, offset, id, 'Table', 'Content')
+            annotations.append(annot)
     return annotations
 
 
