@@ -1,9 +1,16 @@
 # JATS parsing
+
+This is a repository of the BiTeM group of the HES-SO of Geneva, see <http://bitem.hesge.ch/>
+
 The project contains python scripts parsing the Europe PMC interchange format JATS using the lxml library
 
 See https://jats.nlm.nih.gov/archiving/tag-library
 
 See also https://lxml.de/parsing.html
+
+## License
+
+This project is licensed under the terms of the GNU General Public License, version 3 or any later version (see file LICENSE.txt)
 
 ## How to use
 
