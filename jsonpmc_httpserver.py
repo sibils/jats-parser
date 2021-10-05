@@ -8,23 +8,36 @@ from process_xml import parse_PMC_XML,getPmcFtpUrl
 from pseudo_annot import get_pseudo_annotations_for_text,get_pseudo_annotations_for_cell
 
 def getSibilsPubli(pmcid, withCovoc):
-    connection = http.client.HTTPConnection("candy.hesge.ch")
-    url = '/SIBiLS/PMC/fetch_PAM.jsp?ids=' + pmcid
+    hackathon = True
+    if hackathon:
+        if "PMC" not in pmcid: pmcid = "PMC" + pmcid
+        connection = http.client.HTTPConnection("denver.hesge.ch:8900")
+        url = '/BiCIKL_Hackathon/fetch?pmcid=' + pmcid
+    else:
+        connection = http.client.HTTPSConnection("candy.hesge.ch")
+        url = '/SIBiLS/PMC/fetch_PAM.jsp?ids=' + pmcid
+    print("url",url)
     if withCovoc: url += '&covoc'
     connection.request("GET", url)
     response = connection.getresponse()
+    print("response", response.status)
+    print("response", response.reason)
     output={}
     output["status"]=response.status
     output["reason"]=response.reason
     data = response.read().decode("utf-8")
-    obj = json.loads(data)
-    if len(obj)==1:
-        obj = obj[0]
-        #some reformatting
-        if obj.get('annotations') is None and obj.get('annotation') is not None:
-            obj['annotations'] = obj.pop('annotation')
+    obj_raw = json.loads(data)
+    if hackathon and obj_raw is not None:
+        obj = obj_raw
+    elif not hackathon and len(obj_raw)==1:
+        obj = obj_raw[0]
     else:
-        obj = null
+        obj = None
+
+    #some reformatting
+    if obj is not None and obj.get('annotations') is None and obj.get('annotation') is not None:
+        obj['annotations'] = obj.pop('annotation')
+
     output["data"]= obj
     connection.close()
     return output
@@ -198,6 +211,7 @@ class GP(BaseHTTPRequestHandler):
         error_msg='ERROR, invalid URL: ' + self.path
 
         if self.path[0:12]=='/getxml/pmc/':
+            print('hi')
             parts=self.path[12:].split('?')
             pmcid = parts[0]
             if pmcid[0:3]=="PMC": pmcid=pmcid[3:]
@@ -258,7 +272,7 @@ class GP(BaseHTTPRequestHandler):
         self.sendJsonResponse(obj,400)
 
 
-def run(server_class=HTTPServer, handler_class=GP, port=8088):
+def run(server_class=HTTPServer, handler_class=GP, port=8087):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     print('Server running at localhost:8088...')
@@ -267,5 +281,5 @@ def run(server_class=HTTPServer, handler_class=GP, port=8088):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
-use_pseudo_annot=True
+use_pseudo_annot=False
 run()
