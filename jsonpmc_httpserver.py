@@ -275,7 +275,7 @@ class GP(BaseHTTPRequestHandler):
 def run(server_class=HTTPServer, handler_class=GP, port=8087):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    print('Server running at localhost:8088...')
+    print('Server running at localhost:8087...')
     httpd.serve_forever()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
