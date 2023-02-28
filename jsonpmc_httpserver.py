@@ -8,7 +8,7 @@ from process_xml import parse_PMC_XML,getPmcFtpUrl
 from pseudo_annot import get_pseudo_annotations_for_text,get_pseudo_annotations_for_cell
 
 def getSibilsPubli(pmcid, withCovoc):
-    connection = http.client.HTTPConnection("candy.hesge.ch")
+    connection = http.client.HTTPSConnection("candy.hesge.ch")
     url = '/SIBiLS/PMC/fetch_PAM.jsp?ids=' + pmcid
     if withCovoc: url += '&covoc'
     connection.request("GET", url)
@@ -24,7 +24,7 @@ def getSibilsPubli(pmcid, withCovoc):
         if obj.get('annotations') is None and obj.get('annotation') is not None:
             obj['annotations'] = obj.pop('annotation')
     else:
-        obj = null
+        obj = None
     output["data"]= obj
     connection.close()
     return output
