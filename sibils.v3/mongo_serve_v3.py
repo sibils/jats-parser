@@ -61,7 +61,7 @@ class GP(BaseHTTPRequestHandler):
             self.sendJsonResponse(response, 200)
             return
 
-        # get data from sibils v3 bib, ana, sen and reformat it for viewer (fetch_PAM equivalent)
+        # get data from sibils v3 bib, ana, sen (fetch v3 equivalent)
         elif self.path[0:20]=='/mongo/fetch/v3/pmc/':
             parts=self.path[20:].split('?')
             withCovoc = ('covoc' in self.path)
