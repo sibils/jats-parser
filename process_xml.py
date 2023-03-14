@@ -200,12 +200,18 @@ def get_first_pub_date(someroot,format):
 # algo decided in accordance with Julien
 def get_pub_date(someroot,format):
 	selector = '/article/front/article-meta/pub-date'
+	dt = get_pub_date_by_type(someroot, selector, 'epub', format)
+	if dt['status'] != 'ok': dt = get_pub_date_by_type(someroot, selector, 'ppub', format)
+	if dt['status'] != 'ok': dt = get_pub_date_by_type(someroot, selector, 'collection', format)
+	if dt['status'] != 'ok': dt = get_pub_date_by_type(someroot, selector, None, format)
+	if dt['status'] != 'ok': file_status_add_error('ERROR, element not found: ' + selector)
+	return dt
+
+def get_pmc_release_date(someroot,format):
+	selector = '/article/front/article-meta/pub-date'
 	dt = get_pub_date_by_type(someroot, selector, 'pmc-release', format)
-	if dt['status'] is not 'ok': dt = get_pub_date_by_type(someroot, selector, 'epub', format)
-	if dt['status'] is not 'ok': dt = get_pub_date_by_type(someroot, selector, 'ppub', format)
-	if dt['status'] is not 'ok': dt = get_pub_date_by_type(someroot, selector, 'collection', format)
-	if dt['status'] is not 'ok': dt = get_pub_date_by_type(someroot, selector, None, format)
-	if dt['status'] is not 'ok': file_status_add_error('ERROR, element not found: ' + selector)
+	if dt['status'] != 'ok':
+                return {'date': None, 'status': "ok"}
 	return dt
 
 def build_medlinePgn(fp,lp):
@@ -788,9 +794,10 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 
 	# ok with Julien, see precedence rules in def get_pub_date()
 	dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')['date']
-	dict_doc['publication_date_alt'] = get_pub_date(root, 'default format')['date'] # 'yyyy MMM d'
+	dict_doc['pmc_release_date'] = get_pmc_release_date(root, 'd-M-yyyy')['date']
+	#dict_doc['publication_date_alt'] = get_pub_date(root, 'default format')['date'] # 'yyyy MMM d'
 	dict_doc['pubyear'] = get_pub_date(root, 'yyyy')['date']
-	dict_doc['publication_date_status']=get_pub_date(root, 'yyyy')['status']
+	#dict_doc['publication_date_status']=get_pub_date(root, 'yyyy')['status']
 
 	dict_doc['issue'] = get_text_from_xpath(root, '/article/front/article-meta/issue', True, False)
 	dict_doc['volume'] = get_text_from_xpath(root, '/article/front/article-meta/volume', True, False)
@@ -1043,8 +1050,8 @@ def test6():
 	print(str(x['date']) + ' - ' + x['status'])
 
 
-# <mml:math id="M1" overflow="scroll">
-# 	<mml:mi mathvariant="script">O</mml:mi>
+# <mml:math id="M1" overflow="scroll">
+# 	<mml:mi mathvariant="script">O</mml:mi>
 # 	<mml:mo>(</mml:mo>
 # 	<mml:mi>n</mml:mi>
 # 	<mml:mo>log</mml:mo>
