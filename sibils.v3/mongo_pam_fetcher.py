@@ -6,8 +6,11 @@ class MongoPamFetcher:
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def __init__(self, host="localhost", port=27017, db_name="sibils_v3_1"):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        client = MongoClient(host=host, port=port)
-        self.mongo_db = client[db_name]
+        if host is not None and port is not None and db_name is not None:
+            client = MongoClient(host=host, port=port)
+            self.mongo_db = client[db_name]
+        else:
+            print("Init MongoPamFetcher without mongo connection")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def set_collections(self, bibcol_name = "pmcbib23", anacol_name = "pmcana23", sencol_name = "pmcsen23"):
@@ -138,18 +141,26 @@ if __name__ == '__main__':
 
     # init mongo db connection and collections to be fetched
     mongo_pam_fetcher = MongoPamFetcher(host="localhost", port=27018, db_name= "sibils_v3_1")
+    print("Init done")
     mongo_pam_fetcher.set_collections(bibcol_name = "pmcbib23", anacol_name="pmcana23", sencol_name="pmcsen23" )
+    print("Collections set")
 
     # get an object in "sibils-like" fetch v3 raw format
-    obj = mongo_pam_fetcher.fetch_v3_data(pmc_list[0])
-    print("pmcid", obj.get("pmcid"))
-    print("anotations", 0 if obj.get("annotations") is None else len(obj.get("annotations")) )
-    print("sentences", 0 if obj.get("sentences") is None else len(obj.get("sentences")) )
+    obj_v3 = mongo_pam_fetcher.fetch_v3_data(pmc_list[0])
+    print("pmcid", obj_v3.get("pmcid"))
+    print("anotations", 0 if obj_v3.get("annotations") is None else len(obj_v3.get("annotations")) )
+    print("sentences", 0 if obj_v3.get("sentences") is None else len(obj_v3.get("sentences")) )
 
     # get an object in "sibils-like" fetch_PAM format
     obj = mongo_pam_fetcher.fetch_pam_data(pmc_list[0])
     print("pmcid", obj.get("pmcid"))
     print("anotations", 0 if obj.get("annotations") is None else len(obj.get("annotations")) )
     print("sentences", 0 if obj.get("sentences") is None else len(obj.get("sentences")) )
+
+    pmf = MongoPamFetcher(host=None, port=None, db_name=None)
+    pmf.build_v2_style(obj_v3)
+    print("pmcid", obj_v3.get("pmcid"))
+    print("anotations", 0 if obj_v3.get("annotations") is None else len(obj_v3.get("annotations")) )
+    print("sentences", 0 if obj_v3.get("sentences") is None else len(obj_v3.get("sentences")) )
 
     print("End")
