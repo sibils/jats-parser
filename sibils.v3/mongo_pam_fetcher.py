@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-
+import json
 
 class MongoPamFetcher:
 
@@ -128,7 +128,6 @@ class MongoPamFetcher:
             annot["concept_offset"] = cpt_pos
             annot["concept_offset_in_section"] = sen_offset + cpt_pos # wrongly named _in_section, should be in_contents
             v2_annotations.append(annot)        
-        print("v3 annot", len(data["annotations"]), "v2 annot", len(v2_annotations))
         data["annotations"] = v2_annotations
         del data["sentences"]
 
@@ -162,5 +161,9 @@ if __name__ == '__main__':
     print("pmcid", obj_v3.get("pmcid"))
     print("anotations", 0 if obj_v3.get("annotations") is None else len(obj_v3.get("annotations")) )
     print("sentences", 0 if obj_v3.get("sentences") is None else len(obj_v3.get("sentences")) )
+
+    f = open("julien/fetchPam.json")
+    ogj = json.load(f)
+    f.close
 
     print("End")
