@@ -211,7 +211,7 @@ def get_pmc_release_date(someroot,format):
 	selector = '/article/front/article-meta/pub-date'
 	dt = get_pub_date_by_type(someroot, selector, 'pmc-release', format)
 	if dt['status'] != 'ok':
-                return {'date': None, 'status': "ok"}
+		return {'date': None, 'status': "ok"}
 	return dt
 
 def build_medlinePgn(fp,lp):
