@@ -3,6 +3,7 @@
 # A subpart of the XML structure is mods namespace describe here: http://www.loc.gov/standards/mods/v3/
 
 import sys
+import traceback
 import codecs
 import os
 import re
@@ -25,6 +26,7 @@ def do_it(file_list):
             build_path_list('', root, path_list)
             cnt += 1
             if cnt % 100 == 0: print('processing ' + str(cnt) + ' / ' + str(len(file_list)) , flush=True)
+            #if cnt >= 200: break
             for pth in set(path_list):
                 elem_list = pth.split('/')
                 for el in elem_list:
@@ -40,7 +42,9 @@ def do_it(file_list):
                 if len(value['samples'])<1 : value['samples'].append(f)
         except Exception as e:
             print('ERROR with ' + file_name, flush=True)
-            print(e)
+            #print(sys.exc_info())
+            #print(traceback.format_exc())
+            #sys.exit()
 
     print('processed  ' + str(cnt) + ' / ' + str(len(file_list)) )
 
@@ -80,6 +84,29 @@ def do_it(file_list):
             if count>10: continue
             print('tagtext', k)
             print(txt, flush=True)
+
+    print('------', 'attr2values', len(attr2values))
+    for attr in attr2values:
+        valdic = attr2values[attr]
+        print("=======================================")
+        print("attr:", attr, "distinct value count:", len(valdic))
+        print("=======================================")
+        idx = 0
+        sorted_items = sorted(valdic.items(), key = lambda kv : 100000000-kv[1])
+        for item in sorted_items:
+            print("attr:", attr, "value:", item[0], ",",item[1], "occurences")
+            idx +=1
+            if idx > 10: break
+
+    print('------', "taxpub paths only")
+    tp_paths = set()
+    for pth in full_path_dict:
+        tp_elems = list()
+        for elem in  pth.split("/"):
+            if elem.startswith("taxpub:"): tp_elems.append(elem)
+        if len(tp_elems)>0: tp_paths.add("/".join(tp_elems))
+    for tp_path in tp_paths:
+        print("tp_path", tp_path)
     print('------')
 
 
@@ -99,6 +126,21 @@ def sorted_by_frequency(dict):
 def sorted_by_key(dict):
     return sorted(dict.items(), key=lambda item: item[0])
 
+def handle_taxpub_attrs(el, tag):
+    if not tag.startswith("taxpub:"): return
+    for k in el.keys():
+        #print("k", k)
+        key = tag[7:] + ":" + k
+        #print("key", key)
+        if key not in attr2values: attr2values[key]=dict()
+        valdic = attr2values[key]
+        #print("valdic", valdic)
+        value = el.get(k)
+        #print("value", value)
+        if value not in valdic: valdic[value] = 0
+        valdic[value] += 1
+        #print("value count", valdic[value])
+
 def handle_examples(el, tag):
     if tag == "taxpub:taxon-treatment": return  # ignored, contains everything
     if tag not in tag2text_list: 
@@ -111,6 +153,7 @@ def handle_examples(el, tag):
 def build_path_list(ancestors, parent_el, path_list):
     simple_tag = simplify_ns(parent_el.tag)
     if simple_tag.startswith('taxpub:'):
+        handle_taxpub_attrs(parent_el, simple_tag)
         handle_examples(parent_el, simple_tag)
     ancestors = ancestors + '/' + simple_tag
     for el in parent_el:
@@ -170,6 +213,8 @@ if __name__ == '__main__':
     tag2text_list = dict()
     full_path_dict = dict()
     full_elem_dict = dict()
+    attr2values = dict()
+
 
     file_names = os.listdir(data_dir)
     print('Analyzing collection of', len(file_names), "items")
