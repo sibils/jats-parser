@@ -862,33 +862,87 @@ def get_sections(pmcid, node):
 # Recursively visits sub-elements of node.
 # Sub-elements having a tag in kept_tags (i.e. fig, table, list) are left unchanged as well as their own sub-elements
 # Other sub-elements are removed but their text / tail are attached to the appropriate sibling or embedding element.
+# Old method is buggy and obsolete, do NOT use it
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 def simplify_node(el, kept_tags, starting=True):
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	print("Choosing old / new", use_old)
+	if use_old:
+		simplify_node_old(el, kept_tags)
+	else:
+		simplify_node_new(el, kept_tags)
+
+
+# Recursively visits sub-elements of node.
+# buggy method replad with new one in june 2023 defined above
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+def simplify_node_old(el, kept_tags, starting=True):
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	print("Using old")
 	if starting:
 		for subel in el.iterchildren():
-			simplify_node(subel, kept_tags, False)
+			simplify_node_old(subel, kept_tags, False)
 	elif el.tag not in kept_tags: 	# we stringify this el
 		trg_node = el.getprevious() if el.getprevious() is not None else el.getparent()
 		trg_attr = 'tail' if el.getprevious() is not None else 'text'
 		if el.text is not None: setattr(trg_node, trg_attr, (getattr(trg_node, trg_attr) or '') + el.text)
 		for subel in el.iterchildren():
 			el.addnext(subel)
-			simplify_node(subel, kept_tags, False)
+			simplify_node_old(subel, kept_tags, False)
 		if el.tail is not None: setattr(trg_node, trg_attr, (getattr(trg_node ,trg_attr) or '') + el.tail)
 		el.getparent().remove(el)
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+def simplify_node_new(node ,kept_tags):
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	print("Using new")
+	elems = list()
+	recursive_simplify_node(node, kept_tags, elems)
+	node_tail = node.tail
+	node.clear()
+	node.tail = node_tail
+	trg = node
+	for el in elems:
+		if type(el) is str:
+			if trg == node:
+				trg.text = el if trg.text is None else trg.text + el
+			else:
+				trg.tail = el if trg.tail is None else trg.tail + el
+		else:
+			trg = el
+			node.append(trg)
 
+# Recursively visits sub-elements of node.
+# Sub-elements having a tag in kept_tags (i.e. fig, table, list) are left unchanged as well as their own sub-elements
+# Other sub-elements are removed but their text / tail are attached to the appropriate sibling or embedding element.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+def recursive_simplify_node(node ,kept_tags, elems, top_level=True):
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	if node.tag in kept_tags:
+		elems.append(node)
+	else:
+		if node.text is not None: elems.append(node.text)
+		for child in node.iterchildren(): recursive_simplify_node(child, kept_tags, elems, False)
+		if node.tail is not None and not top_level:
+			top_level = False
+			elems.append(node.tail)
 
 # - - - - - - - - - - - - - - - - -
 def main():
 # - - - - - - - - - - - - - - - - -
+	global use_old
 	usage = "%prog file"
 	parser = OptionParser()
 	parser.add_option("-f","--file", dest="filename", help="Process one file for now")
+	# use_old: option used for debugging the old version of simplify_node
+	parser.add_option("-o","--old", dest="use_old", default=False, action="store_true", help="Use old or new node simplifier")
 	(options,args) = parser.parse_args()
 	if len(args) < 1:
 		sys.exit("Please provide a file")
 	else:
 		input_file = args[0]
+
+	use_old = options.use_old
 
 	file_status_reset()
 	file_status_set_name(input_file)
@@ -918,6 +972,8 @@ def main():
 		output_file = 'pmc'+ dict_doc['pmcid']
 	if not os.path.exists(subdir):
 		os.makedirs(subdir)
+	if use_old: 
+		output_file += "-old"
 	output_file += '.json'
 	out_file = codecs.open(subdir + '/' + output_file,'w','utf-8')
 	out_file.write(json.dumps(dict_doc, sort_keys=True, indent=2))
@@ -1019,19 +1075,18 @@ def test4():
 	#print(json.dumps(stuff, sort_keys=True, indent=2))
 
 
+
+
+
 def test5():
-	xmlstr="""<root><p>c1<tag1>c2</tag1>c3<tag2>c4<tag21>c5</tag21>c6</tag2>c7<tag3>c8</tag3>c9<tag4>c10</tag4>c11</p></root>"""
+	xmlstr = "<root><p>toto<q>est<s>depuis</s>quelques<t>temps</t>deja</q>vraiment<r>tres</r>content</p>.</root>"
 	root = etree.fromstring(xmlstr)
-	#tags_to_keep=set(['tag3'])
-	node = root.find('p')
-	#tags_to_strip=set()
-	print(etree.tostring(root, pretty_print = True))
-	kept_tags = sys.argv[1].split(',') if len(sys.argv)>1 else []
-	print('kept tags: ' + str(kept_tags))
-	simplify_node(node, kept_tags)
-	print(etree.tostring(root, pretty_print = True))
-	#stuff=handle_paragraph('1111',root.find('p'))
-	#print(json.dumps(stuff, sort_keys=True, indent=2))
+	print("------")
+	print("avant", etree.tostring(root, pretty_print = True))
+	p = root.find('p')
+	simplify_node(p, ['t'])
+	print("apres",etree.tostring(root, pretty_print = True))
+
 
 def test6():
 	xmlstr="""<root>
@@ -1101,7 +1156,8 @@ def test():
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 file_status = {'name':'', 'errors':[]}
 block_id=[]
+use_old = False
 
 if __name__ == '__main__':
-	#test()
+	#test5()
 	main()
