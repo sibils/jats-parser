@@ -152,6 +152,7 @@ class PmcaFormatter:
         mesh_terms_count = 0
         chem_terms_count = 0
         key_terms_count = 0
+        aff_count = 0
         for sen in data["sentences"]:
             # add missing information in sentence objects
             if sen["field"]=="title":
@@ -172,6 +173,11 @@ class PmcaFormatter:
             elif sen["field"] == "keywords":
                 key_terms_count += 1
                 self.update_sentence(sen,  "5." + str(key_terms_count), "p", "text")
+            # i.e. medline 724279, 724280, 724281 (many in single element)
+            elif sen["field"] == "affiliations":
+                aff_count += 1
+                self.update_sentence(sen,  "100." + str(aff_count), "p", "text")                
+
 
         # add body_sections for title, abstract, ...
         #fields = ["title", "abstract", "chemicals", "coi_statements", "keywords", "mesh_terms", ]
@@ -180,7 +186,22 @@ class PmcaFormatter:
         document["body_sections"] = body_sections
         document["back_sections"] = []
         document["float_sections"] = []
-        
+        extra_sections = list()
+        document["extra_sections"] = extra_sections
+
+        # extra affiliation section
+        affiliation_list = document["affiliations"]
+        if affiliation_list is not None and len(affiliation_list)>0:
+            contents = list()
+            section = {"id": "100", "implicit": True, "label": "", "level": 1, 
+                        "title": "Affiliations", "caption":"", "tag": "affiliations", 
+                        "contents": contents}
+            idx = 0
+            for item in affiliation_list:
+                idx += 1
+                contents.append({"id": "100." + str(idx), "tag": "list-item", "text": item})
+            extra_sections.append(section)
+
         # title section
         title_para = {"id": "1.1", "tag": "p", "text": document["title"]}
         title_section = {"id": "1", "implicit": True, "label": "", "level": 1, 
@@ -199,7 +220,7 @@ class PmcaFormatter:
         if mesh_terms is not None  and len(mesh_terms) > 0:
             contents = list()
             section = {"id": "3", "implicit": False, "label": "", "level": 1, 
-                        "title": "MeSH terms", "caption":"", "tag": "sec", 
+                        "title": "MeSH terms", "caption":"", "tag": "mesh_terms", 
                         "contents": contents}
             idx = 0
             for item in mesh_terms:
@@ -212,7 +233,7 @@ class PmcaFormatter:
         if chem_terms is not None and len(chem_terms) > 0:
             contents = list()
             section = {"id": "4", "implicit": False, "label": "", "level": 1, 
-                        "title": "Chemical terms", "caption":"", "tag": "sec", 
+                        "title": "Chemical terms", "caption":"", "tag": "chemicals", 
                         "contents": contents}
             idx = 0
             for item in chem_terms:
@@ -225,7 +246,7 @@ class PmcaFormatter:
         if key_terms is not None and len(key_terms) > 0:
             contents = list()
             section = {"id": "5", "implicit": False, "label": "", "level": 1, 
-                        "title": "Keywords", "caption":"", "tag": "sec", 
+                        "title": "Keywords", "caption":"", "tag": "keywords", 
                         "contents": contents}
             idx = 0
             for item in key_terms:
@@ -248,6 +269,32 @@ class PmcaFormatter:
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def get_adapted_format_for_pmc(self, data):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        aff_count = 0
+        for sen in data["sentences"]:
+            # add missing information in sentence objects
+            if sen["field"] == "affiliations":
+                aff_count += 1
+                self.update_sentence(sen,  "100." + str(aff_count), "p", "text")                
+
+
+        document = data["document"]
+        extra_sections = list()
+        document["extra_sections"] = extra_sections
+        # extra affiliation section
+        affiliation_list = document["affiliations"]
+        if affiliation_list is not None and len(affiliation_list)>0:
+            contents = list()
+            section = {"id": "100", "implicit": True, "label": "", "level": 1, 
+                        "title": "Affiliation(s):", "caption":"", "tag": "affiliations", 
+                        "contents": contents}
+            idx = 0
+            for item in affiliation_list:
+                idx += 1
+                #name = str(idx) + ". " + item["name"]
+                name = item["name"]
+                contents.append({"id": "100." + str(idx), "tag": "list-item", "text": name, "index": idx })
+            extra_sections.append(section)
+
         return data
 
 
