@@ -111,11 +111,9 @@ class PmcaFormatter:
             sen_id = annot.get("sentence_number") or annot["id_sentence"]
             sen = sentence_dict[sen_id]
             sen_tag = sen.get("tag")
-            # we ignore title, abstract annotations which all have a None tag
-            # TEMP we ignore affiliations and keyword annotations which all have a None tag - TODO
             if sen_tag is None: continue
             sen_fld = sen["field"]
-            # TEMP we ignore annotations on section titles - TODO
+            # TEMP we ignore annotations on section titles
             if sen_fld == "section_title": continue
             annot["subfield"] = self.get_v2_subfield(sen)
             annot["field"] = self.get_v2_field(sen)
@@ -176,7 +174,7 @@ class PmcaFormatter:
             # i.e. medline 724279, 724280, 724281 (many in single element)
             elif sen["field"] == "affiliations":
                 aff_count += 1
-                self.update_sentence(sen,  "100." + str(aff_count), "p", "text")                
+                self.update_sentence(sen,  "1000." + str(aff_count), "p", "text")                
 
 
         # add body_sections for title, abstract, ...
@@ -193,13 +191,13 @@ class PmcaFormatter:
         affiliation_list = document["affiliations"]
         if affiliation_list is not None and len(affiliation_list)>0:
             contents = list()
-            section = {"id": "100", "implicit": True, "label": "", "level": 1, 
+            section = {"id": "1000", "implicit": True, "label": "", "level": 1, 
                         "title": "Affiliations", "caption":"", "tag": "affiliations", 
                         "contents": contents}
             idx = 0
             for item in affiliation_list:
                 idx += 1
-                contents.append({"id": "100." + str(idx), "tag": "list-item", "text": item})
+                contents.append({"id": "1000." + str(idx), "tag": "list-item", "text": item})
             extra_sections.append(section)
 
         # title section
@@ -270,11 +268,15 @@ class PmcaFormatter:
     def get_adapted_format_for_pmc(self, data):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         aff_count = 0
+        key_terms_count = 0
         for sen in data["sentences"]:
             # add missing information in sentence objects
             if sen["field"] == "affiliations":
                 aff_count += 1
-                self.update_sentence(sen,  "100." + str(aff_count), "p", "text")                
+                self.update_sentence(sen,  "1000." + str(aff_count), "p", "text")                
+            elif sen["field"] == "keywords":
+                key_terms_count += 1
+                self.update_sentence(sen,  "1005." + str(key_terms_count), "p", "text")
 
 
         document = data["document"]
@@ -284,7 +286,7 @@ class PmcaFormatter:
         affiliation_list = document["affiliations"]
         if affiliation_list is not None and len(affiliation_list)>0:
             contents = list()
-            section = {"id": "100", "implicit": True, "label": "", "level": 1, 
+            section = {"id": "1000", "implicit": True, "label": "", "level": 1, 
                         "title": "Affiliation(s):", "caption":"", "tag": "affiliations", 
                         "contents": contents}
             idx = 0
@@ -292,8 +294,22 @@ class PmcaFormatter:
                 idx += 1
                 #name = str(idx) + ". " + item["name"]
                 name = item["name"]
-                contents.append({"id": "100." + str(idx), "tag": "list-item", "text": name, "index": idx })
+                contents.append({"id": "1000." + str(idx), "tag": "list-item", "text": name, "index": idx })
             extra_sections.append(section)
+
+
+        # keywords section
+        key_terms = document.get("keywords")
+        if key_terms is not None and len(key_terms) > 0:
+            contents = list()
+            section = {"id": "1005", "implicit": False, "label": "", "level": 1, 
+                        "title": "Keywords", "caption":"", "tag": "keywords", 
+                        "contents": contents}
+            idx = 0
+            for item in key_terms:
+                idx += 1
+                contents.append({"id": "1005." + str(idx), "tag": "list-item", "text": item})
+            document["body_sections"].append(section)
 
         return data
 
