@@ -11,7 +11,6 @@ import re
 from optparse import OptionParser
 from datetime import datetime
 from lxml import etree
-from unidecode import unidecode
 
 
 
@@ -365,19 +364,30 @@ def table_to_df(table_text):
 	columns = []
 	for tr in table_tree.xpath('thead/tr'):
 		for c in tr.getchildren():
-			columns.append(' '.join(c.itertext()))
+			col_content = ' '.join(c.itertext())
+			col_content = col_content.strip()
+			columns.append(col_content)
 
 	row_values = []
 	len_rows = []
 	for tr in table_tree.findall('tbody/tr'):
 		es = tr.xpath('td')
-		row_value = [' '.join(e.itertext()) for e in es]
+		row_value = list()
+		for e in es:
+			joined_e = ' '.join(e.itertext())
+			clean_e = joined_e.strip()
+			row_value.append(clean_e)
 		len_rows.append(len(es))
 		row_values.append(row_value)
 
 	if len(len_rows) >= 1:
-		len_row = max(set(len_rows), key=len_rows.count)
-		row_values = [r for r in row_values if len(r) == len_row] # remove row with different length
+		# - pam 15.12.2023: we remove this check on column count:
+		#   it appears that we miss useful data because of this check
+		#   making sure the the number of columns is the same in every row is complicated and
+		#   not useful, we are interested by content not exact position in the table
+		#len_row = max(set(len_rows), key=len_rows.count)
+		#row_values = [r for r in row_values if len(r) == len_row] # remove row with different length
+		#   end comment pam
 		return columns, row_values
 	else:
 		return None, None

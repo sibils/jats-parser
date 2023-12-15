@@ -267,5 +267,5 @@ def run(server_class=HTTPServer, handler_class=GP, port=8088):
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
-use_pseudo_annot=True
+use_pseudo_annot=False
 run()
