@@ -103,7 +103,9 @@ class PmcaFormatter:
             data = self.get_adapted_format_for_medline(v3_data)
         elif collection == "pmc":
             data = self.get_adapted_format_for_pmc(v3_data)
-        
+        elif collection == "plazi":
+            data = self.get_adapted_format_for_plazi(v3_data)
+
         # trainsform v3 data into a v2 data structure known by the viewer
         v2_annotations = list()
         sentence_dict = self.build_sentence_dic(data)
@@ -127,7 +129,7 @@ class PmcaFormatter:
             annot["concept_offset_in_section"] = sen_offset + cpt_pos # wrongly named _in_section, should be in_contents
             v2_annotations.append(annot)
 
-        pam_data = data["document"]        
+        pam_data = data["document"]  
         pam_data["annotations"] = v2_annotations
         return pam_data
 
@@ -139,6 +141,54 @@ class PmcaFormatter:
         sentence["tag"] = tag
         sentence["field"] = field
 
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def get_adapted_format_for_plazi(self, data):
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        document = data["document"]
+        body_sections = list()
+        document["body_sections"] = []
+        document["back_sections"] = []
+        document["float_sections"] = []
+        document["extra_sections"]  = []
+        document["title"] = document["treatment_title"]
+        document["abstract"] = document["text"]
+        tbu = document["treatment-bank-uri"]
+        if tbu.startswith("https://treatment.plazi.org/id/"): tbu = tbu[31:]
+        elif tbu.startswith("http://treatment.plazi.org/id/"): tbu = tbu[30:]
+        document["treatment_bank_uri"] = tbu
+        zenodoi = document["zenodo-doi"]
+        if zenodoi.startswith("https://dx.doi.org/"): zenodoi = zenodoi[19:]
+        elif zenodoi.startswith("http://dx.doi.org/"): zenodoi = zenodoi[18:]
+        document["zenodo_doi"] = zenodoi
+
+        body_sections = document["body_sections"]
+
+        title_contents = list()
+        title_section = {"id": "1", "implicit": True, "label": "", "level": 1, 
+                         "title": "Title", "contents": title_contents}        
+        body_sections.append(title_section)
+
+        abstract_contents = list()
+        abstract_section = {"id": "2", "implicit": False, "label": "", "level": 1,  
+                            "title": "Treatment", "caption":"", "tag": "abstract", "contents": abstract_contents } 
+        body_sections.append(abstract_section)
+
+        for sen in data["sentences"]:
+            if sen["field"] == "treatment_title":
+                id = "1." + str(len(title_contents) + 1)
+                title_para = {"id": id, "tag": "p", "text": sen["sentence"]}
+                title_contents.append(title_para)
+                self.update_sentence(sen, id, "p", "text")
+                print("treatment_title sentence:", sen)
+
+            elif sen["field"] == "text":
+                id = "2." + str(len(abstract_contents) + 1)
+                abstract_para = {"id": id, "tag": "p", "text": sen["sentence"]}
+                abstract_contents.append(abstract_para)
+                self.update_sentence(sen, id, "p", "text")
+
+        return data
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def get_adapted_format_for_medline(self, data):
@@ -207,10 +257,17 @@ class PmcaFormatter:
         body_sections.append(title_section)
 
         # abstract section
-        abstract_para = {"id": "2.1", "tag": "p", "text": document["abstract"]}
-        abstract_section = {"id": "2", "implicit": False, "label": "", "level": 1, 
-                            "title": "Abstract", "caption":"", "tag": "abstract", 
-                            "contents": [abstract_para]}
+        abstract_section = {
+            "id": "2", "implicit": False, "label": "", "level": 1, 
+            "title": "Abstract", "caption":"", "tag": "abstract" } 
+        content_list = list()
+        para_num = 0
+        for text in document["abstract"].split("\n"):
+            para_num += 1
+            id = "2." + str(para_num)
+            content = { "id": id, "tag": "p", "text": text }
+            content_list.append(content)
+        abstract_section["contents"] = content_list # [abstract_para]}
         body_sections.append(abstract_section)
 
         # mesh terms section

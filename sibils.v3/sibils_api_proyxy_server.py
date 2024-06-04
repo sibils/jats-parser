@@ -42,11 +42,13 @@ class GP(BaseHTTPRequestHandler):
     def getSibilsPubli(self, id, col, formatPam=False, withCovoc=False):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         # EXAMPLES
-        # https://sibils.text-analytics.ch/api/v3.3/fetch?ids=PMC4909023&col=pmc
-        # https://sibils.text-analytics.ch/api/v3.3/fetch?ids=724278&col=medline
+        # https://sibils.text-analytics.ch/api/fetch?ids=PMC4909023&col=pmc
+        # https://sibils.text-analytics.ch/api/fetch?ids=724278&col=medline
+        # https://sibils.text-analytics.ch/api/fetch?ids=000040332F2853C295734E7BD4190F05&col=plazi
 
         connection = http.client.HTTPSConnection("sibils.text-analytics.ch")
-        url = "/api/v3.3/fetch"
+        # url = "/api/v3.3/fetch"
+        url = "/api/fetch" # latest version
         url += "?col=" + col
         if formatPam: url += "&format=PAM"
         if withCovoc: url += "&covoc"
@@ -67,23 +69,27 @@ class GP(BaseHTTPRequestHandler):
 
         error_msg='ERROR, invalid URL: ' + self.path
 
-        if self.path[0:20]=='/sibils/api/v3/fetch':
+        # if self.path[0:20]=='/sibils/api/v3/fetch':
+        if self.path[0:17]=='/sibils/api/fetch':
             formatPam = False
             withCovoc = False
             id="none"
             col="none"
-            for param in self.path[20:].split('?')[1].split("&"):
+            #for param in self.path[20:].split('?')[1].split("&"):
+            for param in self.path[17:].split('?')[1].split("&"):
+                print("URL params:", ">"+ param + "<")
                 nv = param.split("=")
                 if nv[0] == "id":  id = nv[1]
                 if nv[0] == "ids":  id = nv[1]
                 if nv[0] == "col": col = nv[1]
-                if param == "format=PAM" : formatPam = True
-                if param == "covoc" : withCovoc = True
+                if param.lower() == "format=pam" : formatPam = True
+                if param.lower() == "covoc" : withCovoc = True
 
             obj = self.getSibilsPubli(id, col, False, withCovoc)
 
             # we build the PAM format locally
             if formatPam==True:
+                print("We are building format pam locally...")
                 publi = obj["sibils_article_set"][0]
                 collection = obj["collection"]
                 formatter = PmcaFormatter()
