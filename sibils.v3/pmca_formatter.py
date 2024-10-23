@@ -190,6 +190,33 @@ class PmcaFormatter:
 
         return data
 
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def get_abstract_section_for_medline(self, document):
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        abstract_section = {
+            "id": "2", "implicit": False, "label": "", "level": 1, 
+            "title": "Abstract", "caption":"", "tag": "abstract" } 
+        content_list = list()
+        para_num = 0
+        for text in document["abstract"].split("\n"):
+            if len(text.strip())==0: continue
+            para_num += 1
+            id = "2." + str(para_num)
+            content = { "id": id, "tag": "p", "text": text }
+            content_list.append(content)
+        abstract_section["contents"] = content_list # [abstract_para]}
+        return abstract_section
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def find_sentence_content_id(self, section, sentence):
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        for cnt in section["contents"]:
+            if cnt["text"].find(sentence["sentence"]) >= 0:
+                return cnt["id"]
+        return "???"
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def get_adapted_format_for_medline(self, data):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -201,12 +228,16 @@ class PmcaFormatter:
         chem_terms_count = 0
         key_terms_count = 0
         aff_count = 0
+        print(data)
+        abstract_section = self.get_abstract_section_for_medline(data["document"])
         for sen in data["sentences"]:
             # add missing information in sentence objects
             if sen["field"]=="title":
                 self.update_sentence(sen, "1.1", "p", "text")
             elif sen["field"] == "abstract":
-                self.update_sentence(sen, "2.1", "p", "text")
+                cnt_id = self.find_sentence_content_id(abstract_section, sen)
+                #print("sentence_number:", sen["sentence_number"], "content_id", cnt_id, sen["sentence"][0:20]+"...")
+                self.update_sentence(sen, cnt_id, "p", "text")
             # i.e. medline 729227
             elif sen["field"] == "mesh_terms":
                 mesh_terms_count += 1
@@ -257,17 +288,7 @@ class PmcaFormatter:
         body_sections.append(title_section)
 
         # abstract section
-        abstract_section = {
-            "id": "2", "implicit": False, "label": "", "level": 1, 
-            "title": "Abstract", "caption":"", "tag": "abstract" } 
-        content_list = list()
-        para_num = 0
-        for text in document["abstract"].split("\n"):
-            para_num += 1
-            id = "2." + str(para_num)
-            content = { "id": id, "tag": "p", "text": text }
-            content_list.append(content)
-        abstract_section["contents"] = content_list # [abstract_para]}
+        abstract_section = self.get_abstract_section_for_medline(document)
         body_sections.append(abstract_section)
 
         # mesh terms section
