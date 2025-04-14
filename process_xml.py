@@ -690,10 +690,10 @@ def file_status_add_error(r):
 def file_status_ok():
 	return len(file_status['errors'])==0
 
-def file_status_print():
-	msg = file_status['name'] + '\t'
-	msg += str(len(file_status['errors'])) + '\t'
-	for r in file_status['errors']: msg += r + '\t'
+def file_status_print(sep="\t"):
+	msg = file_status['name'] + sep
+	msg += str(len(file_status['errors'])) + sep
+	for r in file_status['errors']: msg += r + sep
 	print(msg)
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -794,13 +794,20 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	# we might find at least one of these:
 	pmc1 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc-uid"]', True, False)
 	pmc2 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, False)
+	dict_doc['other_id'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="other"]', True, False)
+
 	pmc = pmc1
 	if pmc == '': pmc = pmc2
-	if pmc == '' and dict_doc['archive_id'] == '':  file_status_add_error("ERROR, no value for article id in types pmc-uid, pmc, or archive")
+	#if pmc == '' and dict_doc['archive_id'] == '':  file_status_add_error("ERROR, no value for article id in types pmc-uid, pmc, or archive")
+	if pmc == '' and dict_doc['archive_id'] == '' and dict_doc['other_id'] == '':  
+		file_status_add_error("ERROR, no value for article id in types pmc-uid, pmc, archive or other")
 	dict_doc['pmcid'] = pmc
 	dict_doc['_id'] = pmc
 	# if we have no pmc id then use the archive id (for preprints)
-	if pmc == '' and dict_doc['archive_id'] != '': dict_doc['_id'] = dict_doc['archive_id']
+	if pmc == '' and dict_doc['archive_id'] != '': 
+		dict_doc['_id'] = dict_doc['archive_id']
+	elif pmc =='' and dict_doc['other_id'] != '':
+		dict_doc["_id"] = dict_doc['other_id']
 
 	# ok with Julien, see precedence rules in def get_pub_date()
 	dict_doc['publication_date'] = get_pub_date(root, 'd-M-yyyy')['date']
@@ -854,10 +861,14 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['paragraphs_in_float']=len(root.xpath('/article/floats-group//p'))
 
 	# for compatibility reasons
-	dict_doc['pmcid']='PMC' + dict_doc['pmcid']
+
+	dict_doc['pmcid'] = 'PMC' + dict_doc['pmcid']
 	dict_doc['_id'] = dict_doc['pmcid']
 	# in case of a preprint we only have an archive id, we store it as the _id
-	if dict_doc['pmcid'] == 'PMC'  and dict_doc['archive_id'] != '': dict_doc['_id'] = dict_doc['archive_id']
+	if dict_doc['pmcid'] == 'PMC'  and dict_doc['archive_id'] != '': 
+		dict_doc['_id'] = dict_doc['archive_id']
+	elif dict_doc['pmcid'] == 'PMC' and dict_doc['other_id'] != '':
+		dict_doc['_id'] = dict_doc['other_id']
 	# if we have no pmcid, store an empty string for it
 	if dict_doc['pmcid'] == 'PMC': dict_doc['pmcid'] = ''
 
@@ -876,7 +887,7 @@ def get_sections(pmcid, node):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 def simplify_node(el, kept_tags, starting=True):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-	print("Choosing old / new", use_old)
+	#print("Choosing old / new", use_old)
 	if use_old:
 		simplify_node_old(el, kept_tags)
 	else:
@@ -888,7 +899,7 @@ def simplify_node(el, kept_tags, starting=True):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 def simplify_node_old(el, kept_tags, starting=True):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-	print("Using old")
+	#print("Using old")
 	if starting:
 		for subel in el.iterchildren():
 			simplify_node_old(subel, kept_tags, False)
@@ -905,7 +916,7 @@ def simplify_node_old(el, kept_tags, starting=True):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 def simplify_node_new(node ,kept_tags):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-	print("Using new")
+	#print("Using new")
 	elems = list()
 	recursive_simplify_node(node, kept_tags, elems)
 	node_tail = node.tail
@@ -972,7 +983,13 @@ def main():
 
 	dict_doc = parse_PMC_XML_core(xmlstr,root,input_file)
 	if len(dict_doc['body_sections'])<2: file_status_add_error("ERROR: no section after title")
-	if not file_status_ok(): file_status_print()
+	if not file_status_ok(): 
+		print("---------- file status ----------")
+		file_status_print(sep="\n")
+	print("---------- identifiers ----------")
+	print("pmcid: ", dict_doc["pmcid"])
+	print("_id  : ", dict_doc["_id"])
+	print("---------")
 	print(get_stats(input_file,root))
 	print(get_body_structure(input_file,root))
 	output_file='outfile'

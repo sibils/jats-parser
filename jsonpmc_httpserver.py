@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import tarfile
 from ftplib import FTP
@@ -28,6 +29,17 @@ def getSibilsPubli(pmcid, withCovoc):
     output["data"]= obj
     connection.close()
     return output
+
+
+def getOtherXML(filename):
+    xmlstr=None
+    with open(filename, 'r') as nf:
+        xmlstr = nf.read()
+    if xmlstr is None:
+        msg = 'Could not read content from extracted file: ' + filename
+        return {'status':400, 'reason':msg, 'data':None}
+    return {'status':200, 'reason':'OK', 'data':xmlstr}
+
 
 def getPmcXml(pmcid):
 
@@ -227,6 +239,31 @@ class GP(BaseHTTPRequestHandler):
                 return
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
+
+        elif self.path[0:13]=='/parse/other/':
+            fname=self.path[13:]
+            msg='handle parsing of file: ' + fname
+            print(msg)
+            output = getOtherXML(fname)
+            if output['status']==200:
+                xmlstr=output['data']
+                json_publi = parse_PMC_XML(xmlstr)
+                json_publi["annotations"] =   [];
+                if use_pseudo_annot: add_pseudo_annot(obj)
+                json_response = {
+                    "sibils_version": "v4.2.5", 
+                    "success": True, 
+                    "error": "", 
+                    "warnings": "", 
+                    "collection": "pmc", 
+                    "sibils_article_set": [json_publi]
+                }
+                self.sendJsonResponse(json_response, 200)
+                return
+            else:
+                error_msg = str(output['status']) + ' - ' + output['reason']
+
+
 
         elif self.path[0:12]=='/sibils/pmc/':
             parts=self.path[12:].split('?')
