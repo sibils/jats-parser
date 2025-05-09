@@ -794,13 +794,14 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	# we might find at least one of these:
 	pmc1 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc-uid"]', True, False)
 	pmc2 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmc"]', True, False)
+	pmc3 = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="pmcid"]', True, False)
 	dict_doc['other_id'] = get_text_from_xpath(root, '/article/front/article-meta/article-id[@pub-id-type="other"]', True, False)
 
 	pmc = pmc1
 	if pmc == '': pmc = pmc2
-	#if pmc == '' and dict_doc['archive_id'] == '':  file_status_add_error("ERROR, no value for article id in types pmc-uid, pmc, or archive")
+	if pmc == '': pmc = pmc3
 	if pmc == '' and dict_doc['archive_id'] == '' and dict_doc['other_id'] == '':  
-		file_status_add_error("ERROR, no value for article id in types pmc-uid, pmc, archive or other")
+		file_status_add_error("ERROR, no value for article id in types pmc-uid, pmc, pmcid, archive or other")
 	dict_doc['pmcid'] = pmc
 	dict_doc['_id'] = pmc
 	# if we have no pmc id then use the archive id (for preprints)
@@ -861,8 +862,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	dict_doc['paragraphs_in_float']=len(root.xpath('/article/floats-group//p'))
 
 	# for compatibility reasons
-
-	dict_doc['pmcid'] = 'PMC' + dict_doc['pmcid']
+	if not dict_doc['pmcid'].startswith('PMC'): dict_doc['pmcid'] = 'PMC' + dict_doc['pmcid']
 	dict_doc['_id'] = dict_doc['pmcid']
 	# in case of a preprint we only have an archive id, we store it as the _id
 	if dict_doc['pmcid'] == 'PMC'  and dict_doc['archive_id'] != '': 
@@ -989,14 +989,19 @@ def main():
 	print("---------- identifiers ----------")
 	print("pmcid: ", dict_doc["pmcid"])
 	print("_id  : ", dict_doc["_id"])
+	print("pmid : ", dict_doc.get("pmid"))
+	print("doi  : ", dict_doc.get("doi"))
+	
 	print("---------")
 	print(get_stats(input_file,root))
 	print(get_body_structure(input_file,root))
 	output_file='outfile'
 	subdir='out'
 	if 'pmcid' in dict_doc.keys():
-		subdir = subdir + '/' + dict_doc['pmcid'][0:2]
-		output_file = 'pmc'+ dict_doc['pmcid']
+		pmcid = dict_doc['pmcid']
+		if pmcid.startswith("PMC"): pmcid = pmcid[3:] # just keep numeric part of pmcid
+		subdir = subdir + '/' + pmcid[0:2]
+		output_file = 'PMC'+ pmcid
 	if not os.path.exists(subdir):
 		os.makedirs(subdir)
 	if use_old: 
