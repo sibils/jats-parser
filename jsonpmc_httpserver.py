@@ -166,11 +166,14 @@ def saveFileFromFtp(ftpurl):
     return localfile
 
 class GP(BaseHTTPRequestHandler):
+
     def _set_headers(self,statusCode, content_type):
         self.send_response(statusCode)
         #self.send_header('Content-type', 'application/json')
         self.send_header('Content-type', content_type)
         self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', '*')
+        self.send_header('Access-Control-Allow-Headers', '*')
         self.end_headers()
 
     def do_HEAD(self):
