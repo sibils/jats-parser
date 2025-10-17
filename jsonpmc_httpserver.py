@@ -7,6 +7,8 @@ import http.client
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from process_xml import parse_PMC_XML,getPmcFtpUrl
 from pseudo_annot import get_pseudo_annotations_for_text,get_pseudo_annotations_for_cell
+from pmca_formatter import PmcaFormatter
+
 
 def getSibilsPubli(pmcid, withCovoc):
     connection = http.client.HTTPSConnection("candy.hesge.ch")
@@ -85,7 +87,7 @@ def getXmlFilenameFromLocalCache(pmcid):
         filenames = os.listdir(dir)
         for fname in filenames:
             if fname[-3:] == 'xml':
-                fullname='file:///Users/pam/Documents/work/heg/jats-parser/tmp/PMC' + pmcid[0:2] + '/PMC' + pmcid + '/' + fname
+                fullname='file:///home/pmichel/work/jats-parser/tmp/PMC' + pmcid[0:2] + '/PMC' + pmcid + '/' + fname
                 print("File found in local cache for " + pmcid + " : " +fullname)
                 return dir + fname
     print("No file found in local cache for " + pmcid)
@@ -239,6 +241,51 @@ class GP(BaseHTTPRequestHandler):
                 if use_pseudo_annot: add_pseudo_annot(obj)
                 response = self.buildSuccessResponseObject(self.path, obj)
                 self.sendJsonResponse(response, 200)
+                return
+            else:
+                error_msg = str(output['status']) + ' - ' + output['reason']
+
+
+        elif self.path[0:17]=='/pseudo/api/fetch':
+            formatPam = False
+            withCovoc = False
+            id="none"
+            col="none"
+            params = self.path[17:]
+            print(">>>params", params, flush=True)
+            for param in self.path.split('?')[1].split("&"):
+                print("URL params:", ">"+ param + "<")
+                nv = param.split("=")
+                if nv[0] == "id":  id = nv[1]
+                if nv[0] == "ids":  id = nv[1]
+                if nv[0] == "col": col = nv[1]
+                if param.lower() == "format=pam" : formatPam = True
+                if param.lower() == "covoc" : withCovoc = True
+
+            pmcid = id
+            if pmcid[0:3]=="PMC": pmcid=pmcid[3:]
+            msg='handle parsing of pmc file: ' + pmcid
+            print(msg)
+            output=getPmcXml(pmcid)
+            if output['status']==200:
+                xmlstr=output['data']
+                obj = parse_PMC_XML(xmlstr)
+                doc = { "_id": obj["_id"], "document": obj, "sentences": [], "annotations": [] }
+
+                # pseudo response from fetch service
+                response = {"sibils_version": "local", "success": True, "error": "", "warning": "", "collection": "pmc", 
+                            "collection_version": "local", "sibils_article_set": [ doc ] }
+
+                if formatPam==True:
+                    print("We are building format pam locally...")
+                    publi = response["sibils_article_set"][0]
+                    collection = response["collection"]
+                    formatter = PmcaFormatter()
+                    publi_pam = formatter.get_pmca_format(publi, collection)
+                    response["sibils_article_set"][0] = publi_pam
+
+                self.sendJsonResponse(response, 200)
+                print("i was here", flush=True)
                 return
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']

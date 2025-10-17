@@ -13,3 +13,7 @@ stats-fig.txt
 statstxt
 tbl-cases.ttx
 test.html
+*.xml
+*.json
+data_ejt/
+pmca_formatter.py

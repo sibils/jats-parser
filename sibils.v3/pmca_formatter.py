@@ -28,6 +28,7 @@ class PmcaFormatter:
         if sen_fld == "table_footer": return "Footer"
         raise Exception("Unexpected sentence field value: " + str(sen_fld), sentence)
 
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def build_sentence_dic(self, data):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -517,6 +517,28 @@ def handle_fig(pmcid, fig):
 			'graphics': graph_hrefs, 'pmcid':pmcid }
 
 
+def handle_ref(ref):
+	contentList=[]
+	rid = ref.get("id") or ""
+	content = {'tag': 'ref', 'rid': rid, 'text': clean_string(' '.join(ref.itertext()))}
+	contentList.append(content)
+	return contentList
+
+
+def handle_def_item(def_item):
+	contentList=[]
+	term = def_item.find("term")
+	defn = def_item.find("def")
+	text = ""
+	if term is not None and defn is not None:
+		text = clean_string(' '.join(term.itertext())) + " : " + clean_string(' '.join(defn.itertext()))
+	else:
+		text = clean_string(' '.join(def_item.itertext()))
+	content = {'tag': 'def-item', 'text': text }
+	contentList.append(content)
+	return contentList
+
+
 def handle_list(list):
 	contentList=[]
 	for el in list.iterchildren(['list-item']):
@@ -577,8 +599,14 @@ def handle_paragraph_old(pmcid,el):
 def handle_section_flat(pmcid, sec, level, implicit, block_id):
 
 	sectionList = []
-	id = ''.join(sec.xpath('@id'))
 	title = get_clean_text(sec.find('title'))
+	if title == '': 
+		if sec.tag == 'ref-list' : title = "References"   # default for reference list
+		elif sec.tag == 'ack' : title = "Acknowledgments" # default
+		elif sec.tag == 'bio' : title = "Biography" # default
+		elif sec.tag == 'app' : title = "Appendix" # default
+		elif sec.tag == 'glossary' : title = "Glossary" # default
+		elif sec.tag == 'def-list' : title = "" # default is "" cos 'there is often only one def-list in the glossary
 	caption = get_clean_text(sec.find('caption'))
 	label = get_clean_text(sec.find('label'))
 	mainSection = {'implicit':implicit, 'level': level, 'id': build_id(block_id),
@@ -604,7 +632,8 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 		if el.tag == 'caption': continue
 
 		# recursive call for any embedded section <sec>, <boxed-text> and/or <app> (appendices)
-		if el.tag == 'sec' or el.tag == 'app' or el.tag == 'boxed-text':
+		if el.tag in ['sec', 'app', 'boxed-text', 'ref-list', 'ack', 'bio', 'glossary', 'def-list']:
+		#if el.tag == 'sec' or el.tag == 'app' or el.tag == 'boxed-text' or el.tag == 'ref-list':
 			block_id[-1] = block_id[-1] + 1
 			terminalContentShouldBeWrapped=True
 			sectionList.extend(handle_section_flat(pmcid, el, level + 1, False, block_id))
@@ -620,6 +649,10 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 			contentsToBeAdded = [ handle_table_wrap(pmcid, el) ]
 		elif el.tag == 'list':
 			contentsToBeAdded = handle_list(el)
+		elif el.tag == 'ref':
+			contentsToBeAdded = handle_ref(el)
+		elif el.tag == 'def-item':
+			contentsToBeAdded = handle_def_item(el)
 		# default handler: just keep tag and get all text
 		else:
 			#print("el     : " + str(el))
@@ -756,7 +789,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	handle_supplementary_material_elements(root)
 	handle_table_wrap_group_elements(root)
 	handle_fig_group_elements(root)
-	remove_embedding_group_elements(root,'fn')  # removes  fn-group wrapper (foot-notes)
+	remove_embedding_group_elements(root,'fn')  # removes  fn-group wrapper (footnotes)
 	remove_embedding_group_elements(root,'app') # removes app-group wrapper (appendices)
 	remove_alternative_title_if_redundant(root)
 	# End preprocessing
@@ -952,7 +985,6 @@ def recursive_simplify_node(node ,kept_tags, elems, top_level=True):
 def main():
 # - - - - - - - - - - - - - - - - -
 	global use_old
-	usage = "%prog file"
 	parser = OptionParser()
 	parser.add_option("-f","--file", dest="filename", help="Process one file for now")
 	# use_old: option used for debugging the old version of simplify_node
