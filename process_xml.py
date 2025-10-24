@@ -605,6 +605,7 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 		elif sec.tag == 'ack' : title = "Acknowledgments" # default
 		elif sec.tag == 'bio' : title = "Biography" # default
 		elif sec.tag == 'app' : title = "Appendix" # default
+		elif sec.tag == 'fn-group' : title = "Footnotes" # default
 		elif sec.tag == 'glossary' : title = "Glossary" # default
 		elif sec.tag == 'def-list' : title = "" # default is "" cos 'there is often only one def-list in the glossary
 	caption = get_clean_text(sec.find('caption'))
@@ -632,7 +633,7 @@ def handle_section_flat(pmcid, sec, level, implicit, block_id):
 		if el.tag == 'caption': continue
 
 		# recursive call for any embedded section <sec>, <boxed-text> and/or <app> (appendices)
-		if el.tag in ['sec', 'app', 'boxed-text', 'ref-list', 'ack', 'bio', 'glossary', 'def-list']:
+		if el.tag in ['sec', 'app', 'boxed-text', 'ref-list', 'ack', 'bio', 'glossary', 'def-list', 'fn-group']:
 		#if el.tag == 'sec' or el.tag == 'app' or el.tag == 'boxed-text' or el.tag == 'ref-list':
 			block_id[-1] = block_id[-1] + 1
 			terminalContentShouldBeWrapped=True
@@ -789,7 +790,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	handle_supplementary_material_elements(root)
 	handle_table_wrap_group_elements(root)
 	handle_fig_group_elements(root)
-	remove_embedding_group_elements(root,'fn')  # removes  fn-group wrapper (footnotes)
+	#remove_embedding_group_elements(root,'fn')  # removes  fn-group wrapper (footnotes)
 	remove_embedding_group_elements(root,'app') # removes app-group wrapper (appendices)
 	remove_alternative_title_if_redundant(root)
 	# End preprocessing

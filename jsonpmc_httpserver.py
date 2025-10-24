@@ -8,7 +8,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from process_xml import parse_PMC_XML,getPmcFtpUrl
 from pseudo_annot import get_pseudo_annotations_for_text,get_pseudo_annotations_for_cell
 from pmca_formatter import PmcaFormatter
-
+from text_formatter import TextFormatter
 
 def getSibilsPubli(pmcid, withCovoc):
     connection = http.client.HTTPSConnection("candy.hesge.ch")
@@ -197,8 +197,8 @@ class GP(BaseHTTPRequestHandler):
         response['data']=data
         return response
 
-    def sendStringAsJsonResponse(self, str, statusCode):
-        self._set_headers(statusCode, 'application/json')
+    def sendTextResponse(self, str, statusCode):
+        self._set_headers(statusCode, 'text/plain')
         self.wfile.write(bytes(str,'utf-8'))
 
     def sendJsonResponse(self, obj, statusCode):
@@ -213,8 +213,9 @@ class GP(BaseHTTPRequestHandler):
     def do_GET(self):
 
         error_msg='ERROR, invalid URL: ' + self.path
-
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         if self.path[0:12]=='/getxml/pmc/':
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             parts=self.path[12:].split('?')
             pmcid = parts[0]
             if pmcid[0:3]=="PMC": pmcid=pmcid[3:]
@@ -228,7 +229,9 @@ class GP(BaseHTTPRequestHandler):
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
 
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         elif self.path[0:11]=='/parse/pmc/':
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             parts=self.path[11:].split('?')
             pmcid = parts[0]
             if pmcid[0:3]=="PMC": pmcid=pmcid[3:]
@@ -245,9 +248,11 @@ class GP(BaseHTTPRequestHandler):
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
 
-
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         elif self.path[0:17]=='/pseudo/api/fetch':
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             formatPam = False
+            formatTxt = False
             withCovoc = False
             id="none"
             col="none"
@@ -260,6 +265,7 @@ class GP(BaseHTTPRequestHandler):
                 if nv[0] == "ids":  id = nv[1]
                 if nv[0] == "col": col = nv[1]
                 if param.lower() == "format=pam" : formatPam = True
+                if param.lower() == "format=txt" : formatTxt = True
                 if param.lower() == "covoc" : withCovoc = True
 
             pmcid = id
@@ -276,6 +282,15 @@ class GP(BaseHTTPRequestHandler):
                 response = {"sibils_version": "local", "success": True, "error": "", "warning": "", "collection": "pmc", 
                             "collection_version": "local", "sibils_article_set": [ doc ] }
 
+                if formatTxt==True:
+                    print("We are building format txt locally...")
+                    publi = response["sibils_article_set"][0]
+                    collection = response["collection"]
+                    formatter = TextFormatter(publi)
+                    full_text = formatter.get_text_format()
+                    self.sendTextResponse(full_text, 200)
+                    return
+
                 if formatPam==True:
                     print("We are building format pam locally...")
                     publi = response["sibils_article_set"][0]
@@ -285,12 +300,13 @@ class GP(BaseHTTPRequestHandler):
                     response["sibils_article_set"][0] = publi_pam
 
                 self.sendJsonResponse(response, 200)
-                print("i was here", flush=True)
                 return
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
 
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         elif self.path[0:13]=='/parse/other/':
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             fname=self.path[13:]
             msg='handle parsing of file: ' + fname
             print(msg)
@@ -314,8 +330,9 @@ class GP(BaseHTTPRequestHandler):
                 error_msg = str(output['status']) + ' - ' + output['reason']
 
 
-
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         elif self.path[0:12]=='/sibils/pmc/':
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             parts=self.path[12:].split('?')
             withCovoc = ('covoc' in self.path)
             pmcid = parts[0]
@@ -331,7 +348,9 @@ class GP(BaseHTTPRequestHandler):
             else:
                 error_msg = str(output['status']) + ' - ' + output['reason']
 
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         elif self.path[0:11]=='/annot/pmc/':
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             parts=self.path[11:].split('?')
             pmcid = parts[0]
             msg = 'getting annotations of pmc file: ' + pmcid
