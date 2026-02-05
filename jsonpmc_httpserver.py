@@ -59,16 +59,19 @@ def getPmcXml(pmcid):
         ftpurl = getFtpArchiveUrl(pmcid)
         if ftpurl is None:
             msg = 'Could not get an ftp archive for pmcid: ' + pmcid
+            print("ERROR, pmcid:", pmcid, msg)
             return {'status':400, 'reason':msg, 'data':None}
         # copy the ftp archive file (tar.gz) to local cache
         targzfile = saveFileFromFtp(ftpurl)
         if targzfile is None:
             msg = 'Could not get file from ftp url: ' + ftpurl
+            print("ERROR, pmcid:", pmcid, msg)
             return {'status':400, 'reason':msg, 'data':None}
         # extract nxml file from archive and save it locally
         nxmlfile = getXmlFileFromArchive(targzfile,pmcid)
         if nxmlfile is None:
             msg = 'Could not extract nxml file from archive: ' + targzfile
+            print("ERROR, pmcid:", pmcid, msg)
             return {'status':400, 'reason':msg, 'data':None}
 
     # return the content of the nxml file
@@ -88,9 +91,9 @@ def getXmlFilenameFromLocalCache(pmcid):
         for fname in filenames:
             if fname[-3:] == 'xml':
                 fullname='file:///home/pmichel/work/jats-parser/tmp/PMC' + pmcid[0:2] + '/PMC' + pmcid + '/' + fname
-                print("File found in local cache for " + pmcid + " : " +fullname)
+                print("INFO, File found in local cache for " + pmcid + " : " +fullname)
                 return dir + fname
-    print("No file found in local cache for " + pmcid)
+    print("INFO, No file found in local cache for " + pmcid)
     return None
 
 
@@ -159,7 +162,7 @@ def saveFileFromFtp(ftpurl):
     remotedir = '/'.join(url_els[3:-1])
     remotefile = url_els[-1]
     subdir=remotefile[0:5]
-
+    print("DEBUG, downloading", ftpurl)
     localfile = 'tmp/' + subdir + '/' + remotefile
     with FTP(domain, 'anonymous', 'pamichel@infomaniak.ch') as ftp:
         if remotedir != '' : ftp.cwd(remotedir)

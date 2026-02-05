@@ -1,6 +1,8 @@
 import http.client
 from text_formatter import TextFormatter
-
+import json
+import sys
+import os
 
 
 # - - - - - - - - - - - - - - - - - - - - - - 
@@ -44,7 +46,7 @@ def get_some_valid_pmcids():
         if line == "": break
         pmcid_set.add(line.strip())
     stream.close()
-    return list(pmcid_set)
+    return sorted(list(pmcid_set))
 
 
 
@@ -61,26 +63,69 @@ def get_json_for_publi(pmcid):
         data = response.read().decode("utf-8")
         connection.close()
         if status != 200:
-            print(f"ERROR - Got {status} on trying to get json for {pmcid}: {response.reason}")
+            print(f"ERROR - Got {status} on getting json for {pmcid}: {response.reason}")
             return None
         else:
-            print(f"INFO - Got OK on trying to get json for {pmcid}")
-            return data
+            print(f"INFO - Got OK on getting json for {pmcid}")
+            return json.loads(data)
     except Exception as e:
         connection.close()
-        print(f"ERROR - ", e)
+        print(f"ERROR - Got ERROR on getting json for {pmcid}", e)
+        return None
+
+
+# - - - - - - - - - - - - - - - - - - - - - - 
+def save_publi_with_pmcid():
+# - - - - - - - - - - - - - - - - - - - - - - 
+    pmid2pmcid = get_pmid2pmcid()
+    newlines = list()
+
+#   with open("cl-single-publi.tsv") as stream:
+    with open("cl-single-publi-0-xref.tsv") as stream:
+        newlines.append(stream.readline().strip() + "\tpmcid")
+        while True:
+            line = stream.readline()
+            if line == "": break
+            line = line.strip()
+            fields = line.split("\t")
+            if not fields[5].startswith("PubMed="):
+                print("WARNING", "No PubMed identifier at line: ", line)
+                continue
+            pmid = fields[5][7:]
+            if pmid not in pmid2pmcid:
+                print("WARNING", "No mapping to a known pmcid at line: ", line)
+                continue
+            pmcid = pmid2pmcid[pmid]
+            filename = f"data_txt/{pmcid}.txt"
+            if not os.path.exists(filename):
+                print("WARNING", "No text file for pmcid mapped to line: ", line)
+                continue
+            newlines.append(line + "\t" + pmcid)
+
+    with open("cl-single-publi-with-pmcid.tsv", "w") as stream:
+        stream.write("\n".join(newlines))
 
 
 # ============================================
 if __name__ == '__main__':
 # ============================================
-    #pmcids = list(get_pmid2pmcid().values())
-    pmcids = get_some_valid_pmcids()
-    print(f"INFO - Found {len(pmcids)} pmcid(s)")
-    count = 0
-    for pmcid in pmcids:
-        count += 1
-        print(f"INFO - Getting json for publi {pmcid}")
-        json_obj = get_json_for_publi(pmcid)
+
+    save_publi_with_pmcid()
+
+    if 1==2:
+        pmcids = get_some_valid_pmcids()
+        #pmcids = list(get_pmid2pmcid().values())
+        print(f"INFO - Found {len(pmcids)} pmcid(s)")
+        count = 0
+        for pmcid in pmcids:
+            count += 1
+            print(f"INFO - Getting json for publi {pmcid}")
+            json_obj = get_json_for_publi(pmcid)
+            if json_obj is None: continue
+            publi_obj = json_obj["sibils_article_set"][0]
+            formatter = TextFormatter(publi_obj)
+            txt = formatter.get_text_format()
+            filename = f"data_txt/{pmcid}.txt"
+            with open(filename, "w") as stream: stream.write(txt)
 
     print("INFO end")

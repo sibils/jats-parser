@@ -141,6 +141,18 @@ class TextFormatter:
                         if url: lines.append(url)
                         cpt = cnt.get("caption")
                         if cpt: lines.append(cpt)
+                    elif cnt_tag == "table":
+                        lines.append("")
+                        elems = list()
+                        if cnt.get("label"): elems.append(cnt.get("label"))
+                        if cnt.get("caption"): elems.append(cnt.get("caption"))
+                        header = " - ".join(elems)
+                        if header: lines.append(header + "\n")
+                        lines.append("\t".join(cnt.get("table_columns") or []).replace("\n",""))
+                        for row in cnt.get("table_values") or []:
+                            lines.append("\t".join(row).replace("\n",""))
+                        foo = cnt.get("footer") or ""
+                        if foo: lines.append("\n" + foo)
                     else:
                         elems.append(cnt["text"])
                         lines.append(" ".join(elems))

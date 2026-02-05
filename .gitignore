@@ -15,5 +15,8 @@ tbl-cases.ttx
 test.html
 *.xml
 *.json
+*.tsv
 data_ejt/
+data_julien/
+data_txt/
 pmca_formatter.py
