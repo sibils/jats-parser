@@ -145,6 +145,11 @@ def get_text_from_xpath(someroot, somepath, withWarningOnMultipleValues, withErr
 		file_status_add_error("ERROR, no text for element: " + somepath)
 	return result
 
+def get_first_text_from_xpath(someroot, somepath):
+	txt_list = someroot.xpath(somepath)
+	result = txt_list[0] if len(txt_list) > 0 else ''
+	return result
+
 
 def get_pub_date_by_type(someroot,selector,pubtype,format):
 
@@ -810,10 +815,19 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	if lng == None : lng = ''
 	dict_doc['language'] = lng[0:2]
 
-	# note: we can get multiple journal-id elements with different journal-id-type attributes
-	dict_doc['medline_ta'] = get_text_from_xpath(root, '/article/front/journal-meta/journal-id', False, True)
-
 	dict_doc['journal'] = get_multiple_texts_from_xpath(root, '/article/front/journal-meta//journal-title', True)
+	# note: we can get multiple journal-id elements with different journal-id-type attributes
+	dict_doc['medline_ta'] = get_text_from_xpath(root, '/article/front/journal-meta/journal-id', False, True)	
+	dict_doc['journal_id_nlm_ta'] = get_first_text_from_xpath(root, '/article/front/journal-meta/journal-id[@journal-id-type="nlm-ta"]/text()')
+	dict_doc['journal_id_iso_abbrev'] = get_first_text_from_xpath(root, '/article/front/journal-meta/journal-id[@journal-id-type="iso-abbrev"]/text()')
+
+	dict_doc['issn_print'] = get_first_text_from_xpath(root, '/article/front/journal-meta//issn[@pub-type="ppub"]/text()')
+	dict_doc['issn_electronic'] = get_first_text_from_xpath(root, '/article/front/journal-meta//issn[@pub-type="epub"]/text()')
+
+	dict_doc['license_href'] = get_first_text_from_xpath(root, '/article/front/article-meta//license//@*[local-name()="href"]')	
+	dict_doc['license_ali'] = get_first_text_from_xpath(root, '/article/front/article-meta//*[local-name()="license_ref"]/text()')	
+
+	# TODO  XPATH_LICENCE_ALI = etree.XPath('//*[local-name()="license_ref"]/text()')
 
 
 	# note: I did not see any multiple <article-title> elements but we retrieve each element of the hypothetical list just in case
