@@ -42,18 +42,18 @@ class GP(BaseHTTPRequestHandler):
     def getSibilsPubli(self, id, col, formatPam=False, withCovoc=False):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
         # EXAMPLES
-        # https://sibils.text-analytics.ch/api/fetch?ids=PMC4909023&col=pmc
-        # https://sibils.text-analytics.ch/api/fetch?ids=724278&col=medline
-        # https://sibils.text-analytics.ch/api/fetch?ids=000040332F2853C295734E7BD4190F05&col=plazi
+        # https://biodiversitypmc.sibils.org/api/fetch?ids=PMC4909023&col=pmc
+        # https://biodiversitypmc.sibils.org/api/fetch?ids=724278&col=medline
+        # https://biodiversitypmc.sibils.org/api/fetch?ids=000040332F2853C295734E7BD4190F05&col=plazi
 
-        connection = http.client.HTTPSConnection("sibils.text-analytics.ch")
+        connection = http.client.HTTPSConnection("biodiversitypmc.sibils.org")
         # url = "/api/v3.3/fetch"
         url = "/api/fetch" # latest version
         url += "?col=" + col
         if formatPam: url += "&format=PAM"
         if withCovoc: url += "&covoc"
         url += "&ids=" + id
-        print("Call to sibils.text-analytics.ch:", url)
+        print("Call to biodiversitypmc.sibils.org:", url)
         
         connection.request("GET", url)
         response = connection.getresponse()
@@ -86,6 +86,13 @@ class GP(BaseHTTPRequestHandler):
                 if param.lower() == "covoc" : withCovoc = True
 
             obj = self.getSibilsPubli(id, col, False, withCovoc)
+
+            # publi not found
+            if len(obj.get("sibils_article_set") or []) == 0:
+                msg = obj.get("warning") or obj.get("error") or "publication not found"
+                print("ERROR", msg)
+                self.sendJsonResponse(self.buildErrorResponseObject(self.path, msg), 404)
+                return
 
             # we build the PAM format locally
             if formatPam==True:

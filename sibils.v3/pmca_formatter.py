@@ -106,6 +106,8 @@ class PmcaFormatter:
             data = self.get_adapted_format_for_pmc(v3_data)
         elif collection == "plazi":
             data = self.get_adapted_format_for_plazi(v3_data)
+        elif collection == "zenodo":
+            data = self.get_adapted_format_for_zenodo(v3_data)
 
         # trainsform v3 data into a v2 data structure known by the viewer
         v2_annotations = list()
@@ -188,6 +190,84 @@ class PmcaFormatter:
                 abstract_para = {"id": id, "tag": "p", "text": sen["sentence"]}
                 abstract_contents.append(abstract_para)
                 self.update_sentence(sen, id, "p", "text")
+
+        return data
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def get_adapted_format_for_zenodo(self, data):
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        document = data["document"]
+        body_sections = list()
+        document["body_sections"] = body_sections
+        document["back_sections"] = []
+        document["float_sections"] = []
+        document["extra_sections"] = []
+
+        # metadata adapted to existing pam slots
+        interpreted = data.get("interpreted") or {}
+        document["license"] = interpreted.get("license")
+        document["article_type"] = interpreted.get("document_type")
+        resource_type = document.get("resource_type")
+        document["publication_types"] = [resource_type] if resource_type else []
+        doi = document.get("doi") or ""
+        if doi.startswith("10.5281/zenodo."): document["zenodo_doi"] = doi
+
+        # title section
+        title_para = {"id": "1.1", "tag": "p", "text": document["title"]}
+        title_section = {"id": "1", "implicit": True, "label": "", "level": 1,
+                         "title": "Title", "contents": [title_para]}
+        body_sections.append(title_section)
+
+        # abstract section (may be a placeholder or prefixed by the uploader, we keep it as is)
+        abstract = document.get("abstract")
+        abstract_section = None
+        if abstract is not None and len(abstract.strip()) > 0:
+            abstract_section = self.get_abstract_section_for_medline(document)
+            body_sections.append(abstract_section)
+
+        # full text section, one paragraph per sentence because sentences may span lines and pages
+        text_contents = list()
+        text_section = {"id": "3", "implicit": False, "label": "", "level": 1,
+                        "title": "Full text", "caption":"", "tag": "sec", "contents": text_contents }
+
+        # keywords section
+        key_terms = document.get("keywords")
+        keywords_section = None
+        if key_terms is not None and len(key_terms) > 0:
+            contents = list()
+            keywords_section = {"id": "5", "implicit": False, "label": "", "level": 1,
+                        "title": "Keywords", "caption":"", "tag": "keywords",
+                        "contents": contents}
+            idx = 0
+            for item in key_terms:
+                idx += 1
+                contents.append({"id": "5." + str(idx), "tag": "list-item", "text": item})
+
+        key_terms_count = 0
+        for sen in data["sentences"]:
+            # empty sentences (i.e. empty abstract) are left untagged and so ignored
+            if len(sen["sentence"]) == 0: continue
+            if sen["field"] == "title":
+                self.update_sentence(sen, "1.1", "p", "text")
+            elif sen["field"] == "abstract":
+                cnt_id = self.find_sentence_content_id(abstract_section, sen)
+                self.update_sentence(sen, cnt_id, "p", "text")
+            elif sen["field"] == "text":
+                id = "3." + str(len(text_contents) + 1)
+                text_contents.append({"id": id, "tag": "p", "text": sen["sentence"]})
+                self.update_sentence(sen, id, "p", "text")
+            elif sen["field"] == "keywords":
+                key_terms_count += 1
+                self.update_sentence(sen,  "5." + str(key_terms_count), "p", "text")
+
+        if len(text_contents) > 0: body_sections.append(text_section)
+        if keywords_section is not None: body_sections.append(keywords_section)
+
+        # restricted records have no sentences (text is not distributed),
+        # so annotations cannot be located and are dropped
+        if len(data["sentences"]) == 0:
+            data["annotations"] = []
 
         return data
 
