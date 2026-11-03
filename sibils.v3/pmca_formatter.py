@@ -108,6 +108,8 @@ class PmcaFormatter:
             data = self.get_adapted_format_for_plazi(v3_data)
         elif collection == "zenodo":
             data = self.get_adapted_format_for_zenodo(v3_data)
+        elif collection == "suppdata":
+            data = self.get_adapted_format_for_suppdata(v3_data)
 
         # trainsform v3 data into a v2 data structure known by the viewer
         v2_annotations = list()
@@ -266,6 +268,53 @@ class PmcaFormatter:
 
         # restricted records have no sentences (text is not distributed),
         # so annotations cannot be located and are dropped
+        if len(data["sentences"]) == 0:
+            data["annotations"] = []
+
+        return data
+
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def get_adapted_format_for_suppdata(self, data):
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        # a suppdata record is one supplementary file (pdf, docx, xlsx, jpg ocr...) of a pmc article,
+        # its only sentences are "text" sentences, document title is the title of the parent article
+        document = data["document"]
+        body_sections = list()
+        document["body_sections"] = body_sections
+        document["back_sections"] = []
+        document["float_sections"] = []
+        document["extra_sections"] = []
+
+        # metadata adapted to existing pam slots (interpreted.license is null, licence is in document)
+        interpreted = data.get("interpreted") or {}
+        document["license"] = document.get("licence")
+        document["article_type"] = document.get("type")
+        doc_type = interpreted.get("document_type")
+        document["publication_types"] = [doc_type] if doc_type else []
+
+        # title section: file name + title of the parent article (not annotated, no title sentence)
+        filename = document.get("filename") or ""
+        parent_title = document.get("title") or ""
+        title = filename + " - supplement of: " + parent_title if parent_title else filename
+        document["title"] = title
+        title_para = {"id": "1.1", "tag": "p", "text": title}
+        title_section = {"id": "1", "implicit": True, "label": "", "level": 1,
+                         "title": "Title", "contents": [title_para]}
+        body_sections.append(title_section)
+
+        # content section, one paragraph per sentence (annotation offsets are sentence relative)
+        text_contents = list()
+        text_section = {"id": "3", "implicit": False, "label": "", "level": 1,
+                        "title": "Content", "caption":"", "tag": "sec", "contents": text_contents }
+        for sen in data["sentences"]:
+            if len(sen["sentence"]) == 0: continue
+            if sen["field"] == "text":
+                id = "3." + str(len(text_contents) + 1)
+                text_contents.append({"id": id, "tag": "p", "text": sen["sentence"]})
+                self.update_sentence(sen, id, "p", "text")
+        if len(text_contents) > 0: body_sections.append(text_section)
+
         if len(data["sentences"]) == 0:
             data["annotations"] = []
 
