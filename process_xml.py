@@ -225,28 +225,50 @@ def build_medlinePgn(fp,lp):
 	return ''
 
 
+# some publishers use a leading <sup> instead of a <label> in <aff>
+# To be called before <sup> tags get stripped, otherwise the sup text merges with the name
+def convert_leading_sup_to_label_in_affs(someroot):
+	for aff in someroot.xpath('/article/front/article-meta//aff[not(label)]'):
+		if len(aff)>0 and aff[0].tag == 'sup' and len((aff.text or '').strip())==0:
+			aff[0].tag = 'label'
+
+def get_aff_ror_id(aff):
+	for el in aff.iter('institution-id'):
+		if (el.get('institution-id-type') or '').lower() == 'ror':
+			return get_clean_text(el)
+	return ''
+
+# collects the text of el and its descendants in document order, tails included
+def collect_aff_text(el, texts):
+	if el.text: texts.append(el.text)
+	for child in el:
+		if child.tag not in ('label', 'institution-id') and isinstance(child.tag, str):
+			collect_aff_text(child, texts)
+		if child.tail: texts.append(child.tail)
+
+def get_aff_name(aff):
+	# when the original text is given, the other <institution> elements only repeat parts of it
+	original = get_clean_text(aff.xpath('.//institution[@content-type="original"]'))
+	if len(original)>0:
+		name = original
+	else:
+		texts = []
+		collect_aff_text(aff, texts)
+		name = clean_string(' '.join(texts))
+	# sub elements are joined with a space, also those followed by a punctuation sign
+	name = re.sub(r'\s+([,;.:])', r'\1', name)
+	return name.lstrip(' ,;.:')
+
 def get_affiliations(someroot):
 	result=[]
 	affs = someroot.xpath('/article/front/article-meta//aff')
 	for aff in affs:
-		id=aff.get('id')
-		# extract label text and then remove node
-		label_node = aff.find('label')
-		label = get_clean_text(label_node)
-		# !!! DO NOT USE line below: it removes the node tail as well
-		# if label_node is not None: aff.remove(label_node, keep_tail=True)
-		# use line below instead
-		if label_node is not None: label_node.text = ''
-		# try to build name from institut and country
-		institution = get_clean_text(aff.find('institution'))
-		country = get_clean_text(aff.find('country'))
-		if len(institution)>0 and len(country)>0:
-			name = institution + ', ' + country
-		# otherwise build name from any text found in there
-		else:
-			name = get_clean_text(aff)
-
-		result.append({'id':id, 'label':label, 'name': clean_string(name)})
+		result.append({
+			'id': aff.get('id'),
+			'ror_id': get_aff_ror_id(aff),
+			'label': get_clean_text(aff.find('label')),
+			'name': get_aff_name(aff)
+		})
 	return result
 
 def get_authors(someroot):
@@ -766,6 +788,7 @@ def parse_PMC_XML_core(xmlstr, root, input_file):
 	# To be kept here before any parsing aimed at retrieving data
 	for xs in root.xpath('//xref/sup'): xs.getparent().remove(xs)
 	for sx in root.xpath('//sup/xref'): sx.getparent().remove(sx)
+	convert_leading_sup_to_label_in_affs(root)
 	etree.strip_tags(root,'sup')
 
 	etree.strip_tags(root,'italic')
