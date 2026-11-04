@@ -742,20 +742,6 @@ def parse_PMC_XML(xmlstr):
 	return parse_PMC_XML_core(xmlstr,None, None)
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
-# used by jsonpmc_httpserver.py
-# - - - - - - - - - - - - - - - - - - - - - - - -
-def getPmcFtpUrl(xmlstr):
-	root = etree.fromstring(xmlstr)
-	lnk = root.xpath('/OA/records/record/link')
-	if lnk is not None:
-		if len(lnk) == 1: return lnk[0].get('href')
-		if len(lnk) >  1:
-			print("WARNING: multiple archives available on ftp, choosing format tgz")
-			for itm in lnk:
-				if itm.get('format')=='tgz': return itm.get('href')
-	return None
-
-# - - - - - - - - - - - - - - - - - - - - - - - -
 
 def parse_PMC_XML_core(xmlstr, root, input_file):
 

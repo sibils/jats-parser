@@ -135,7 +135,7 @@ Simple http server providing a json version of a publication given a pmcid.
 
 The server listens to http requests on port 8088 and responds to requests like _/parse/pmc/{some pmcid}_ .
 
-The server retrieves the XML JATS version of the corresponding publication by calling the ebi API.
+The server retrieves the XML JATS version of the corresponding publication from the PMC Cloud Service (open access articles only) and keeps it in the *tmp* directory, which it checks first for later requests.
 
 It then uses **process_xml.py** to parse the XML. The response is a json version of the publication.
 

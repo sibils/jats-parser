@@ -1,11 +1,9 @@
 import os
 import sys
 import json
-import tarfile
-from ftplib import FTP
 import http.client
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from process_xml import parse_PMC_XML,getPmcFtpUrl
+from process_xml import parse_PMC_XML
 from pseudo_annot import get_pseudo_annotations_for_text,get_pseudo_annotations_for_cell
 from pmca_formatter import PmcaFormatter
 from text_formatter import TextFormatter
@@ -55,22 +53,10 @@ def getPmcXml(pmcid):
     # if xml file not found locally...
     if nxmlfile is None:
 
-        # get archive name from remote oa service
-        ftpurl = getFtpArchiveUrl(pmcid)
-        if ftpurl is None:
-            msg = 'Could not get an ftp archive for pmcid: ' + pmcid
-            print("ERROR, pmcid:", pmcid, msg)
-            return {'status':400, 'reason':msg, 'data':None}
-        # copy the ftp archive file (tar.gz) to local cache
-        targzfile = saveFileFromFtp(ftpurl)
-        if targzfile is None:
-            msg = 'Could not get file from ftp url: ' + ftpurl
-            print("ERROR, pmcid:", pmcid, msg)
-            return {'status':400, 'reason':msg, 'data':None}
-        # extract nxml file from archive and save it locally
-        nxmlfile = getXmlFileFromArchive(targzfile,pmcid)
+        # copy the xml file from the PMC cloud service to local cache
+        nxmlfile = saveXmlFromPmcCloud(pmcid)
         if nxmlfile is None:
-            msg = 'Could not extract nxml file from archive: ' + targzfile
+            msg = 'Could not get xml from PMC cloud service for pmcid: ' + pmcid
             print("ERROR, pmcid:", pmcid, msg)
             return {'status':400, 'reason':msg, 'data':None}
 
@@ -97,31 +83,34 @@ def getXmlFilenameFromLocalCache(pmcid):
     return None
 
 
-def getXmlFileFromArchive(archive,pmcid):
-    with tarfile.open(archive, "r") as tar:
-        for filename in tar.getnames():
-            if filename[-4:] == 'nxml':
-                subdir='tmp/PMC' + pmcid[0:2]
-                tar.extract(filename, path=subdir)
-                newname = filename[:-4] + 'xml'
-                os.rename(subdir + '/' + filename, subdir + '/' + newname)
-                return subdir + '/' + newname
-    return None
-
-def getFtpArchiveUrl(pmcid):
-    connection = http.client.HTTPSConnection("www.ncbi.nlm.nih.gov")
-    url = '/pmc/utils/oa/oa.fcgi?id=' + pmcid
-    connection.request("GET", url)
-    response = connection.getresponse()
-    output={}
-    output["status"]=response.status
-    output["reason"]=response.reason
-    output["data"]=response.read()
+def saveXmlFromPmcCloud(pmcid):
+    #
+    # Files are stored per article version, so we try versions 1, 2, ... until
+    # one is missing and keep the latest. Example:
+    # https://pmc-oa-opendata.s3.amazonaws.com/PMC13498323.1/PMC13498323.1.xml
+    #
+    name = 'PMC' + pmcid
+    connection = http.client.HTTPSConnection("pmc-oa-opendata.s3.amazonaws.com")
+    version = 0
+    content = None
+    while True:
+        versioned_name = name + '.' + str(version + 1)
+        connection.request("GET", '/' + versioned_name + '/' + versioned_name + '.xml')
+        response = connection.getresponse()
+        data = response.read()
+        if response.status != 200: break
+        version = version + 1
+        content = data
     connection.close()
-    ftpurl = None
-    if output["status"] == 200:
-        ftpurl = getPmcFtpUrl(output["data"])
-    return ftpurl
+    if content is None: return None
+
+    subdir = 'tmp/PMC' + pmcid[0:2] + '/' + name
+    os.makedirs(subdir, exist_ok=True)
+    localfile = subdir + '/' + name + '.' + str(version) + '.xml'
+    with open(localfile, 'wb') as f:
+        f.write(content)
+    return localfile
+
 
 def add_pseudo_annot(obj):
     annotations=list()
@@ -148,27 +137,6 @@ def add_pseudo_annot(obj):
                 annotations.extend(a_list)
                 annotated_capt = annotated_capt + 1
 
-
-def saveFileFromFtp(ftpurl):
-    #
-    # extract domain, path and filename from url.
-    # Example:
-    # ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_package/20/f2/PMC4804230.tar.gz
-    # ['ftp:', '', 'ftp.ncbi.nlm.nih.gov', 'pub', 'pmc', 'oa_package', '20', 'f2', 'PMC4804230.tar.gz']
-    #
-    url_els=ftpurl.split('/')
-    if len(url_els) < 4: return None
-    domain = url_els[2]
-    remotedir = '/'.join(url_els[3:-1])
-    remotefile = url_els[-1]
-    subdir=remotefile[0:5]
-    print("DEBUG, downloading", ftpurl)
-    localfile = 'tmp/' + subdir + '/' + remotefile
-    with FTP(domain, 'anonymous', 'pamichel@infomaniak.ch') as ftp:
-        if remotedir != '' : ftp.cwd(remotedir)
-        with open(localfile, 'wb') as f:
-            ftp.retrbinary('RETR ' + remotefile, f.write)
-    return localfile
 
 class GP(BaseHTTPRequestHandler):
 
