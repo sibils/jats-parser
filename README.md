@@ -19,6 +19,11 @@ Contents
   * [Request examples, one per collection](#request-examples-one-per-collection)
   * [How each collection is converted to PAM](#how-each-collection-is-converted-to-pam)
 * [JATS parser tools](#jats-parser-tools)
+  * [process_xml.py](#process_xmlpy)
+  * [jsonpmc_httpserver.py](#jsonpmc_httpserverpy)
+  * [Start / stop / status: jsonpmc_server.sh](#start--stop--status-jsonpmc_serversh)
+  * [Routes: /getxml/pmc, /parse/pmc and /pseudo/api/fetch](#routes-getxmlpmc-parsepmc-and-pseudoapifetch)
+  * [Developing process_xml.py and pmca_formatter.py](#developing-process_xmlpy-and-pmca_formatterpy)
 * [Installation](#installation)
 * [Notes about the JATS parser](#notes-about-the-jats-parser)
 * [License](#license)
@@ -141,9 +146,95 @@ It then uses **process_xml.py** to parse the XML. The response is a json version
 
 **Usage**
 
-    python ./jsonpmc_httpserver.py > mylog 2>&1 &
-    # wait 5 seconds
+    ./jsonpmc_server.sh start
     curl http://localhost:8088/parse/pmc/3507161
+
+### Start / stop / status: jsonpmc_server.sh
+
+The script `jsonpmc_server.sh` at the repository root manages the server as a background process.
+
+    ./jsonpmc_server.sh start     # start the server on port 8088 (does nothing if already running)
+    ./jsonpmc_server.sh status    # running? responding on port 8088?
+    ./jsonpmc_server.sh stop      # stop it (SIGTERM, then SIGKILL after 5 s)
+    ./jsonpmc_server.sh restart
+    ./jsonpmc_server.sh log       # follow the server log
+
+* pid file: `tmp/jsonpmc_server.pid`, log file: `tmp/jsonpmc_server.log` (`tmp/` is git ignored)
+* `status` exit code: 0 running and responding, 1 running but port not responding, or port answered by
+  a server not started with this script, 3 not running
+* `start` refuses to run if port 8088 is already answered by a server not started with this script: stop that one first
+* the python interpreter can be changed with the `PYTHON` variable, e.g. `PYTHON=~/venv/bin/python ./jsonpmc_server.sh start`
+
+### Routes: /getxml/pmc, /parse/pmc and /pseudo/api/fetch
+
+The three routes are successive views of the same publication. They all get the XML the same way,
+so each one shows the result of one more processing step:
+
+    tmp/ cache, or else PMC Cloud Service
+      |
+      +--> XML JATS ----------------------------------------> /getxml/pmc/{pmcid}
+             |
+             | process_xml.py (parse_PMC_XML)
+             v
+           parsed publication ------------------------------> /parse/pmc/{pmcid}
+             |
+             +--> wrapped in a SIBiLS-like response --------> /pseudo/api/fetch?ids={pmcid}
+             |
+             +--> pmca_formatter.py (PmcaFormatter) --------> /pseudo/api/fetch?ids={pmcid}&format=pam
+             |
+             +--> text_formatter.py (TextFormatter) --------> /pseudo/api/fetch?ids={pmcid}&format=txt
+
+| Route | Response | Publication found in |
+| ----- | -------- | -------------------- |
+| `/getxml/pmc/{pmcid}` | the XML JATS file, unchanged | the response itself |
+| `/parse/pmc/{pmcid}` | json: `success`, `query`, `data` | `data` |
+| `/pseudo/api/fetch?ids={pmcid}` | json: same structure as a SIBiLS fetch response | `sibils_article_set[0].document` |
+| `/pseudo/api/fetch?ids={pmcid}&format=pam` | json: same structure, publication in PAM format | `sibils_article_set[0]` |
+| `/pseudo/api/fetch?ids={pmcid}&format=txt` | plain text | the response itself |
+
+* The publication in `data` of `/parse/pmc` and in `document` of `/pseudo/api/fetch` is the same object.
+* `{pmcid}` can be written with or without the `PMC` prefix. `/pseudo/api/fetch` accepts `ids=` or `id=`, with a single id.
+* Errors are returned as http 400 with a json body, for instance for a publication which is not open access.
+* `/pseudo/api/fetch` always returns the collection `pmc`, its `col` and `covoc` parameters have no effect.
+  Calling it without any parameter makes the request fail without a json error.
+
+Example:
+
+    curl http://localhost:8088/getxml/pmc/13498323
+    curl http://localhost:8088/parse/pmc/13498323
+    curl 'http://localhost:8088/pseudo/api/fetch?ids=PMC13498323&format=pam'
+
+### Developing process_xml.py and pmca_formatter.py
+
+The server loads the python modules when it starts, so **restart it after each code change**.
+A publication is only downloaded once, so restarts and repeated requests are fast.
+
+**process_xml.py**: compare the input from `/getxml/pmc` with the output from `/parse/pmc`.
+The json keys are sorted, so the output before and after a change can be compared with `diff`:
+
+    curl -s http://localhost:8088/parse/pmc/13498323 > tmp/before.json
+    # ... edit process_xml.py ...
+    ./jsonpmc_server.sh restart
+    curl -s http://localhost:8088/parse/pmc/13498323 > tmp/after.json
+    diff tmp/before.json tmp/after.json
+
+**pmca_formatter.py**: compare the input from `/pseudo/api/fetch?ids={pmcid}` with the output
+from `/pseudo/api/fetch?ids={pmcid}&format=pam`, in the same way. A change in `process_xml.py` also shows
+in the PAM output, since it is built from the parsed publication.
+
+This route only tests a part of the formatter. Its `sentences` and `annotations` are always empty, so the
+PAM output never has annotations. It also only covers the collection pmc. To test annotations or the other
+collections, use the [SIBiLS API proxy](#sibils-api-proxy-pam-format), which runs the same `PmcaFormatter`
+on real SIBiLS data:
+
+    curl 'http://localhost:8089/sibils/api/fetch?col=pmc&format=PAM&ids=PMC4909023'
+
+**Tips**
+
+* If a parsing or formatting error occurs, the client gets an empty response and the python traceback is in the log: `./jsonpmc_server.sh log`
+* To try a specific XML case, edit the cached file (e.g. `tmp/PMC13/PMC13498323/PMC13498323.1.xml`), no restart needed.
+  Delete the publication directory (e.g. `tmp/PMC13/PMC13498323/`) to download the file again on the next request.
+* `pmca_formatter.py` is in `sibils.v3/`. `jsonpmc_server.sh` adds this directory to `PYTHONPATH` so the server can import it.
 
 ## Installation
 
